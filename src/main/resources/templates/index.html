@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+{{^sb3}}
+<button onclick="location.href='/selogin/login'">로그인</button>
+<button onclick="location.href='/selogin/signup'">회원 가입</button>
+<button onclick="location.href='/category/page'">카테고라</button>
+{{/sb3}}
+
+{{#sb3}}
+<button onclick="location.href='/signout'">로그아웃</button>
+<button onclick="location.href='/category/page'">카테고라</button>
+{{/sb3}}
+</body>
+</html>
