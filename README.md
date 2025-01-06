@@ -8,7 +8,7 @@ CREATE TABLE `member_tbl` (
   `nickname` varchar(30) COLLATE utf8mb4_general_ci NOT NULL,
   `email` varchar(200) COLLATE utf8mb4_general_ci NOT NULL,
   `role` varchar(10) COLLATE utf8mb4_general_ci NOT NULL,
-  `active` tinyint(1) NOT NULL DEFAULT 0,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
   `createDt` varchar(20) COLLATE utf8mb4_general_ci NULL,
   `createId` varchar(20) COLLATE utf8mb4_general_ci NULL,
   `updateDt` varchar(20) COLLATE utf8mb4_general_ci NULL,
