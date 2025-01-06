@@ -18,8 +18,7 @@ public class BoardDto  {
     private String name;
     @Size(min = 10, max = 1000, message = "본문은 10~1000자 입니다.")
     private String content;
-    private Integer viewQty;
-    private Integer likeQty;
+
     public String getTbl() {
         return "board";
     }
