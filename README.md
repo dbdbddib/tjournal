@@ -1,3 +1,5 @@
+# mysql
+```
 CREATE TABLE `member_tbl` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `loginId` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
@@ -18,3 +20,4 @@ CREATE TABLE `member_tbl` (
   UNIQUE KEY `member_tbl_uniq_loginId` (`loginId`),
   UNIQUE KEY `member_tbl_uniq_nickname` (`nickname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+```
