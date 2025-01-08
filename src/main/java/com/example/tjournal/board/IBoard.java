@@ -12,11 +12,6 @@ public interface IBoard extends IBase {
     String getContent();
     void setContent(String content);
 
-    Integer getViewQty();
-    void setViewQty(Integer viewQty);
-
-    Integer getLikeQty();
-    void setLikeQty(Integer likeQty);
 
     String getTbl();
 
@@ -32,12 +27,6 @@ public interface IBoard extends IBase {
         }
         if (from.getContent() != null && !from.getContent().isEmpty()) {
             this.setContent(from.getContent());
-        }
-        if (from.getViewQty() != null) {
-            this.setViewQty(from.getViewQty());
-        }
-        if (from.getLikeQty() != null) {
-            this.setLikeQty(from.getLikeQty());
         }
         IBase.super.copyFields(from);
     }
