@@ -1,5 +1,6 @@
 package com.example.tjournal.board;
 
+import com.example.tjournal.commons.dto.BaseDto;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,11 +13,11 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardDto  {
+public class BoardDto extends BaseDto implements IBoard{
     private Long id;
-    @Size(min = 10, max = 100, message = "제목은 10~100자 입니다.")
+    @Size(min = 5, max = 100, message = "제목은 5~100자 입니다.")
     private String name;
-    @Size(min = 10, max = 1000, message = "본문은 10~1000자 입니다.")
+    @Size(min = 5, max = 1000, message = "본문은 5~1000자 입니다.")
     private String content;
 
     public String getTbl() {
