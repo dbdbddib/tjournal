@@ -149,6 +149,7 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
             List<BoardDto> list = this.boardService.findAllByNameContains(searchAjaxDto);
             searchAjaxDto.setTotal(total);
             searchAjaxDto.setDataList(list);
+            // 요청한 곳의 ajax done()함수로 데이터 전송
             return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", searchAjaxDto);
         } catch (LoginAccessException ex) {
             log.error(ex.toString());
