@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#postForm").on("submit", function (event) {
+                event.preventDefault();
+                $.addInsert();
+            });
+        });
+
+
+        $.addInsert = function () {
+            let name = $("#name").val();
+            let content = $("#content").val();
+            if (!confirm(name + " 추가 하시겠습니까 ?")) {
+                return;
+            }
+
+            let formData = new FormData();
+            for ( const file of fileArrayAdd ) {
+                formData.append("files", file);
+            }
+            formData.append("boardDto", new Blob([JSON.stringify({
+                "name": name,
+                "content": content
+            })], {type:"application/json"}));
+
+            $.ajax({
+                url: "/api/v1/board",
+                type: "POST",
+                datatype: "JSON",
+                data: formData,
+                contentType: false,
+                processData: false,
+            }).done(function (data, status, xhr) {
+                console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+                // insert 완료시
+                $("#postForm")[0].reset();
+                fileArrayAdd = new Array();
+                $("#fileListAdd").children().remove();
+                alert("등록이 완료되었습니다.");
+                window.location.href = "board_ajx_list"
+            }).fail(function (jqXHR, status, errorThrown) {
+                console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                let message = getErrorMessage(jqXHR.responseJSON);
+                alert("추가를 실패했습니다. " + message);
+            });
+        }
+
+        let fileArrayAdd = new Array();
+
+        $.addFile = function(inputFile) {
+            let num = 0;
+            for ( const file of inputFile.files ) {
+                let html = "";
+                html += "<div id='file" + num + "' class='filebox'>";
+                html += "<div class='filename'>" + file.name + "</div>";
+                html += "</div>";
+                $("#fileListAdd").append(html);
+                fileArrayAdd.push(file);
+                num++;
+            }
+            $("#file").val("");
+        }
+
+        $.addFileModity = function(inputFile) {
+            let num = 0;
+            for ( const file of inputFile.files ) {
+                let html = "";
+                html += "<div id='fileView_" + num + "' class='filebox'>";
+                html += "<div class='filename'>" + file.name + "</div>";
+                html += "</div>";
+                $("#fileListView").append(html);
+                fileArrayModity.push(file);
+                num--;
+            }
+            $("#fileModity").val("");
+        }
+
+        function validation(obj) {
+            if (obj.name.length > 100) {
+                alert("파일명이 100자 이상인 파일은 제외되었습니다.");
+                return false;
+            } else if (obj.size > (100 * 1024 * 1024)) {
+                alert("최대 파일 용량인 100MB를 초과한 파일은 제외되었습니다.");
+                return false;
+            } else if (obj.name.lastIndexOf('.') === -1) {
+                alert("확장자가 없는 파일은 제외되었습니다.");
+                return false;
+            } else {
+                return true;
+            }
+        }
+    </script>
+</head>
+<body>
+<main class="main">
+    <div class="container">
+        <form id="postForm">
+            <label for="name">제목</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="content">내용</label>
+            <textarea id="content" name="content" required></textarea>
+
+            <label>첨부파일</label>
+            <input type="file" id="file" name="file" onchange="$.addFile(this);" multiple/>
+            <div id="fileListAdd" class="file-list"></div>
+
+            <button type="submit" id="addButton">등록</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

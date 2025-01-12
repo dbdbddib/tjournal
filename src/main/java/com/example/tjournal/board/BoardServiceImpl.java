@@ -6,6 +6,7 @@ import com.example.tjournal.commons.exeption.IdNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class BoardServiceImpl implements IBoardService {
 
     @Override
     @Transactional
-    public BoardDto insert(CUDInfoDto cudInfoDto, BoardDto dto) {
+    public BoardDto insert(CUDInfoDto cudInfoDto, BoardDto dto, List<MultipartFile> files) {
         if ( cudInfoDto == null || dto == null ) {
             return null;
         }
@@ -25,6 +26,11 @@ public class BoardServiceImpl implements IBoardService {
         cudInfoDto.setCreateInfo(insert);
         this.boardMybatisMapper.insert(insert);
         return insert;
+    }
+
+    @Override
+    public BoardDto insert(CUDInfoDto cudInfoDto, BoardDto dto) {
+        return null;
     }
 
     // Transactional

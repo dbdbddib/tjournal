@@ -8,6 +8,9 @@ import com.example.tjournal.commons.exeption.IdNotFoundException;
 import com.example.tjournal.commons.exeption.LoginAccessException;
 import com.example.tjournal.commons.inif.ICommonRestController;
 import com.example.tjournal.member.IMember;
+import com.example.tjournal.member.IMemberService;
+import com.example.tjournal.security.config.SecurityConfig;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,21 +28,62 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
     @Autowired
     private IBoardService boardService;
 
-    @PostMapping
-    public ResponseEntity<ResponseDto> insert(Model model
-            , @Validated @RequestPart(value="boardDto") BoardDto dto
-    ) {
+    @Autowired
+    private IMemberService memberService;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseDto> findById(HttpSession session, @PathVariable Long id) {
         try {
-            CUDInfoDto cudInfoDto = makeResponseCheckLogin(model);
-            IBoard result = this.boardService.insert(cudInfoDto, dto);
+            if (id == null || id <= 0) {
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
+            }
+            String nickname = (String) session.getAttribute(SecurityConfig.LOGINUSER);
+            IMember loginUser = this.memberService.findByNickname(nickname);
+            if (loginUser == null) {
+                return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, "로그인 필요", null);
+            }
+            IBoard result = this.boardService.findById(id);
             return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", result);
         } catch (LoginAccessException ex) {
             log.error(ex.toString());
             return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.getMessage(), null);
+        } catch (IdNotFoundException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, ex.getMessage(), null);
         } catch (Exception ex) {
             log.error(ex.toString());
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.getMessage(), null);
         }
+    }
+
+    @PostMapping
+    public ResponseEntity<ResponseDto> insert(HttpSession session
+            , @Validated @RequestPart(value = "boardDto") BoardDto dto
+            , @RequestPart(value = "files", required = false) List<MultipartFile> files) {
+        try {
+            if (dto == null) {
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
+            }
+            String nickname = (String) session.getAttribute(SecurityConfig.LOGINUSER);
+            IMember loginUser = this.memberService.findByNickname(nickname);
+            if (loginUser == null) {
+                return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, "로그인 필요", null);
+            }
+            CUDInfoDto cudInfoDto = new CUDInfoDto(loginUser);
+            IBoard result = this.boardService.insert(cudInfoDto, dto, files);
+            if (result == null) {
+                return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R000011, "서버 입력 에러", null);
+            }
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", result);
+        } catch (Exception ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseDto> insert(Model model, BoardDto dto) {
+        return null;
     }
 
     @PatchMapping("/{id}")

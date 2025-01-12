@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script>
+
+        $.showItemInfo = function (item) {
+            if (item == null) {
+                return;
+            }
+            $('#name').text(item.title);
+            $('#createDt').text(item.createDt);
+            $('#content').text(item.content);
+        }
+
+        $.viewItem = function (id) {
+            $.ajax({
+                url: "/api/v1/allNoticeBoard/" + id,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+            }).done(function (data, status, xhr) {
+                if (status === "success") {
+                    $.showItemInfo(data.responseData);
+                    $.getAllNoticeBoardFiles(id);
+                    if (item.fileListView) {
+                        $('#fileListView').html(item.fileListView.map(file => `<a href="${file.url}">${file.name}</a>`).join('<br>'));
+                    } else {
+                        $('#fileListView').html("첨부파일 없음");
+                    }
+                }
+            }).fail(function (jqXHR, status, errorThrown) {
+                console.error("게시글을 불러오는 데 실패했습니다.", status, errorThrown);
+                alert("게시글을 불러오는 데 실패했습니다.");
+            });
+        }
+
+        $.getAllNoticeBoardFiles = function (id) {
+            if (id <= 0) {
+                return;
+            }
+            $.ajax({
+                url: "/api/v1/sunfile/findbyboardid",
+                type: "POST",
+                datatype: "JSON",
+                data: JSON.stringify({"tbl": "{{allNoticeBoardTbl}}", "boardId": id}),
+                contentType: "application/json; charset=UTF-8",
+            }).done(function (data, status, xhr) {
+                console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+                if (status === "success") {
+                    $.showAllNoticeBoardFiles(data.responseData);
+                }
+            }).fail(function (jqXHR, status, errorThrown) {
+                console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                alert("첨부파일 보기 실패했습니다. " + jqXHR.responseJSON.message);
+            });
+        }
+
+        let fileArrayView = new Array();
+        $.showAllNoticeBoardFiles = function (fileList) {
+            if (fileList == null) {
+                return;
+            }
+            let html = "";
+            fileArrayView = fileList;
+            for (const file of fileArrayView) {
+                let id = file.id;
+                let tbl = file.tbl;
+                let name = file.name;
+                let uniqName = file.uniqName;
+                let fileType = file.fileType;
+                let size = file.length;
+                html += "<div id='fileView_" + id + "' class='row'>";
+                html += "<div class='filename col-md-6' onclick=\"$.downloadFile('" + tbl + "', '" + name + "', '" + uniqName + "', '" + fileType + "')\">" + name + "</div>";
+                html += "</div>";
+            }
+            $("#fileListView").append(html);
+        }
+    </script>
+</head>
+<body>
+<main class="main">
+    <div class="container">
+        <div class="header">
+            <h2 id="title">게시글 제목</h2>
+            <div class="meta-info">
+                작성자: <span id="writer"></span> | 작성일: <span id="createDt"></span> | 조회수: <span id="viewQty"></span>
+            </div>
+        </div>
+        <div class="content" id="content">
+        </div>
+        <div id="fileListView" class="attachments">
+            <div class="file-title">파일</div>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button class="back-button" onclick="location.href='board_ajx_list'">목록으로</button>
+        <button onclick="location.href='board_update?id=' + getId()">수정</button>
+    </div>
+</main>
+</body>
+</html>
