@@ -3,6 +3,7 @@ package com.example.tjournal.board;
 import com.example.tjournal.commons.dto.CUDInfoDto;
 import com.example.tjournal.commons.dto.SearchAjaxDto;
 import com.example.tjournal.commons.exeption.IdNotFoundException;
+import com.example.tjournal.sbfile.ISbFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,9 @@ public class BoardServiceImpl implements IBoardService {
     @Autowired
     private IBoardMybatisMapper boardMybatisMapper;
 
+    @Autowired
+    private ISbFileService sbFileService;
+
     @Override
     @Transactional
     public BoardDto insert(CUDInfoDto cudInfoDto, BoardDto dto, List<MultipartFile> files) {
@@ -25,6 +29,7 @@ public class BoardServiceImpl implements IBoardService {
         insert.copyFields(dto);
         cudInfoDto.setCreateInfo(insert);
         this.boardMybatisMapper.insert(insert);
+        this.sbFileService.insertFiles(insert, files);
         return insert;
     }
 
