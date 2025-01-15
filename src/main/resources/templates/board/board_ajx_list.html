@@ -6,7 +6,7 @@
     <!--    <script language="JavaScript" src="/js/jquery-3.7.1.min.js"></script>-->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
-        let page = 0;
+        let page = 1;
         let total = 0;
         let sortColumn = "id";
         let sortAscDesc = "DESC";
@@ -15,10 +15,13 @@
         // HTML 문서 로딩이 완료된 후 자동적으로 한번 실행되는 jQuery 부분
         $(function () {
 
+
             // 게시판 리스트 검색
             $.searchItemList = function (pPage) {
                 page = pPage;
-                $("#id").val("");   // id="id" 요소의 value 속성의 값을 "" 설정한다.
+                $("#id").val("");
+                // ex) <input id="id" type="text" value="example">
+                // id="id" 요소의 value 속성의 값을 "" 설정한다.
                 $("#name").val(""); // id="name" 요소의 value 속성의 값을 "" 설정한다.
                 $("#content").val(""); // id="name" 요소의 value 속성의 값을 "" 설정한다.
                 let searchName = $("#searchName").val();
@@ -89,6 +92,7 @@
             $.makePageUI = function (paramTotal, paramPage) {
                 // paramTotal : 전체 데이터 수
                 // paramPage : 현재 페이지 번호
+                // ~~ : 숫자를 정수로 변환 (소수점 제거)
                 let totPage = ~~((paramTotal + rowsOnePage - 1) / rowsOnePage);    // 전체 페이지 수
                 let startPage = getStartPage(paramPage);
                 let endPage = getEndPage(startPage, paramTotal);
