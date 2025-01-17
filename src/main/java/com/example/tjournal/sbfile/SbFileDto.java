@@ -21,5 +21,5 @@ public class SbFileDto implements ISbFile {
     private String description;
     private String tbl;
     private Long boardId;
-    private Boolean deleteFlag;
+    private Boolean deleteFlag = false;
 }

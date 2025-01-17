@@ -4,6 +4,7 @@ import com.example.tjournal.commons.dto.CUDInfoDto;
 import com.example.tjournal.commons.dto.SearchAjaxDto;
 import com.example.tjournal.commons.exeption.IdNotFoundException;
 import com.example.tjournal.sbfile.ISbFileService;
+import com.example.tjournal.sbfile.SbFileDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,21 @@ public class BoardServiceImpl implements IBoardService {
         this.boardMybatisMapper.insert(insert);
         this.sbFileService.insertFiles(insert, files);
         return insert;
+    }
+
+    @Override
+    public BoardDto update(CUDInfoDto info, BoardDto dto
+            , List<SbFileDto> sbFileDtoList, List<MultipartFile> files) throws RuntimeException {
+        if (info == null || dto == null) {
+            return null;
+        }
+        BoardDto update = BoardDto.builder().build();
+        update.copyFields(dto);
+        info.setUpdateInfo(update);
+        this.boardMybatisMapper.update(update);
+        this.sbFileService.updateFiles(sbFileDtoList);
+        this.sbFileService.insertFiles(update, files);
+        return update;
     }
 
     @Override

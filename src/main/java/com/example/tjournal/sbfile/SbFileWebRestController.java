@@ -1,11 +1,16 @@
 package com.example.tjournal.sbfile;
 
+import com.example.tjournal.commons.dto.CUDInfoDto;
 import com.example.tjournal.commons.dto.ResponseCode;
 import com.example.tjournal.commons.dto.ResponseDto;
 import com.example.tjournal.commons.exeption.IdNotFoundException;
 import com.example.tjournal.commons.exeption.LoginAccessException;
 import com.example.tjournal.commons.inif.IResponseController;
 import com.example.tjournal.filecntl.FileCtrlService;
+import com.example.tjournal.member.IMember;
+import com.example.tjournal.member.IMemberService;
+import com.example.tjournal.security.config.SecurityConfig;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -31,6 +36,9 @@ public class SbFileWebRestController implements IResponseController {
     private ISbFileService sbFileService;
     @Autowired
     private FileCtrlService fileCtrlService;
+
+    @Autowired
+    private IMemberService memberService;
 
     @PostMapping("/findbyboardid")
     public ResponseEntity<ResponseDto> findByBoardId(Model model
@@ -110,6 +118,32 @@ public class SbFileWebRestController implements IResponseController {
         } catch ( Exception ex ) {
             log.error(ex.toString());
             return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @DeleteMapping("/deleteFlag/{id}")
+    public ResponseEntity<ResponseDto> updateDeleteFlag(HttpSession session, @PathVariable Long id, @RequestBody SbFileDto dto){
+        try{
+            if (id == null || dto == null || dto.getId() == null || dto.getId() <= 0 || !id.equals(dto.getId()) || dto.getDeleteFlag() == null) {
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
+            }
+            String nickname = (String) session.getAttribute(SecurityConfig.LOGINUSER);
+            IMember loginUser = this.memberService.findByNickname(nickname);
+            CUDInfoDto cudInfoDto = new CUDInfoDto(loginUser);
+            if (loginUser == null) {
+                return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, "로그인 필요", null);
+            }
+            Boolean result = this.sbFileService.updateDeleteFlag(cudInfoDto, dto);
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", result);
+        } catch (LoginAccessException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.getMessage(), null);
+        } catch (IdNotFoundException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, ex.getMessage(), null);
+        } catch (Exception ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.getMessage(), null);
         }
     }
 

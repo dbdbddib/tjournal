@@ -12,6 +12,11 @@
             // $(function () {
         });
 
+        function getId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
         $.showItemInfo = function (item) {
             if (item == null) {
                 return;

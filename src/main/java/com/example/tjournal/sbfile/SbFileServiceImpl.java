@@ -119,9 +119,12 @@ public class SbFileServiceImpl implements ISbFileService {
 
     @Override
     public Boolean updateFiles(List<SbFileDto> sbFileDtoList) {
-        for ( SbFileDto sbFileDto : sbFileDtoList ) {
-            if (sbFileDto.getDeleteFlag()) {
-                this.sbFileMybatisMapper.updateDeleteFlag(sbFileDto);
+        if ( sbFileDtoList == null ) {
+            return false;
+        }
+        for ( SbFileDto sunFileDto : sbFileDtoList ) {
+            if (sunFileDto.getDeleteFlag()) {
+                this.sbFileMybatisMapper.updateDeleteFlag(sunFileDto);
             }
         }
         return true;

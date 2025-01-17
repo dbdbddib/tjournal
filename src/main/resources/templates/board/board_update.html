@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(function () {
+            const id = getId();
+            if (id) {
+                $.getItem(id);
+            }
+            $('#updateForm').submit(function (event) {
+                event.preventDefault();
+                $.update(id);
+            });
+        });
+
+        $.fileArrayView = [];
+
+        function getId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        $.getItem = function (id) {
+            $.ajax({
+                url: "/api/v1/board/" + id,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+            }).done(function (data, status, xhr) {
+                if (status === "success" && data.responseData) {
+                    const item = data.responseData;
+                    $('#name').val(item.name);
+                    $('#content').val(item.content);
+                    $.getBoardFiles(id);
+                }
+            }).fail(function (jqXHR, status, errorThrown) {
+                console.error("게시글을 불러오는 데 실패했습니다.", status, errorThrown);
+                alert("게시글을 불러오는 데 실패했습니다.");
+            });
+        }
+
+        $.getBoardFiles = function (id) {
+            if (id <= 0) {
+                return;
+            }
+            $.ajax({
+                url: "/api/v1/sbfile/findbyboardid",
+                type: "POST",
+                datatype: "JSON",
+                data: JSON.stringify({"tbl": "{{boardTbl}}", "boardId": id}),
+                contentType: "application/json; charset=UTF-8",
+            }).done(function (data, status, xhr) {
+                console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+                if (status === "success") {
+                    $.fileArrayView = data.responseData || [];
+                    $.showBoardFiles($.fileArrayView);
+                }
+            }).fail(function (jqXHR, status, errorThrown) {
+                console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                alert("첨부파일 보기 실패했습니다. " + jqXHR.responseJSON.message);
+            });
+        }
+
+        $.showBoardFiles = function (fileList) {
+            if (fileList == null) {
+                return;
+            }
+            let html = "";
+            $.fileArrayView = fileList;
+            $("#fileListView").children().remove();
+            for (const file of $.fileArrayView) {
+                let id = file.id;
+                let name = file.name;
+                html += "<div id='fileView_" + id + "' class='row'>";
+                html += "<div class='filename col-md-7'>" + name + "</div>";
+                html += "<div class='col-md-5'><span class='delete-label' onclick='$.deleteFile(" + id + ")'>삭제</span></div>";
+                html += "</div>";
+            }
+            $("#fileListView").html(html);
+        }
+
+        $.addFile = function (input) {
+            const files = input.files;
+            if ($.fileArrayView.length + files.length > 2) {
+                alert("파일은 최대 2개까지 업로드할 수 있습니다.");
+                return;
+            }
+            for (const file of files) {
+                $.fileArrayView.push(file);
+            }
+            $.showBoardFiles([...$.fileArrayView]);
+            $("#file").val("");
+        }
+
+        $.deleteFile = function (id) {
+            if (confirm("파일을 삭제하시겠습니까?")) {
+                $.ajax({
+                    url: "/api/v1/sbfile/deleteFlag/" + id,
+                    type: "DELETE",
+                    dataType: "json",
+                    data: JSON.stringify({"id": id, "deleteFlag": true}),
+                    contentType: "application/json; charset=UTF-8",
+                }).done(function (data, status, xhr) {
+                    if (status === "success") {
+                        alert("파일이 삭제되었습니다.");
+                        $('#fileView_' + id + ' .filename').addClass('deleted');
+                        $('#fileView_' + id + ' .delete-label').addClass('disabled').text('삭제됨');
+                        $.fileArrayView.length--;
+                    }
+                }).fail(function (jqXHR, status, errorThrown) {
+                    console.error("파일 삭제에 실패했습니다.", status, errorThrown);
+                    alert("파일 삭제에 실패했습니다.");
+                });
+            }
+        }
+
+        $.update = function (id) {
+            if (confirm("게시글을 수정하시겠습니까?")) {
+                const updateData = {
+                    id: id,
+                    name: $('#name').val(),
+                    content: $('#content').val(),
+                };
+
+                let formData = new FormData();
+                formData.append("boardDto", new Blob([JSON.stringify(updateData)], {type: "application/json"}));
+                for (const file of $.fileArrayView) {
+                    formData.append("files", file);
+                }
+                formData.append("sbfiles", new Blob([JSON.stringify($.fileArrayView)], {type: "application/json"}));
+
+                // 디버깅 코드 추가
+                // 크롬 개발자 도구 console 에서 확인
+                console.log("업데이트 데이터:", updateData);
+                console.log("FormData 내용:", Array.from(formData.entries()));
+                console.log("$.fileArrayView:", $.fileArrayView);
+
+                $.ajax({
+                    url: "/api/v1/board/" + id,
+                    type: "PATCH",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                }).done(function (data, status, xhr) {
+                    if (status === "success") {
+                        alert("게시글이 성공적으로 수정되었습니다.");
+                        window.location.href = "board_view?id=" + id;
+                    }
+                }).fail(function (jqXHR, status, errorThrown) {
+                    console.error("게시글 수정에 실패했습니다.", status, errorThrown);
+                    alert("게시글 수정에 실패했습니다.");
+                });
+            }
+        }
+
+        $.deleteBoard = function (id) {
+            if (confirm("게시글을 삭제하시겠습니까?")) {
+                $.ajax({
+                    url: "/api/v1/board/deleteFlag/" + id,
+                    type: "DELETE",
+                    dataType: "json",
+                    data: JSON.stringify({"id": id, "deleteFlag": true}),
+                    contentType: "application/json; charset=UTF-8",
+                }).done(function (data, status, xhr) {
+                    if (status === "success") {
+                        alert("게시글이 성공적으로 삭제되었습니다.");
+                        window.location.href = "board_list";
+                    }
+                }).fail(function (jqXHR, status, errorThrown) {
+                    console.error("게시글 삭제에 실패했습니다.", status, errorThrown);
+                    alert("게시글 삭제에 실패했습니다.");
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+<main class="main">
+    <div class="container">
+        <div class="header">
+            <h2>게시글 수정</h2>
+        </div>
+        <form id="updateForm">
+            <div class="form-group">
+                <label for="name">제목</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="content">내용</label>
+                <textarea id="content" name="content" required></textarea>
+            </div>
+            <div>첨부파일</div>
+            <div id="fileListView" class="attachments"></div>
+            <input type="file" id="file" name="file" onchange="$.addFile(this);" multiple/>
+            <div class="actions">
+                <button type="button" class="cancel-button" onclick="location.href='board_view?id=' + getId()">
+                    뒤로가기
+                </button>
+                <div>
+                    <button type="button" class="delete-button" onclick="$.deleteBoard(getId())">삭제</button>
+                    <button type="button" class="update-button" onclick="$.update(getId())">저장</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>

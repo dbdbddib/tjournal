@@ -48,4 +48,10 @@ public class BoardWebController {
         model.addAttribute("boardDto", boardDto);
         return "board/board_view";
     }
+
+    @GetMapping("/board_update")
+    private String freeBoardUpdate(Model model) {
+        model.addAttribute("boardTbl", new BoardDto().getTbl());
+        return "board/board_update";
+    }
 }
