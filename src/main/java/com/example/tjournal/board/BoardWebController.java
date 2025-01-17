@@ -41,10 +41,11 @@ public class BoardWebController {
         return "board/board_add";
     }
 
-    @GetMapping("/allnoticeboard_view")
+    @GetMapping("/board_view")
     private String allNoticeBoardView(@RequestParam("id") Long id, Model model) {
         BoardDto boardDto = boardService.findById(id);
-        model.addAttribute("allNoticeBoardTbl", new BoardDto().getTbl());
+        model.addAttribute("boardTbl", new BoardDto().getTbl());
+        model.addAttribute("boardDto", boardDto);
         return "board/board_view";
     }
 }

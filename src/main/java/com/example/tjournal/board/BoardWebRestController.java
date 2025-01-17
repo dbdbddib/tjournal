@@ -44,6 +44,8 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
             }
             IBoard result = this.boardService.findById(id);
             return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", result);
+
+
         } catch (LoginAccessException ex) {
             log.error(ex.toString());
             return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.getMessage(), null);

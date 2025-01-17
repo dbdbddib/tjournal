@@ -3,21 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+
+        // HTML 문서 로딩이 완료된 후 자동적으로 한번 실행되는 jQuery 부분
+        $(function () {
+            $.viewItem(Number("{{boardDto.id}}"));
+            // $(function () {
+        });
 
         $.showItemInfo = function (item) {
             if (item == null) {
                 return;
             }
-            $('#name').text(item.title);
+            $('#name').text(item.name);
             $('#createDt').text(item.createDt);
             $('#content').text(item.content);
+            $('#writer').text(item.createName);
         }
 
         $.viewItem = function (id) {
             $.ajax({
-                url: "/api/v1/allNoticeBoard/" + id,
+                url: "/api/v1/board/" + id,
                 type: "GET",
                 dataType: "json",
                 contentType: "application/json; charset=UTF-8",
@@ -42,10 +49,10 @@
                 return;
             }
             $.ajax({
-                url: "/api/v1/sunfile/findbyboardid",
+                url: "/api/v1/sbfile/findbyboardid",
                 type: "POST",
                 datatype: "JSON",
-                data: JSON.stringify({"tbl": "{{allNoticeBoardTbl}}", "boardId": id}),
+                data: JSON.stringify({"tbl": "{{boardTbl}}", "boardId": id}),
                 contentType: "application/json; charset=UTF-8",
             }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
@@ -84,7 +91,7 @@
 <main class="main">
     <div class="container">
         <div class="header">
-            <h2 id="title">게시글 제목</h2>
+            <h2 id="title">게시글 제목: <span id="name"></span></h2>
             <div class="meta-info">
                 작성자: <span id="writer"></span> | 작성일: <span id="createDt"></span> | 조회수: <span id="viewQty"></span>
             </div>
