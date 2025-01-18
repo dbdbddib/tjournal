@@ -26,6 +26,13 @@
             $('#content').text(item.content);
             $('#writer').text(item.createName);
             $('#viewQty').text(item.viewQty);
+            $("#likeQty2").text(item.likeQty);
+            let count = item.deleteDt;
+            if (count === "0") {
+                $("#heartIcon").attr("src", "/svg/heartOff.svg");
+            } else {
+                $("#heartIcon").attr("src", "/svg/heartOn.svg");
+            }
         }
 
         $.viewItem = function (id) {
@@ -91,6 +98,47 @@
             }
             $("#fileListView").append(html);
         }
+
+        $.likeItem = function () {
+            let heartIcon = $("#heartIcon");
+            let src = heartIcon.attr("src");
+            let bOff = src.includes("Off");
+            let id = getId();
+            if (id <= 0) {
+                return;
+            }
+            if (bOff) {
+                $.ajax({
+                    url: "/api/v1/board/like/" + id,
+                    type: "GET",
+                    datatype: "JSON",
+                    contentType: "application/json; charset=UTF-8",
+                }).done(function (data, status, xhr) {
+                    console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+                    if (status === "success") {
+                        $.showItemInfo(data.responseData);
+                    }
+                }).fail(function (jqXHR, status, errorThrown) {
+                    console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                    alert("Like 실패 했습니다. " + jqXHR.responseJSON.message);
+                });
+            } else {
+                $.ajax({
+                    url: "/api/v1/board/unlike/" + id,
+                    type: "GET",
+                    datatype: "JSON",
+                    contentType: "application/json; charset=UTF-8",
+                }).done(function (data, status, xhr) {
+                    console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+                    if (status === "success") {
+                        $.showItemInfo(data.responseData);
+                    }
+                }).fail(function (jqXHR, status, errorThrown) {
+                    console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                    alert("UnLike 실패 했습니다. " + jqXHR.responseJSON.message);
+                });
+            }
+        }
     </script>
 </head>
 <body>
@@ -101,12 +149,18 @@
             <div class="meta-info">
                 작성자: <span id="writer"></span> | 작성일: <span id="createDt"></span> | 조회수: <span id="viewQty"></span>
             </div>
+
         </div>
         <div class="content" id="content">
         </div>
         <div id="fileListView" class="attachments">
             <div class="file-title">파일</div>
         </div>
+    </div>
+
+    <div>
+        <img id="heartIcon" src="/svg/heartOff.svg" width="40px" alt="Like" onclick="$.likeItem();"/>
+        <span id="likeQty2"></span>
     </div>
 
     <div class="actions">

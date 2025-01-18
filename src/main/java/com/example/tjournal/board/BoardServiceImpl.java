@@ -5,6 +5,8 @@ import com.example.tjournal.commons.dto.SearchAjaxDto;
 import com.example.tjournal.commons.exeption.IdNotFoundException;
 import com.example.tjournal.sbfile.ISbFileService;
 import com.example.tjournal.sbfile.SbFileDto;
+import com.example.tjournal.sblike.ISbLikeMybatisMapper;
+import com.example.tjournal.sblike.SbLikeDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,9 @@ import java.util.List;
 public class BoardServiceImpl implements IBoardService {
     @Autowired
     private IBoardMybatisMapper boardMybatisMapper;
+
+    @Autowired
+    private ISbLikeMybatisMapper sbLikeMybatisMapper;
 
     @Autowired
     private ISbFileService sbFileService;
@@ -55,6 +60,47 @@ public class BoardServiceImpl implements IBoardService {
             return;
         }
         this.boardMybatisMapper.addViewQty(id);
+    }
+
+
+    @Override
+    @Transactional
+    public void addLikeQty(CUDInfoDto cudInfoDto, Long id) {
+        if ( cudInfoDto == null || cudInfoDto.getLoginUser() == null || id == null || id <= 0 ) {
+            return;
+        }
+        SbLikeDto boardLikeDto = SbLikeDto.builder()
+                .tbl(new BoardDto().getTbl())
+                .createId(cudInfoDto.getLoginUser().getId())
+                .boardId(id)
+                .build();
+
+        Integer count = this.sbLikeMybatisMapper.countByTableUserBoard(boardLikeDto);
+        if ( count > 0 ) {
+            return;
+        }
+        this.sbLikeMybatisMapper.insert(boardLikeDto);
+        this.boardMybatisMapper.addLikeQty(id);
+    }
+
+    @Override
+    @Transactional
+    public void subLikeQty(CUDInfoDto cudInfoDto, Long id) {
+        if ( cudInfoDto == null || cudInfoDto.getLoginUser() == null || id == null || id <= 0 ) {
+            return;
+        }
+        SbLikeDto boardLikeDto = SbLikeDto.builder()
+                .tbl(new BoardDto().getTbl())
+                .createId(cudInfoDto.getLoginUser().getId())
+                .boardId(id)
+                .build();
+
+        Integer count = this.sbLikeMybatisMapper.countByTableUserBoard(boardLikeDto);
+        if ( count < 1 ) {
+            return;
+        }
+        this.sbLikeMybatisMapper.deleteByTableUserBoard(boardLikeDto);
+        this.boardMybatisMapper.subLikeQty(id);
     }
 
     @Override

@@ -10,6 +10,8 @@ import com.example.tjournal.commons.inif.ICommonRestController;
 import com.example.tjournal.member.IMember;
 import com.example.tjournal.member.IMemberService;
 import com.example.tjournal.sbfile.SbFileDto;
+import com.example.tjournal.sblike.ISbLikeService;
+import com.example.tjournal.sblike.SbLikeDto;
 import com.example.tjournal.security.config.SecurityConfig;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,9 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
 
     @Autowired
     private IMemberService memberService;
+
+    @Autowired
+    private ISbLikeService sbLikeService;
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto> findById(HttpSession session, @PathVariable Long id) {
@@ -229,5 +234,63 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
             log.error(ex.toString());
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.getMessage(), null);
         }
+    }
+
+    @GetMapping("/like/{id}")
+    public ResponseEntity<ResponseDto> addLikeQty(Model model, @Validated @PathVariable Long id) {
+        try {
+            if (id == null || id <= 0) {
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
+            }
+            this.boardService.findById(id);
+            CUDInfoDto cudInfoDto = makeResponseCheckLogin(model);
+            this.boardService.addLikeQty(cudInfoDto, id);
+            IBoard result = this.getBoardAndLike(id, cudInfoDto.getLoginUser());
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", result);
+        } catch (LoginAccessException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.getMessage(), null);
+        } catch (IdNotFoundException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, ex.getMessage(), null);
+        } catch (Exception ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.getMessage(), null);
+        }
+    }
+
+    @GetMapping("/unlike/{id}")
+    public ResponseEntity<ResponseDto> subLikeQty(Model model, @Validated @PathVariable Long id) {
+        try {
+            if (id == null || id <= 0) {
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
+            }
+            this.boardService.findById(id);
+            CUDInfoDto cudInfoDto = makeResponseCheckLogin(model);
+            this.boardService.subLikeQty(cudInfoDto, id);
+            IBoard result = this.getBoardAndLike(id, cudInfoDto.getLoginUser());
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", result);
+        } catch (LoginAccessException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.getMessage(), null);
+        } catch (IdNotFoundException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, ex.getMessage(), null);
+        } catch (Exception ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.getMessage(), null);
+        }
+    }
+
+    private IBoard getBoardAndLike(Long id, IMember loginUser) {
+        IBoard result = this.boardService.findById(id);
+        SbLikeDto boardLikeDto = SbLikeDto.builder()
+                .tbl(new BoardDto().getTbl())
+                .createId(loginUser.getId())
+                .boardId(id)
+                .build();
+        Integer likeCount = this.sbLikeService.countByTableUserBoard(boardLikeDto);
+        result.setDeleteDt(likeCount.toString());
+        return result;
     }
 }

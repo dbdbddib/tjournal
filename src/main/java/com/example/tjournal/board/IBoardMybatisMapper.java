@@ -9,6 +9,9 @@ import java.util.List;
 @Mapper
 public interface IBoardMybatisMapper extends IMybatisCRUD<BoardDto> {
     void addViewQty(Long id);
+    void addLikeQty(Long id);
+    void subLikeQty(Long id);
+
     Integer countAllByNameContains(SearchAjaxDto searchAjaxDto);
     List<BoardDto> findAllByNameContains(SearchAjaxDto searchAjaxDto);
 }
