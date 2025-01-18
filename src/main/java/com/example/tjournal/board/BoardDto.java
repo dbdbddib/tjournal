@@ -19,7 +19,8 @@ public class BoardDto extends BaseDto implements IBoard{
     private String name;
     @Size(min = 5, max = 1000, message = "본문은 5~1000자 입니다.")
     private String content;
-
+    private Integer viewQty;
+    private Integer likeQty;
     public String getTbl() {
         return "board";
     }

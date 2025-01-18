@@ -6,6 +6,8 @@ import lombok.Getter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+
+// CUID 시간
 @Getter
 public class CUDInfoDto {
     private final IMember loginUser;

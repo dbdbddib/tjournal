@@ -50,6 +50,14 @@ public class BoardServiceImpl implements IBoardService {
     }
 
     @Override
+    public void addViewQty(Long id) {
+        if (id == null || id <= 0) {
+            return;
+        }
+        this.boardMybatisMapper.addViewQty(id);
+    }
+
+    @Override
     public BoardDto insert(CUDInfoDto cudInfoDto, BoardDto dto) {
         return null;
     }

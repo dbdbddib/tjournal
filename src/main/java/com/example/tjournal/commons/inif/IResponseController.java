@@ -31,6 +31,7 @@ public interface IResponseController {
         return new CUDInfoDto(loginUser);
     }
 
+    // login 체크
     default CUDInfoDto makeResponseCheckSelfOrAdmin(Model model, IBase checkObject) {
         IMember loginUser = (IMember) model.getAttribute(SecurityConfig.LOGINUSER);
         if (loginUser == null) {

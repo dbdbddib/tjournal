@@ -6,11 +6,15 @@
     <insert id="insert" parameterType="BoardDto" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO board_tbl ( name
                               , content
+                              , viewQty
+                              , likeQty
                               , createDt
                               , createId
                               , deleteFlag)
         VALUES ( #{name}
                , #{content}
+               , 0
+               , 0
                , #{createDt}
                , #{createId}
                , false)
@@ -42,6 +46,8 @@
         SELECT bt.id
              , bt.name
              , bt.content
+             , bt.viewQty
+             , bt.likeQty
              , bt.createDt
              , bt.createId
              , ct.nickname AS createName
@@ -73,6 +79,8 @@
         SELECT bt.id
              , bt.name
              , bt.content
+             , bt.viewQty
+             , bt.likeQty
              , bt.createDt
              , bt.createId
              , ct.nickname AS createName
@@ -92,4 +100,25 @@
         ORDER BY ${orderByWord}
         LIMIT #{rowsOnePage} OFFSET #{firstIndex}
     </select>
+
+    <update id="addViewQty">
+        UPDATE board_tbl
+        SET viewQty = viewQty + 1
+        WHERE id = #{id}
+          AND deleteFlag = false
+    </update>
+
+    <update id="addLikeQty">
+        UPDATE board_tbl
+        SET likeQty = likeQty + 1
+        WHERE id = #{id}
+          AND deleteFlag = false
+    </update>
+
+    <update id="subLikeQty">
+        UPDATE board_tbl
+        SET likeQty = likeQty - 1
+        WHERE id = #{id}
+          AND deleteFlag = false
+    </update>
 </mapper>

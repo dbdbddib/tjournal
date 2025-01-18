@@ -167,7 +167,7 @@
                 }).done(function (data, status, xhr) {
                     if (status === "success") {
                         alert("게시글이 성공적으로 삭제되었습니다.");
-                        window.location.href = "board_list";
+                        window.location.href = "board_ajx_list";
                     }
                 }).fail(function (jqXHR, status, errorThrown) {
                     console.error("게시글 삭제에 실패했습니다.", status, errorThrown);

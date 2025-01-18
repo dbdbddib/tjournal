@@ -1,33 +1,39 @@
 # 생각
-- 팔로워들의 장소
+- 팔로워들의 장소:
 유튜브 구독창 처럼
 초기화면은 전체표출
-특정 팔로워 선택 후 팔로워만 볼 수 있게도 구현
+
+
+- 특정 팔로워 선택 후 특정 팔로워만 볼 수 있게도 구현
   
 # 설계
 - 메인페이지
-  로그인
-  회원가입
-  (이메일 인증)
-  (보류 : 소셜로그인 (카톡, 구글))
+  - 로그인
+  - 회원가입
+  - (이메일 인증)
+  - (보류 : 소셜로그인 (카톡, 구글))
+
 
 - 세컨드페이지
-지도(이미지)
-플로팅 챗봇
+  - 지도(이미지)
+  - 플로팅 챗봇
+
 
 - 일기장 작성페이지
-제목
-본문
-사진
-위치추가
+  - 제목
+  - 본문
+  - 사진
+  - 위치추가
+  - 좋아요
+  - 댓글
+  - 조회수
 
 
-
-마이페이지
-아이디변경
-비번변경
-닉네임 변경
-내가 작성한 글목록 (삭제, 수정)
+- 마이페이지
+  - 아이디변경
+  - 비번변경
+  - 닉네임 변경
+  - 내가 작성한 글목록 (삭제, 수정)
 
 
 # mustacheajax
@@ -72,6 +78,8 @@ CREATE TABLE `board_tbl` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `content` varchar(4000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `viewQty` int DEFAULT '0',
+  `likeQty` int DEFAULT '0',
   `createDt` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `createId` bigint unsigned DEFAULT NULL,
   `updateDt` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,

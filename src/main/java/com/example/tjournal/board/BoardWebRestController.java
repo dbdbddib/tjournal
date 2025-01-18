@@ -39,10 +39,24 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
                 return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
             }
             String nickname = (String) session.getAttribute(SecurityConfig.LOGINUSER);
-            IMember loginUser = this.memberService.findByNickname(nickname);
-            if (loginUser == null) {
+            if (nickname == null) {
                 return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, "로그인 필요", null);
             }
+
+            // 중복 조회수 방지 로직
+            // 세션을 활용해 동일 브라우저에서의 조회수 중복 증가를 방지
+            String viewKey = "viewed_" + id; // 게시글 ID 기반 Key
+            Long lastViewedTime = (Long) session.getAttribute(viewKey);
+            // 세션에 저장된 이전 조회 시간
+            // 처음 조회할 때는 null 그러므로 조건문 if문 실행 (|| -> or)
+
+            if (lastViewedTime == null || (System.currentTimeMillis() - lastViewedTime) >= 3600000) { // 1시간(3600000ms)
+                this.boardService.addViewQty(id);
+                session.setAttribute(viewKey, System.currentTimeMillis());
+                // System.currentTimeMillis() 현재 시간 호출
+                // 세션에 viewKey 라는 키와 현재 시간 set
+            }
+
             IBoard result = this.boardService.findById(id);
             return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", result);
 
