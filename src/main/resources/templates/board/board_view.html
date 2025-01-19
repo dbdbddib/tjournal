@@ -44,7 +44,8 @@
             }).done(function (data, status, xhr) {
                 if (status === "success") {
                     $.showItemInfo(data.responseData);
-                    $.getAllNoticeBoardFiles(id);
+                    $.getBoardFiles(id);
+                    $.getCommentList(id, true);
                     if (item.fileListView) {
                         $('#fileListView').html(item.fileListView.map(file => `<a href="${file.url}">${file.name}</a>`).join('<br>'));
                     } else {
@@ -57,7 +58,7 @@
             });
         }
 
-        $.getAllNoticeBoardFiles = function (id) {
+        $.getBoardFiles = function (id) {
             if (id <= 0) {
                 return;
             }
@@ -70,7 +71,7 @@
             }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                 if (status === "success") {
-                    $.showAllNoticeBoardFiles(data.responseData);
+                    $.showBoardFiles(data.responseData);
                 }
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
@@ -79,7 +80,7 @@
         }
 
         let fileArrayView = new Array();
-        $.showAllNoticeBoardFiles = function (fileList) {
+        $.showBoardFiles = function (fileList) {
             if (fileList == null) {
                 return;
             }
@@ -139,6 +140,112 @@
                 });
             }
         }
+
+
+
+// 댓글
+
+
+        $.addComment = function () {
+            let id = getId();
+            let comment = $("#comment").val();
+            let tbl = "board";
+            if (!comment) {
+                alert("댓글을 입력하세요.");
+                return;
+            }
+            if (!confirm("댓글을 추가 하시겠습니까 ?")) {
+                return;
+            }
+            $.ajax({
+                url: "/api/v1/comment",
+                type: "POST",
+                datatype: "JSON",
+                data: JSON.stringify({"comment": comment, "boardId": id, "tbl": tbl}),
+                contentType: "application/json; charset=UTF-8",
+            }).done(function (data, status, xhr) {
+                $("#comment").val("");
+                $.getCommentList(id, true);
+                alert("댓글을 추가하였습니다.");
+            }).fail(function (jqXHR, status, errorThrown) {
+                let message = getErrorMessage(jqXHR.responseJSON);
+                alert("댓글 추가를 실패했습니다. " + message);
+            });
+        }
+
+        $.getCommentList = function (id, clear) {
+            let tbl = "board";
+            if (id <= 0) {
+                return;
+            }
+            $.ajax({
+                url: "/api/v1/comment/findbyboardid",
+                type: "POST",
+                dataType: "json",
+                data: JSON.stringify({"tbl": tbl, "boardId": id}),
+                contentType: "application/json; charset=UTF-8",
+            }).done(function (data, status, xhr) {
+                if (status === "success") {
+                    $.showCommentList(clear, data.responseData);
+                }
+            }).fail(function (jqXHR, status, errorThrown) {
+                alert("댓글 보기 실패했습니다. " + jqXHR.responseJSON.message);
+            });
+        }
+
+        $.showCommentList = function (clear, commentList) {
+            if (commentList == null) {
+                return;
+            }
+            if (clear) {
+                $("#commentList").children().remove();
+            }
+            let html = "";
+            for (const commentItem of commentList) {
+                let id = commentItem.id;
+                let comment = commentItem.comment;
+                let writer = commentItem.writer;
+                let createDt = commentItem.createDt;
+                html += "<div id='List_" + id + "' class='comment-item'>";
+                html += "<div class='comment-content'>" + comment + "</div>";
+                html += "<div class='comment-meta'>" + createDt + " | " + writer + "</div>";
+                html += "<div class='comment-actions'><button onclick='$.deleteComment(" + id + ")'>X</button></div>";
+                html += "</div>";
+            }
+            $("#commentList").append(html);
+        }
+
+        $.deleteComment = (id) => {
+            if (id <= 0) {
+                return;
+            }
+            if (!confirm("댓글을 삭제 하시겠습니까 ?")) {
+                return;
+            }
+            $.ajax({
+                url: "/api/v1/comment/deleteFlag/" + id,
+                type: "DELETE",
+                datatype: "JSON",
+                data: JSON.stringify({"id": id, "deleteFlag": true}),
+                contentType: "application/json; charset=UTF-8",
+            }).done(function (data, status, xhr) {
+                if (status === "success") {
+                    $.deleteCommentItem(id);
+                    alert("댓글이 삭제되었습니다.");
+                }
+            }).fail(function (jqXHR, status, errorThrown) {
+                try {
+                    const response = JSON.parse(jqXHR.responseText);
+                    alert("댓글 삭제 실패 했습니다. " + "\n\n" + (response.message || "알 수 없는 오류"));
+                } catch (e) {
+                    alert("댓글 삭제 실패 했습니다. 서버 응답을 확인할 수 없습니다.");
+                }
+            });
+        }
+
+        $.deleteCommentItem = (id) => {
+            $("#List_" + id).remove();
+        }
     </script>
 </head>
 <body>
@@ -161,6 +268,12 @@
     <div>
         <img id="heartIcon" src="/svg/heartOff.svg" width="40px" alt="Like" onclick="$.likeItem();"/>
         <span id="likeQty2"></span>
+    </div>
+
+    <div id="commentList" class="comment-list"></div>
+    <div class="comment-form">
+        <textarea id="comment" rows="4" style="width: 100%;" placeholder="댓글을 입력하세요"></textarea>
+        <button id="addCommentButton" onclick="$.addComment()">댓글 추가</button>
     </div>
 
     <div class="actions">
