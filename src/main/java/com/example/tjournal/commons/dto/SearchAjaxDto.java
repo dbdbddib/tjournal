@@ -26,6 +26,7 @@ public class SearchAjaxDto {
 
     private Integer page;
     private Integer total;
+
     private List<?> dataList;
 
     public void settingValues() {
