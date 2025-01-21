@@ -24,48 +24,52 @@ public class BoardWebController {
     private BoardServiceImpl boardService;
 
 
-    @GetMapping("/board_ajx_list")
+    @GetMapping("/board_ajx_list/{category}")
     private String boardAjxList(
             Model model,
             HttpServletRequest request,
             HttpServletResponse response,
-            HttpSession session
+            HttpSession session,
+            @PathVariable String category
     ) {
         IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
         if ( loginUser == null ) {
             return "redirect:/";
         }
         model.addAttribute("boardTbl", new BoardDto().getTbl());
-        model.addAttribute("category", "");
+        model.addAttribute("region", "");
+        model.addAttribute("category", category);
         return "board/board_ajx_list";
     }
 
-    @GetMapping("/board_ajx_list/{category}")
-    private String boardAjxCategoryList(
+    @GetMapping("/board_ajx_list/{category}/{region}")
+    private String boardAjxRegionList(
             Model model,
             HttpServletRequest request,
             HttpServletResponse response,
             HttpSession session,
-            @Validated @PathVariable String category
+            @Validated @PathVariable String region,
+            @PathVariable String category
     ) {
         IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
         if ( loginUser == null ) {
             return "redirect:/";
         }
         model.addAttribute("boardTbl", new BoardDto().getTbl());
+        model.addAttribute("region", region);
         model.addAttribute("category", category);
         return "board/board_ajx_list";
     }
 
     @GetMapping("/board_add")
     private String allNoticeBoardAdd(Model model) {
-        model.addAttribute("category", "");
+        model.addAttribute("region", "");
         return "board/board_add";
     }
 
-    @GetMapping("/board_add/{category}")
-    private String categoryBoardAdd(Model model, @PathVariable String category) {
-        model.addAttribute("category", category);
+    @GetMapping("/board_add/{region}")
+    private String regionBoardAdd(Model model, @PathVariable String region) {
+        model.addAttribute("region", region);
         return "board/board_add";
     }
 

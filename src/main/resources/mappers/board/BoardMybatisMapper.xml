@@ -11,6 +11,7 @@
                               , createDt
                               , createId
                               , deleteFlag
+                              , region
                               , category)
         VALUES ( #{name}
                , #{content}
@@ -19,6 +20,7 @@
                , #{createDt}
                , #{createId}
                , false
+               ,#{region}
                ,#{category})
     </insert>
 
@@ -73,7 +75,8 @@
         FROM board_tbl
         WHERE name like CONCAT('%',#{searchName},'%')
           AND deleteFlag = false
-          AND (#{category} IS NULL OR #{category} = '' OR category = #{category})
+          AND (#{region} IS NULL OR #{region} = '' OR region = #{region})
+          AND  category = #{category}
     </select>
 
 
@@ -100,7 +103,8 @@
         LEFT OUTER JOIN member_tbl AS dt ON bt.deleteId = dt.id
         WHERE bt.name like CONCAT('%',#{searchName},'%')
           AND bt.deleteFlag = false
-          AND (#{category} IS NULL OR #{category} = '' OR category = #{category})
+          AND (#{region} IS NULL OR #{region} = '' OR region = #{region})
+          AND  category = #{category}
         ORDER BY ${orderByWord}
         LIMIT #{rowsOnePage} OFFSET #{firstIndex}
     </select>

@@ -12,6 +12,9 @@ public interface IBoard extends IBase {
     String getContent();
     void setContent(String content);
 
+    String getRegion();
+    void setRegion(String region);
+
     String getCategory();
     void setCategory(String category);
 
@@ -31,6 +34,9 @@ public interface IBoard extends IBase {
         }
         if (from.getContent() != null && !from.getContent().isEmpty()) {
             this.setContent(from.getContent());
+        }
+        if (from.getRegion() != null && !from.getRegion().isEmpty()) {
+            this.setRegion(from.getRegion());
         }
         if (from.getCategory() != null && !from.getCategory().isEmpty()) {
             this.setCategory(from.getCategory());

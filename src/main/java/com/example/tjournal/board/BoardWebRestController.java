@@ -219,7 +219,6 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
             }
             makeResponseCheckLogin(model);
             int total = this.boardService.countAllByNameContains(searchAjaxDto);
-
             List<BoardDto> list = this.boardService.findAllByNameContains(searchAjaxDto);
 
             searchAjaxDto.setTotal(total);
@@ -240,7 +239,7 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
 
     // 게시판 카테고리별 리스트 검색
     // 메소드 및 mapper 새로 만들자
-//    @PostMapping("/searchName/{category}")
+//    @PostMapping("/searchName/{region}")
 //    public ResponseEntity<ResponseDto> findAllByNameContains(Model model,
 //                                                             @Validated @RequestBody SearchAjaxDto searchAjaxDto) {
 //        try {
@@ -249,9 +248,9 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
 //            }
 //            makeResponseCheckLogin(model);
 //
-//            int total = this.boardService.countCategoryByNameContains(searchAjaxDto);
+//            int total = this.boardService.countRegionByNameContains(searchAjaxDto);
 //
-//            List<BoardDto> list = this.boardService.findCategoryByNameContains(searchAjaxDto);
+//            List<BoardDto> list = this.boardService.findRegionByNameContains(searchAjaxDto);
 //
 //            searchAjaxDto.setTotal(total);
 //            searchAjaxDto.setDataList(list);

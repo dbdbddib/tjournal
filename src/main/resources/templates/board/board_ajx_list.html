@@ -11,6 +11,7 @@
         let sortColumn = "id";
         let sortAscDesc = "DESC";
         let rowsOnePage = 10;
+        let region = "{{region}}";
         let category = "{{category}}";
 
         // HTML 문서 로딩이 완료된 후 자동적으로 한번 실행되는 jQuery 부분
@@ -24,13 +25,13 @@
                 // 클릭 시 실행되는 코드
                 const currentPath = window.location.pathname; // e.g., /board/board_ajx_list/seoul
                 const parts = currentPath.split("/"); // URL을 "/" 기준으로 나누기
-                const category = parts[parts.length - 1]; // 마지막 부분 가져오기 (seoul)
+                const region = parts[parts.length - 1]; // 마지막 부분 가져오기 (seoul)
 
                 let newUrl;
-                if (category !== "board_add") {
-                    newUrl = `/board/board_add/${category}`;
+                if (region !== "board_add") {
+                    newUrl = `/board/board_add/${region}`;
                 } else {
-                    newUrl = "/board/board_add"; // category가 없거나 "board_add"이면 기본 경로
+                    newUrl = "/board/board_add"; // region가 없거나 "board_add"이면 기본 경로
                 }
 
                 window.location.href = newUrl;
@@ -58,6 +59,7 @@
                     "sortColumn": sortColumn,
                     "sortAscDsc": sortAscDesc,
                     "rowsOnePage": rowsOnePage,
+                    "region": region,
                     "category": category,
                 }),
                 // 전송하는 실제 데이터 JSON 을 사용했다.
@@ -175,6 +177,10 @@
         <input id="page" name="page" type="hidden" value=""/>
         <button onclick="$.searchItemList(1);">검색</button>
     </div>
+    <br>
+    <button type="button" onclick="location.href='/board/board_ajx_list/place/{{region}}'">장소</button>
+    <button type="button" onclick="location.href='/board/board_ajx_list/food/{{region}}'">음식</button>
+    <br><br>
     <div>
         게시판 목록
     </div>

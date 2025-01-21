@@ -6,7 +6,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
 
-    let category = "{{category}}";
+    let region = "{{region}}";
 
         $(document).ready(function () {
             $("#postForm").on("submit", function (event) {
@@ -20,6 +20,7 @@
         $.addInsert = function () {
             let name = $("#name").val();
             let content = $("#content").val();
+            let category = $("#category").val();
             if (!confirm(name + " 추가 하시겠습니까 ?")) {
                 return;
             }
@@ -31,6 +32,7 @@
             formData.append("boardDto", new Blob([JSON.stringify({
                 "name": name,
                 "content": content,
+                "region": region,
                 "category": category
             })], {type:"application/json"}));
 
@@ -116,6 +118,13 @@
             <input type="file" id="file" name="file" onchange="$.addFile(this);" multiple/>
             <div id="fileListAdd" class="file-list"></div>
 
+            <label>카테고리</label>
+            <select id="category" name="category" required>
+                <option value="">선택하세요</option>
+                <option value="food">음식</option>
+                <option value="place">장소</option>
+                <!-- 다른 음식들 추가 -->
+            </select>
             <button type="submit" id="addButton">등록</button>
         </form>
     </div>
