@@ -35,7 +35,7 @@
   - 닉네임 변경
   - 내가 작성한 글목록 (삭제, 수정)
 
-# category
+# region
   - 서울: seoul
   - 부산: busan
   - 대구: daegu
@@ -54,7 +54,9 @@
   - 경남: gyeongnam
   - 제주: jeju
 
-
+# category
+  - 장소: place
+  - 음식: food
 
 # mustacheajax
 
