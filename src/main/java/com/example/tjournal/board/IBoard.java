@@ -12,9 +12,13 @@ public interface IBoard extends IBase {
     String getContent();
     void setContent(String content);
 
+    String getCategory();
+    void setCategory(String category);
 
     String getTbl();
 
+
+    // 넣어야할 필드 값에 null 채크 후 값 생성
     default void copyFields(IBoard from) {
         if (from == null) {
             return;
@@ -27,6 +31,9 @@ public interface IBoard extends IBase {
         }
         if (from.getContent() != null && !from.getContent().isEmpty()) {
             this.setContent(from.getContent());
+        }
+        if (from.getCategory() != null && !from.getCategory().isEmpty()) {
+            this.setCategory(from.getCategory());
         }
         IBase.super.copyFields(from);
     }

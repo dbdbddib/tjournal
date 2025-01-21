@@ -6,6 +6,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
 
+    let category = "{{category}}";
 
         $(document).ready(function () {
             $("#postForm").on("submit", function (event) {
@@ -29,7 +30,8 @@
             }
             formData.append("boardDto", new Blob([JSON.stringify({
                 "name": name,
-                "content": content
+                "content": content,
+                "category": category
             })], {type:"application/json"}));
 
             $.ajax({
@@ -46,7 +48,7 @@
                 fileArrayAdd = new Array();
                 $("#fileListAdd").children().remove();
                 alert("등록이 완료되었습니다.");
-                window.location.href = "board_ajx_list"
+                history.back();
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
                 let message = getErrorMessage(jqXHR.responseJSON);

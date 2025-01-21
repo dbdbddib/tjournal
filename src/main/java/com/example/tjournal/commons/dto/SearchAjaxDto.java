@@ -18,11 +18,14 @@ public class SearchAjaxDto {
     private String searchName;
     private String sortColumn;
     private String sortAscDsc;
+
     private Integer rowsOnePage;
     private Integer firstIndex;
     public Integer getFirstIndex() {
         return (this.page - 1) * this.rowsOnePage;
     }
+
+    private String category;
 
     private Integer page;
     private Integer total;
