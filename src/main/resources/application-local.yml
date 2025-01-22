@@ -15,6 +15,17 @@ spring:
     username: tjournal_user
     password: tjournal1234!
 
+# log4jdbc: 로깅 기능이 추가된 JDBC 드라이버를 사용합니다. SQL 쿼리 실행 기록을 로그에 남기기 위해 활용
+# ?useSSL=false: SSL(Secure Sockets Layer) 연결을 비활성화합니다. 보안 연결이 필요하지 않은 경우 false
+  # SSL: 데이터를 암호화하여 네트워크를 통해 안전하게 전송하기 위한 보안 기술
+  # 기본적으로 MySQL 서버는 SSL 연결을 지원
+# &characterEncoding=UTF-8: 데이터베이스에서 문자 데이터를 읽고 쓸 때 사용할 문자 인코딩을 지정
+# &serverTimezone=UTC: 데이터베이스 서버의 시간대를 UTC로 설정
+  # UTC(Coordinated Universal Time)
+  # 세계 표준시를 의미하며, 지구상의 모든 시간대의 기준이 되는 시간
+  # 전 세계 사용자가 사용하는 애플리케이션에서는 UTC로 시간을 저장하고, 사용자 지역에 맞는 시간대로 변환하여 표시하는 방식이 일반적
+# &allowPublicKeyRetrieval=true: 클라이언트가 서버의 공개 키를 검색할 수 있도록 허용
+  # 클라이언트는 서버에 미리 등록된 공개 키를 알 수 없기 때문에, 서버로부터 공개 키를 자동으로 검색할 수 있도록 이 옵션을 활성화
   # attachfile
   servlet:
     multipart:

@@ -1,7 +1,7 @@
 package com.example.tjournal.category;
 
 // url {{region}} 확인 후 반환 하게 만들자
-public enum region {
+public enum regionEnum {
     seoul,
     busan,
     daegu,

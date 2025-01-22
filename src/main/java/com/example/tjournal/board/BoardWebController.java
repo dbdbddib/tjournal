@@ -1,11 +1,12 @@
 package com.example.tjournal.board;
 
-import com.example.tjournal.commons.dto.SearchAjaxDto;
+import com.example.tjournal.category.categoryEnum;
 import com.example.tjournal.member.IMember;
 import com.example.tjournal.security.config.SecurityConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import com.example.tjournal.category.regionEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,6 +37,11 @@ public class BoardWebController {
         if ( loginUser == null ) {
             return "redirect:/";
         }
+        try {
+            categoryEnum.valueOf(category);
+        } catch (IllegalArgumentException e) {
+            return "error/400"; // 유효하지 않은 값에 대한 처리
+        }
         model.addAttribute("boardTbl", new BoardDto().getTbl());
         model.addAttribute("region", "");
         model.addAttribute("category", category);
@@ -55,6 +61,12 @@ public class BoardWebController {
         if ( loginUser == null ) {
             return "redirect:/";
         }
+        try {
+            regionEnum.valueOf(region); // 예외 발생 시 유효하지 않은 값
+            categoryEnum.valueOf(category);
+        } catch (IllegalArgumentException e) {
+            return "error/400"; // 유효하지 않은 값에 대한 처리
+        }
         model.addAttribute("boardTbl", new BoardDto().getTbl());
         model.addAttribute("region", region);
         model.addAttribute("category", category);
@@ -70,6 +82,11 @@ public class BoardWebController {
     @GetMapping("/board_add/{region}")
     private String regionBoardAdd(Model model, @PathVariable String region) {
         model.addAttribute("region", region);
+        try {
+            regionEnum.valueOf(region); // 예외 발생 시 유효하지 않은 값
+        } catch (IllegalArgumentException e) {
+            return "error/400"; // 유효하지 않은 값에 대한 처리
+        }
         return "board/board_add";
     }
 
