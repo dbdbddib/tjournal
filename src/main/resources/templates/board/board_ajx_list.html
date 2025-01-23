@@ -28,10 +28,10 @@
                 const region = parts[parts.length - 1]; // 마지막 부분 가져오기 (seoul)
 
                 let newUrl;
-                if (region !== "board_add") {
-                    newUrl = `/board/board_add/${region}`;
+                if (region === "place" || region === "food") {
+                    newUrl = "/board/board_add";
                 } else {
-                    newUrl = "/board/board_add"; // region가 없거나 "board_add"이면 기본 경로
+                    newUrl = `/board/board_add/${region}`; // region가 없거나 "board_add"이면 기본 경로
                 }
 
                 window.location.href = newUrl;
