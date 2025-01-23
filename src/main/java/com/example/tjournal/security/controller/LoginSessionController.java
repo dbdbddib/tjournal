@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import com.example.tjournal.commons.inif.IResponseController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequestMapping("/selogin")
-public class LoginSessionController {
+public class LoginSessionController implements IResponseController{
 
     @Autowired
     private MemberServiceImpl memberService;
@@ -63,8 +64,12 @@ public class LoginSessionController {
     }
 
     @GetMapping("/login")
-    private String viewLogin() {
-        return "login/login";
+    private String viewLogin(HttpServletRequest request) {
+        HttpSession session = request.getSession(false); // 이미 존재하는 세션만 반환
+        if (session != null && session.getAttribute(SecurityConfig.LOGINUSER) != null) {
+            return "redirect:/"; // 세션에 로그인 정보가 있으면 메인 페이지로 리다이렉트
+        }
+        return "login/login"; // 로그인 정보가 없으면 로그인 페이지 반환
     }
 
     @PostMapping("/signin")

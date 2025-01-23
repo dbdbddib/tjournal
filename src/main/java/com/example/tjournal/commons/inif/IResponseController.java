@@ -21,6 +21,14 @@ public interface IResponseController {
         return new CUDInfoDto(loginUser);
     }
 
+    default String makeResponseCheckLogout(Model model) {
+        IMember loginUser = (IMember) model.getAttribute(SecurityConfig.LOGINUSER);
+        if (loginUser != null) {
+            return "redirect:/";
+        }
+        return "null";
+    }
+
     default CUDInfoDto makeResponseCheckLoginAdmin(Model model) {
         IMember loginUser = (IMember) model.getAttribute(SecurityConfig.LOGINUSER);
         if (loginUser == null) {
