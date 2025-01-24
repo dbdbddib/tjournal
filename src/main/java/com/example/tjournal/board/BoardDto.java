@@ -16,9 +16,9 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class BoardDto extends BaseDto implements IBoard{
     private Long id;
-    @Size(min = 5, max = 100, message = "제목은 5~100자 입니다.")
+    @Size(min = 1, max = 100, message = "제목은 1~100자 입니다.")
     private String name;
-    @Size(min = 5, max = 1000, message = "본문은 5~1000자 입니다.")
+    @Size(min = 1, max = 1000, message = "본문은 1~1000자 입니다.")
     private String content;
     @NotNull
     private String region;

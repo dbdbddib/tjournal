@@ -15,7 +15,7 @@ public class MemberWebController {
     @Autowired
     private IMemberService memberService;
 
-    @GetMapping("member_ajx_list")
+    @GetMapping("member_list")
     public String member_ajx_list(Model model) {
         IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
         if (loginUser == null) {
@@ -24,6 +24,6 @@ public class MemberWebController {
         if ( loginUser.getRole().equals(MemberRole.ADMIN.toString()) ) {
             model.addAttribute("adminUser", true);
         }
-        return "member/member_ajx_list";
+        return "member/member_list";
     }
 }

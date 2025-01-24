@@ -177,4 +177,28 @@ public class MemberWebRestController implements ICommonRestController<MemberDto>
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.getMessage(), null);
         }
     }
+
+    @PostMapping("/search")
+    public ResponseEntity<ResponseDto> findByName(Model model, @RequestBody SearchAjaxDto searchAjaxDto) {
+        try {
+            if (searchAjaxDto == null) {
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
+            }
+            CUDInfoDto cudInfoDto = makeResponseCheckLogin(model);
+            int total = this.memberService.countAllByNameContains(searchAjaxDto);
+            List<IMember> list = this.memberService.findAllByNameContains(searchAjaxDto); // 이 부분을 EmployeeDto 에서 전체 사원 수를 받자!, IEmployeeMybatisMapper -> findAll 만들고
+            searchAjaxDto.setTotal(total);
+            searchAjaxDto.setDataList(list);
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", searchAjaxDto);
+        } catch (LoginAccessException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.getMessage(), null);
+        } catch (IdNotFoundException ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, ex.getMessage(), null);
+        } catch (Exception ex) {
+            log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.getMessage(), null);
+        }
+    }
 }

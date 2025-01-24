@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+        $(document).ready(function () {
+            let page = 1;
+            let total = 0;
+            let rowsOnePage = 10;
+
+            $("#search-button").click(function () {
+                alert("클릭 이벤트가 호출되었습니다!"); // 동작 테스트
+                $.searchItemList();
+            });
+
+            // 리스트 검색
+            $.searchItemList = function () {
+
+                let searchName = $("#search-name").val();       // jquery 에서 값 받아오기  (화면에서 값 받기)
+
+
+                $.ajax({
+                    url: "/api/v1/member/search",     // 이 url 에서 값을 받아 옴
+                    type: "POST",
+                    datatype: "json",                         // 페이지 나누어 데이터를 받는 것이 ajax 의 큰 장점이다.    (페이지 초기화가 아닌 받고 싶은 데이터만)
+                    data: JSON.stringify({
+                        "page": page,
+                        "searchName": searchName,
+                        "sortColumn": "name",
+                        "sortAscDsc": "ASC",
+                        "rowsOnePage": rowsOnePage,
+                    }),
+                    contentType: "application/json; charset=UTF-8"
+                }).done(function (data, status, xhr) {      // data(json): 서버에서 받은 값, status: 성공적으로 요청이 완료되면 "success"라는 문자열이 전달, xhr: XMLHttpRequest 객체, HTTP 요청에 대한 다양한 정보를 담고 있으며, 응답 헤더나 상태 코드 등을 확인
+                    if (status === "success") {
+                        $("#total").html(data.responseData.total);  // responseData 안에 searchAjaxDto 의 필드 값들이 있는 것 ( why? return 값이 searchAjaxDto 이기 때문    ( url: "/api/v1/employee/search" 여기서 값을 얻음 )
+                        $.showItemList(data.responseData.dataList);
+                        $.makePageUI(data.responseData.total, page);
+                    }
+                }).fail(function (jqXHR, status, errorThrown) {
+                    alert("검색을 실패했습니다. " + jqXHR.responseJSON.message);
+                });
+            };
+
+            // searchItemList에서 검색한 리스트 화면에 출력
+            $.showItemList = function (itemList) {
+                if (itemList == null) {
+                    return;
+                }
+                const list = $("#itemList");
+                list.children().remove();
+                for (let i = 0; i < itemList.length; i++) {
+                    let id = itemList[i].id;
+                    let name = itemList[i].name;
+                    let nickname = itemList[i].nickname;
+
+                    // 클릭시 viewItem( id ) 메소드 실행
+                    let strLi = "<li> <span class='col-md-8 d-flex justify-content-start'>" + nickname + "</span>"
+                        + "<span class='col-md-8 d-flex justify-content-start'>" + " " + "</span>"
+                        + "</div></li>";
+                    list.append(strLi);
+                }
+            };
+
+            // 페이징 UI 생성 함수
+            $.makePageUI = function (totalItems) {
+
+                // const  상수
+                // Math.ceil() 올림 처리  ->  4.1 이나 4.9 모두 5 로 처리
+                const totalPages = Math.ceil(totalItems / rowsOnePage); // 총 페이지 수 계산
+                const pageDiv = $("#pageDiv");
+
+                pageDiv.children().remove(); // 기존 페이지 버튼 제거
+
+                // 페이지 버튼 생성
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageButton = $("<button>").text(i);
+
+                    // 현재 페이지와 일치하는 경우, active 클래스를 추가하여 스타일을 적용합니다.
+                    if (i === page) {
+                        // 현 페이지에 active class 추가 css 에서 현 페이지 표시하기 위함
+                        pageButton.addClass('active');
+                    }
+
+                    // 클릭 이벤트 처리 메소드
+                    pageButton.on("click", function () {
+                        page = i; // 클릭한 페이지로 설정
+                        $.searchItemList($("").val()); // 해당 페이지로 리스트 검색
+
+                        // 모든 버튼의 active 클래스 제거 후 현재 클릭한 버튼에만 추가
+                        pageDiv.children().removeClass('active');
+                        $(this).addClass('active');
+                    });
+                    pageDiv.append(pageButton);
+                }
+            };
+        });
+
+    </script>
+</head>
+<body>
+    <input type="text" id="search-name" placeholder="전체 검색">
+    <button id="search-button" style="margin-left: 10px;">검색</button>
+
+<ul id="itemList"></ul>
+
+<div id="total2">total : <span id="total"></span></div>
+
+<div id="pageDiv"></div>
+</body>
+</html>
