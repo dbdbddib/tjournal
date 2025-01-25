@@ -3,6 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>블로그 목록</title>
+    <style>
+        .header {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .blog-title {
+            font-size: 36px; /* 글자 크기 증가 */
+            font-weight: bold; /* 글자를 굵게 */
+            color: #333; /* 글자 색상 */
+        }
+    </style>
     <!--    <script language="JavaScript" src="/js/jquery-3.7.1.min.js"></script>-->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
@@ -173,6 +185,9 @@
     </script>
 </head>
 <body>
+<div class="header">
+    <span class="blog-title">{{memberDto.nickname}} 블로그</span>
+</div>
 <div class="content">
     <div>
         <label for="searchName">검색이름</label><input id="searchName" name="searchName" type="text" value=""/>

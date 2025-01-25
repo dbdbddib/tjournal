@@ -2,6 +2,8 @@ package com.example.tjournal.board;
 
 import com.example.tjournal.category.CategoryEnum;
 import com.example.tjournal.member.IMember;
+import com.example.tjournal.member.MemberDto;
+import com.example.tjournal.member.MemberServiceImpl;
 import com.example.tjournal.security.config.SecurityConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,6 +25,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class BoardWebController {
     @Autowired
     private BoardServiceImpl boardService;
+
+    @Autowired
+    private MemberServiceImpl memberService;
 
 
     @GetMapping("/board_ajx_list/{category}")
@@ -91,10 +96,12 @@ public class BoardWebController {
         } catch (IllegalArgumentException e) {
             return "error/400"; // 유효하지 않은 값에 대한 처리
         }
+        IMember memberDto = this.memberService.findById(id);
         model.addAttribute("boardTbl", new BoardDto().getTbl());
         model.addAttribute("region", "");
         model.addAttribute("category", category);
         model.addAttribute("searchId", id);
+        model.addAttribute("memberDto", memberDto);
         return "board/board_ajx_Id_list";
     }
 
