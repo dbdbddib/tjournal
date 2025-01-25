@@ -147,12 +147,31 @@ public class BoardServiceImpl implements IBoardService {
     }
 
     @Override
+    public Integer countIdByNameContains(SearchAjaxDto searchAjaxDto) {
+        if ( searchAjaxDto == null ) {
+            return 0;
+        }
+        Integer count = this.boardMybatisMapper.countIdByNameContains(searchAjaxDto);
+        return count;
+    }
+
+    @Override
     public List<BoardDto> findAllByNameContains(SearchAjaxDto searchAjaxDto) {
         if ( searchAjaxDto == null ) {
             return List.of();
         }
         searchAjaxDto.settingValues();
         List<BoardDto> list = this.boardMybatisMapper.findAllByNameContains(searchAjaxDto);
+        return list;
+    }
+
+    @Override
+    public List<BoardDto> findIdByNameContains(SearchAjaxDto searchAjaxDto) {
+        if ( searchAjaxDto == null ) {
+            return List.of();
+        }
+        searchAjaxDto.settingValues();
+        List<BoardDto> list = this.boardMybatisMapper.findIdByNameContains(searchAjaxDto);
         return list;
     }
 

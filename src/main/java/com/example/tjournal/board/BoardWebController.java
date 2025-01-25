@@ -1,6 +1,6 @@
 package com.example.tjournal.board;
 
-import com.example.tjournal.category.categoryEnum;
+import com.example.tjournal.category.CategoryEnum;
 import com.example.tjournal.member.IMember;
 import com.example.tjournal.security.config.SecurityConfig;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,7 +38,7 @@ public class BoardWebController {
             return "redirect:/";
         }
         try {
-            categoryEnum.valueOf(category);
+            CategoryEnum.valueOf(category);
         } catch (IllegalArgumentException e) {
             return "error/400"; // 유효하지 않은 값에 대한 처리
         }
@@ -63,7 +63,7 @@ public class BoardWebController {
         }
         try {
             regionEnum.valueOf(region); // 예외 발생 시 유효하지 않은 값
-            categoryEnum.valueOf(category);
+            CategoryEnum.valueOf(category);
         } catch (IllegalArgumentException e) {
             return "error/400"; // 유효하지 않은 값에 대한 처리
         }
@@ -71,6 +71,31 @@ public class BoardWebController {
         model.addAttribute("region", region);
         model.addAttribute("category", category);
         return "board/board_ajx_list";
+    }
+
+    @GetMapping("/board_ajx_id_list/{category}/{id}")
+    private String boardAjxIdList(
+            Model model,
+            HttpServletRequest request,
+            HttpServletResponse response,
+            HttpSession session,
+            @PathVariable String category,
+            @PathVariable Long id
+    ) {
+        IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
+        if ( loginUser == null ) {
+            return "redirect:/";
+        }
+        try {
+            CategoryEnum.valueOf(category);
+        } catch (IllegalArgumentException e) {
+            return "error/400"; // 유효하지 않은 값에 대한 처리
+        }
+        model.addAttribute("boardTbl", new BoardDto().getTbl());
+        model.addAttribute("region", "");
+        model.addAttribute("category", category);
+        model.addAttribute("searchId", id);
+        return "board/board_ajx_Id_list";
     }
 
     @GetMapping("/board_add")

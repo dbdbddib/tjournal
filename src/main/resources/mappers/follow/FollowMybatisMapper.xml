@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.tjournal.follow.IFollowMybatisMapper">
+
+    <insert id="insert" parameterType="FollowDto" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO follower_tbl ( followingId
+                               , followerId)
+        VALUES ( #{followingId}
+               , #{followerId})
+    </insert>
+
+<!--  특정 사용자가 팔로우한 다른 사용자 목록을 조회.  -->
+    <select id="getFollowingsByUserId" parameterType="long" resultType="map">
+        SELECT m.name AS Follower, m2.name AS Following
+        FROM follower_tbl f
+                 JOIN member_tbl m ON f.follower_id = m.id
+                 JOIN member_tbl m2 ON f.following_id = m2.id
+        WHERE m.id = #{userId};
+    </select>
+
+<!--  특정 사용자를 팔로우한 사람들의 목록을 조회.  -->
+    <select id="getFollowersByUserId" parameterType="long" resultType="map">
+        SELECT m.name AS Following, m2.name AS Follower
+        FROM follower_tbl f
+                 JOIN member_tbl m ON f.following_id = m.id
+                 JOIN member_tbl m2 ON f.follower_id = m2.id
+        WHERE m.id = #{userId};
+    </select>
+</mapper>

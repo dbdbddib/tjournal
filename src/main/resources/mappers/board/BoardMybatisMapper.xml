@@ -79,6 +79,16 @@
           AND  category = #{category}
     </select>
 
+    <select id="countIdByNameContains" parameterType="SearchAjaxDto" resultType="Integer">
+        SELECT count(*)
+        FROM board_tbl
+        WHERE name like CONCAT('%',#{searchName},'%')
+          AND createId = #{searchId}
+          AND deleteFlag = false
+          AND (#{region} IS NULL OR #{region} = '' OR region = #{region})
+          AND  category = #{category}
+    </select>
+
 
 <!--  게시판 리스트 검색  -->
     <select id="findAllByNameContains" parameterType="SearchAjaxDto" resultType="BoardDto">
@@ -107,6 +117,36 @@
           AND  category = #{category}
         ORDER BY ${orderByWord}
         LIMIT #{rowsOnePage} OFFSET #{firstIndex}
+    </select>
+
+    <!--  게시판 리스트 검색  -->
+    <select id="findIdByNameContains" parameterType="SearchAjaxDto" resultType="BoardDto">
+        SELECT bt.id
+             , bt.name
+             , bt.content
+             , bt.viewQty
+             , bt.likeQty
+             , bt.createDt
+             , bt.createId
+             , ct.nickname AS createName
+             , bt.updateDt
+             , bt.updateId
+             , ut.nickname AS updateName
+             , bt.deleteDt
+             , bt.deleteId
+             , dt.nickname AS deleteName
+             , bt.deleteFlag
+        FROM board_tbl AS bt
+                 LEFT OUTER JOIN member_tbl AS ct ON bt.createId = ct.id
+                 LEFT OUTER JOIN member_tbl AS ut ON bt.updateId = ut.id
+                 LEFT OUTER JOIN member_tbl AS dt ON bt.deleteId = dt.id
+        WHERE bt.name LIKE CONCAT('%', #{searchName}, '%')
+          AND bt.deleteFlag = false
+          AND (#{region} IS NULL OR #{region} = '' OR region = #{region})
+          AND category = #{category}
+          AND bt.createId = #{searchId}
+        ORDER BY ${orderByWord}
+            LIMIT #{rowsOnePage} OFFSET #{firstIndex};
     </select>
 
     <update id="addViewQty">

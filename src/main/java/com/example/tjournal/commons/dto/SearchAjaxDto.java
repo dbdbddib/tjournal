@@ -27,6 +27,7 @@ public class SearchAjaxDto {
 
     private String category;
     private String region;
+    private Integer searchId;
 
     private Integer page;
     private Integer total;

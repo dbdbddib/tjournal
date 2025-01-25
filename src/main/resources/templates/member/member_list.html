@@ -12,7 +12,6 @@
             let rowsOnePage = 10;
 
             $("#search-button").click(function () {
-                alert("클릭 이벤트가 호출되었습니다!"); // 동작 테스트
                 $.searchItemList();
             });
 
@@ -58,9 +57,12 @@
                     let nickname = itemList[i].nickname;
 
                     // 클릭시 viewItem( id ) 메소드 실행
-                    let strLi = "<li> <span class='col-md-8 d-flex justify-content-start'>" + nickname + "</span>"
-                        + "<span class='col-md-8 d-flex justify-content-start'>" + " " + "</span>"
-                        + "</div></li>";
+                    let strLi = `<li onclick="location.href='/board/board_ajx_id_list/place/${id}'"
+                            style="cursor: pointer;">
+                            <span class='col-md-8 d-flex justify-content-start'>${id}</span>
+                            <span class='col-md-8 d-flex justify-content-start'> </span>
+                            <span class='col-md-8 d-flex justify-content-start'>${nickname}</span>
+                        </li>`;
                     list.append(strLi);
                 }
             };

@@ -17,23 +17,7 @@
             return urlParams.get('id');
         }
 
-        $.showItemInfo = function (item) {
-            if (item == null) {
-                return;
-            }
-            $('#name').text(item.name);
-            $('#createDt').text(item.createDt);
-            $('#content').text(item.content);
-            $('#writer').text(item.createName);
-            $('#viewQty').text(item.viewQty);
-            $("#likeQty2").text(item.likeQty);
-            let count = item.deleteDt;
-            if (count === "0") {
-                $("#heartIcon").attr("src", "/svg/heartOff.svg");
-            } else {
-                $("#heartIcon").attr("src", "/svg/heartOn.svg");
-            }
-        }
+
 
         $.viewItem = function (id) {
             $.ajax({
@@ -100,9 +84,35 @@
             $("#fileListView").append(html);
         }
 
+
+        // $(selector).attr(attributeName);               // 속성 값 가져오기
+        // $(selector).attr(attributeName, value);        // 속성 값 설정
+
+
+        $.showItemInfo = function (item) {
+            if (item == null) {
+                return;
+            }
+            $('#name').text(item.name);
+            $('#createDt').text(item.createDt);
+            $('#content').text(item.content);
+            $('#writer').text(item.createName);
+            $('#viewQty').text(item.viewQty);
+            $("#likeQty2").text(item.likeQty);
+            let count = item.deleteDt;
+            if (count === "0") {
+                $("#heartIcon").attr("src", "/svg/heartOff.svg");
+            } else {
+                $("#heartIcon").attr("src", "/svg/heartOn.svg");
+            }
+        }
+
         $.likeItem = function () {
             let heartIcon = $("#heartIcon");
+            // 이미지 경로
+            // ID: heartIcon 의 src 값을 가져옴
             let src = heartIcon.attr("src");
+            // includes(): 문자열이 포함되어 있는지 확인 -> 포함되면 bOff: true
             let bOff = src.includes("Off");
             let id = getId();
             if (id <= 0) {
