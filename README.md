@@ -40,6 +40,7 @@
 
 - 팔로워, 팔로잉 
   - 사람 목록 표출
+  - loginUser id, 회원 id 의 where  ->  true  ->  언팔
 
 
 # region

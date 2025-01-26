@@ -11,20 +11,17 @@
     </insert>
 
 <!--  특정 사용자가 팔로우한 다른 사용자 목록을 조회.  -->
-    <select id="getFollowingsByUserId" parameterType="long" resultType="map">
-        SELECT m.name AS Follower, m2.name AS Following
-        FROM follower_tbl f
-                 JOIN member_tbl m ON f.follower_id = m.id
-                 JOIN member_tbl m2 ON f.following_id = m2.id
-        WHERE m.id = #{userId};
+    <select id="getFollowingsByUserId" parameterType="long" resultType="Integer">
+        SELECT COUNT(*)
+        FROM follower_tbl
+        WHERE follower_id = #{id};
+
     </select>
 
 <!--  특정 사용자를 팔로우한 사람들의 목록을 조회.  -->
-    <select id="getFollowersByUserId" parameterType="long" resultType="map">
-        SELECT m.name AS Following, m2.name AS Follower
-        FROM follower_tbl f
-                 JOIN member_tbl m ON f.following_id = m.id
-                 JOIN member_tbl m2 ON f.follower_id = m2.id
-        WHERE m.id = #{userId};
+    <select id="getFollowersByUserId" parameterType="long" resultType="Integer">
+        SELECT COUNT(*)
+        FROM follower_tbl
+        WHERE following_id = #{id};
     </select>
 </mapper>

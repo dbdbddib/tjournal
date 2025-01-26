@@ -26,10 +26,12 @@
         let region = "{{region}}";
         let category = "{{category}}";
         let searchId = "{{searchId}}";
+        let id = "{{memberDto.id}}";
 
         // HTML 문서 로딩이 완료된 후 자동적으로 한번 실행되는 jQuery 부분
         $(function () {
             $.searchItemList(1);
+            $.searchFollow(id);
         // $(function () {
         });
 
@@ -50,6 +52,34 @@
                 window.location.href = newUrl;
             });
         });
+
+        $.searchFollow =function (id) {
+            $.ajax({
+                url: "/api/v1/follow/searchFollow/" + id,
+                type: "GET",
+                contentType: "application/json; charset=UTF-8",
+            }).done(function (data, status, xhr) {
+                if (status === "success") {
+                    $.showFollow(data.responseData.follower, data.responseData.following);
+                }
+            }).fail(function (jqXHR, status, errorThrown){
+                console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                alert("검색을 실패했습니다. " + jqXHR.responseJSON.message);
+            });
+        }
+
+        $.showFollow = function (followerCount, followingCount) {
+            const followHTML = `
+                <div class="follower">
+                    <span>팔로워: ${followerCount}</span>
+                </div>
+                <div class="following">
+                    <span>팔로잉: ${followingCount}</span>
+                </div>`;
+            $(".follow-info").html(followHTML);
+        };
+
+
 
 
         // 게시판 리스트 검색
@@ -187,6 +217,8 @@
 <body>
 <div class="header">
     <span class="blog-title">{{memberDto.nickname}} 블로그</span>
+    <div class="follow-info">
+    </div>
 </div>
 <div class="content">
     <div>
