@@ -40,7 +40,10 @@
 
 - 팔로워, 팔로잉 
   - 사람 목록 표출
-  - loginUser id, 회원 id 의 where  ->  true  ->  언팔
+  - ( 팔로우, 언팔로우 ) 
+    - loginUser id, 회원 id 
+    - count  ->  1  ->  언팔
+    - count  ->  0  ->  팔로우
 
 
 # region

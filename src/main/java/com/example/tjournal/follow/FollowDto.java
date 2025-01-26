@@ -16,7 +16,9 @@ public class FollowDto extends BaseDto implements IFollow{
     private Long id;
     private Long followerId;
     private Long followingId;
-    private String createDt;
+
+    private Long isFollow;
+
     private Long follower;
     private Long following;
 }

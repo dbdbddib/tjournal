@@ -15,6 +15,9 @@ public interface IFollow extends IBase {
     Long getFollowingId();
     void setFollowingId(Long followingId);
 
+    Long getIsFollow();
+    void setIsFollow(Long IsFollow);
+
     default void copyFields(IFollow from) {
         if (from == null) {
             return;

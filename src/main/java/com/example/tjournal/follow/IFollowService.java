@@ -8,4 +8,5 @@ public interface IFollowService extends IServiceCRUD<FollowDto> {
     void subFollow(Long following, Long follower);
     Integer getFollowersByUserId(Long id);
     Integer getFollowingsByUserId(Long id);
+    Integer checkFollowingStatus(Long loginUserId, Long boardUserId);
 }

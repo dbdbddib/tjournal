@@ -32,6 +32,7 @@
         $(function () {
             $.searchItemList(1);
             $.searchFollow(id);
+            $.checkFollowingStatus(id);
         // $(function () {
         });
 
@@ -51,7 +52,14 @@
 
                 window.location.href = newUrl;
             });
+
+            $('#followButton').on('click', function () {
+                $.followItem();
+            });
         });
+
+
+
 
         $.searchFollow =function (id) {
             $.ajax({
@@ -78,6 +86,64 @@
                 </div>`;
             $(".follow-info").html(followHTML);
         };
+
+
+
+
+        $.checkFollowingStatus = function (id) {
+            $.ajax({
+                url: "/api/v1/follow/checkFollowing/" + id,
+                type: "GET",
+                contentType: "application/json; charset=UTF-8",
+            }).done(function (data, status, xhr) {
+                if (status === "success") {
+                    $.showItemInfo(data.responseData);
+                }
+            }).fail(function (jqXHR, status, errorThrown){
+                console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                alert("검색을 실패했습니다. " + jqXHR.responseJSON.message);
+            });
+        }
+
+        $.showItemInfo = function (item) {
+            if (item == null) {
+                return;
+            }
+            if (item === 1) {
+                // 이미 팔로우 중인 경우
+                $("#followButton").text("팔로우 취소").addClass("following");
+            } else {
+                // 팔로우하지 않은 경우
+                $("#followButton").text("팔로우").removeClass("following");
+            }
+        }
+
+        $.followItem = function () {
+            let followButton = $("#followButton");
+            let isFollowing = followButton.hasClass("following");
+
+            if (isFollowing) { // 팔로우 취소
+                $.ajax({
+
+                })
+            } else { // 팔로우
+                $.ajax({
+                    url: "/api/v1/follow/addFollow/" + id,
+                    type: "GET",
+                    contentType: "application/json; charset=UTF-8",
+                }).done(function (data, status, xhr) {
+                    if (status === "success") {
+                        $.showItemInfo(data.responseData.isFollow);
+                        $.searchFollow(id);
+                    }
+                }).fail(function (jqXHR, status, errorThrown){
+                    console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                    alert("검색을 실패했습니다. " + jqXHR.responseJSON.message);
+                });
+            }
+
+        }
+
 
 
 
@@ -219,6 +285,7 @@
     <span class="blog-title">{{memberDto.nickname}} 블로그</span>
     <div class="follow-info">
     </div>
+    <button id="followButton"></button>
 </div>
 <div class="content">
     <div>

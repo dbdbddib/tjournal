@@ -12,8 +12,8 @@ public class FollowSerciveImpl implements IFollowService{
     private IFollowMybatisMapper followMybatisMapper;
 
     @Override
-    public void addFollow(Long followingId, Long id) {
-        this.followMybatisMapper.insert(followingId, id);
+    public void addFollow(Long followingId, Long followerId) {
+        this.followMybatisMapper.insert(followingId, followerId);
     }
 
     @Override
@@ -31,6 +31,12 @@ public class FollowSerciveImpl implements IFollowService{
     public Integer getFollowingsByUserId(Long id) {
         Integer countFollowing = this.followMybatisMapper.getFollowingsByUserId(id);
         return countFollowing;
+    }
+
+    @Override
+    public Integer checkFollowingStatus(Long loginUserId, Long boardUserId) {
+        Integer checkFollowingStatus = this.followMybatisMapper.checkFollowingStatus(loginUserId, boardUserId);
+        return checkFollowingStatus;
     }
 
     @Override

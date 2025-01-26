@@ -4,8 +4,8 @@
 <mapper namespace="com.example.tjournal.follow.IFollowMybatisMapper">
 
     <insert id="insert" parameterType="FollowDto" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO follower_tbl ( followingId
-                               , followerId)
+        INSERT INTO follower_tbl ( following_id
+                               , follower_id)
         VALUES ( #{followingId}
                , #{followerId})
     </insert>
@@ -24,4 +24,12 @@
         FROM follower_tbl
         WHERE following_id = #{id};
     </select>
+
+    <select id="checkFollowingStatus" parameterType="long" resultType="Integer">
+        SELECT COUNT(*)
+        FROM follower_tbl
+        WHERE following_id = #{loginUserId}
+        AND follower_id = #{boardUserId};
+    </select>
+
 </mapper>

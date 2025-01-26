@@ -8,4 +8,5 @@ public interface IFollowMybatisMapper extends IMybatisCRUD<FollowDto> {
     void insert(Long followingId, Long followerId);
     Integer getFollowingsByUserId(Long id);
     Integer getFollowersByUserId(Long id);
+    Integer checkFollowingStatus(Long loginUserId, Long boardUserId);
 }

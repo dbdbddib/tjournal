@@ -29,7 +29,11 @@ public class FollowWebRestController implements ICommonRestController<FollowDto>
             Long followingId = cudInfoDto.getLoginUser().getId();
             this.followService.addFollow(followingId, id);
 
+            Integer check = this.followService.checkFollowingStatus(cudInfoDto.getLoginUser().getId(), id);
+
             IFollow result = this.getFollw(id);
+
+            result.setIsFollow(Long.valueOf(check));
 
             return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", result);
             } catch (Exception e) {
@@ -45,6 +49,22 @@ public class FollowWebRestController implements ICommonRestController<FollowDto>
             }
             makeResponseCheckLogin(model);
             IFollow result = this.getFollw(id);
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", result);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @GetMapping("/checkFollowing/{id}")
+    public ResponseEntity<ResponseDto> checkFollowing(Model model, @Validated @PathVariable Long id) {
+        try {
+            if (id == null || id <= 0) {
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
+            }
+            CUDInfoDto cudInfoDto = makeResponseCheckLogin(model);
+
+            Integer result = this.followService.checkFollowingStatus(cudInfoDto.getLoginUser().getId(), id);
+
             return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", result);
         } catch (Exception e) {
             throw new RuntimeException(e);
