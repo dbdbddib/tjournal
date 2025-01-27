@@ -6,10 +6,16 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
 
+        $(function () {
+            $.searchItemList();
+
+        });
+
         $(document).ready(function () {
             let page = 1;
             let total = 0;
             let rowsOnePage = 10;
+
 
             $("#search-button").click(function () {
                 $.searchItemList();

@@ -105,6 +105,25 @@ public class BoardWebController {
         return "board/board_ajx_Id_list";
     }
 
+    @GetMapping("/board_ajx_my_list/{category}")
+    private String myBoard(Model model
+                           , @PathVariable String category) {
+        IMember loginUser = (IMember)model.getAttribute(SecurityConfig.LOGINUSER);
+        if ( loginUser == null ) {
+            return "redirect:/";
+        }
+        try {
+            CategoryEnum.valueOf(category);
+        } catch (IllegalArgumentException e) {
+            return "error/400"; // 유효하지 않은 값에 대한 처리
+        }
+        IMember memberDto = this.memberService.findById(loginUser.getId());
+        model.addAttribute("memberDto", memberDto);
+        model.addAttribute("category", category);
+
+        return "board/board_ajx_my_list";
+    }
+
     @GetMapping("/board_add")
     private String allNoticeBoardAdd(Model model) {
         model.addAttribute("region", "");
