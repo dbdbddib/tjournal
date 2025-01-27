@@ -181,4 +181,17 @@ CREATE TABLE `sblike_tbl` (
   KEY `sblike_tbl_tbl_IDX` (`tbl`,`createId`,`boardId`) USING BTREE,
   CONSTRAINT `sblike_tbl_member_tbl_createId` FOREIGN KEY (`createId`) REFERENCES `member_tbl` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+
+CREATE TABLE `follower_tbl` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `follower_id` bigint unsigned NOT NULL,
+  `following_id` bigint unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `follower_following_uniq` (`follower_id`,`following_id`),
+  KEY `follower_tbl_following_id_fk` (`following_id`),
+  CONSTRAINT `follower_tbl_follower_id_fk` FOREIGN KEY (`follower_id`) REFERENCES `member_tbl` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `follower_tbl_following_id_fk` FOREIGN KEY (`following_id`) REFERENCES `member_tbl` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
 ```
