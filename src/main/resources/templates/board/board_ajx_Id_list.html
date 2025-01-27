@@ -26,10 +26,10 @@
         let region = "{{region}}";
         let category = "{{category}}";
 
-        // urlId -> 블로그 creatId
-        let searchId = "{{searchId}}";
+        // loginId 의 Id값
+        let loginId = "{{loginId}}";
 
-        // loginId
+        // 블로그 createId
         let id = "{{memberDto.id}}";
 
 
@@ -63,8 +63,10 @@
                 $.followItem();
             });
 
-            if (searchId === id) {
+            if (loginId === id) {
                 $("#followButton").hide();
+            } else {
+                $("#followButton").show(); // 조건을 만족하지 않으면 버튼을 표시
             }
         });
 
@@ -130,12 +132,24 @@
 
         $.followItem = function () {
             let followButton = $("#followButton");
+
+            // class="following" -> true
             let isFollowing = followButton.hasClass("following");
 
             if (isFollowing) { // 팔로우 취소
                 $.ajax({
-
-                })
+                    url: "/api/v1/follow/subFollow/" + id,
+                    type: "GET",
+                    contentType: "application/json; charset=UTF-8",
+                }).done(function (data, status, xhr) {
+                    if (status === "success") {
+                        $.showItemInfo(data.responseData.isFollow);
+                        $.searchFollow(id);
+                    }
+                }).fail(function (jqXHR, status, errorThrown){
+                    console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                    alert("검색을 실패했습니다. " + jqXHR.responseJSON.message);
+                });
             } else { // 팔로우
                 $.ajax({
                     url: "/api/v1/follow/addFollow/" + id,
@@ -180,7 +194,7 @@
                     "rowsOnePage": rowsOnePage,
                     "region": region,
                     "category": category,
-                    "searchId": searchId
+                    "searchId": id
                 }),
                 // 전송하는 실제 데이터 JSON 을 사용했다.
                 contentType: "application/json; charset=UTF-8", // 응답받는 데이터 형식

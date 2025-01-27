@@ -13,12 +13,12 @@ public class FollowSerciveImpl implements IFollowService{
 
     @Override
     public void addFollow(Long followingId, Long followerId) {
-        this.followMybatisMapper.insert(followingId, followerId);
+        this.followMybatisMapper.follow(followingId, followerId);
     }
 
     @Override
-    public void subFollow(Long cudInfoDto, Long id) {
-
+    public void subFollow(Long followingId, Long followerId) {
+        this.followMybatisMapper.unFollow(followingId, followerId);
     }
 
     @Override

@@ -100,7 +100,7 @@ public class BoardWebController {
         model.addAttribute("boardTbl", new BoardDto().getTbl());
         model.addAttribute("region", "");
         model.addAttribute("category", category);
-        model.addAttribute("searchId", id);
+        model.addAttribute("loginId", loginUser.getId());
         model.addAttribute("memberDto", memberDto);
         return "board/board_ajx_Id_list";
     }

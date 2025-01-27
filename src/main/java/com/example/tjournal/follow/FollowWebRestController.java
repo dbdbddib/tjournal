@@ -46,6 +46,29 @@ public class FollowWebRestController implements ICommonRestController<FollowDto>
         }
     }
 
+    @GetMapping("/subFollow/{id}")
+    public ResponseEntity<ResponseDto> subFollow(Model model, @Validated @PathVariable Long id) {
+        try {
+            if (id == null || id <= 0) {
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
+            }
+            CUDInfoDto cudInfoDto = makeResponseCheckLogin(model);
+            Long followingId = cudInfoDto.getLoginUser().getId();
+
+            this.followService.subFollow(followingId, id);
+
+            Integer check = this.followService.checkFollowingStatus(cudInfoDto.getLoginUser().getId(), id);
+
+            IFollow result = this.getFollw(id);
+
+            result.setIsFollow(Long.valueOf(check));
+
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", result);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @GetMapping("/searchFollow/{id}")
     public ResponseEntity<ResponseDto> searchFollow(Model model, @Validated @PathVariable Long id) {
         try {

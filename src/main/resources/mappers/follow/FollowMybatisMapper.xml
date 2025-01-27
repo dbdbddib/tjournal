@@ -3,12 +3,22 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.tjournal.follow.IFollowMybatisMapper">
 
-    <insert id="insert" parameterType="FollowDto" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO follower_tbl ( following_id
-                               , follower_id)
-        VALUES ( #{followingId}
-               , #{followerId})
+    <insert id="follow" parameterType="FollowDto">
+        INSERT INTO follower_tbl (follower_id, following_id)
+        SELECT #{followerId}, #{followingId}
+            WHERE NOT EXISTS (
+        SELECT 1
+        FROM follower_tbl
+        WHERE follower_id = #{followerId}
+                AND following_id = #{followingId}
+                );
     </insert>
+
+    <delete id="unFollow" parameterType="FollowDto">
+        DELETE FROM follower_tbl
+        WHERE following_id = #{followingId}
+          AND follower_id = #{followerId}
+    </delete>
 
 <!--  특정 사용자가 팔로우한 다른 사용자 목록을 조회.  -->
     <select id="getFollowingsByUserId" parameterType="long" resultType="Integer">
