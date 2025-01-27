@@ -27,6 +27,11 @@ public class FollowWebRestController implements ICommonRestController<FollowDto>
             }
             CUDInfoDto cudInfoDto = makeResponseCheckLogin(model);
             Long followingId = cudInfoDto.getLoginUser().getId();
+
+            if(followingId.equals(id)) {
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
+            }
+
             this.followService.addFollow(followingId, id);
 
             Integer check = this.followService.checkFollowingStatus(cudInfoDto.getLoginUser().getId(), id);
