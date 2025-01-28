@@ -22,3 +22,19 @@ IResponseController 클래스의 makeResponseEntity 메서드는 응답 데이�
 유효 기간	기본적으로 브라우저 종료 시 소멸	  설정된 만료 시간까지 유지
 보안	        상대적으로 안전 (서버 관리)	  상대적으로 취약 (클라이언트 관리)
 ```
+
+
+# html 실행순서
+
+1. <head> 태그 파싱 및 처리:
+  - <title>, <style>, <script> 등이 실행됨.
+  - <script>는 순서대로 실행되며, 이후 코드는 바로 실행됩니다.
+
+2. HTML <body> 태그 파싱:
+  - <body>의 HTML 요소가 렌더링되고 DOM에 추가됨.
+
+3. $(function () { ... })와 $(document).ready(function () { ... }) 실행
+   - DOM 트리가 완전히 구성된 후 실행됨.
+
+$(function() { ... })
+축약형 표현으로, jQuery가 제공하는 $(document).ready()의 단축 문법
