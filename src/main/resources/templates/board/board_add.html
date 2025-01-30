@@ -60,28 +60,28 @@
 
         let fileArrayModity = new Array();
 
-        $.addFile = function(inputFile) {
-            let num = 0;
-            for ( const file of inputFile.files ) {
-                let html = "";
-                html += "<div id='file" + num + "' class='filebox'>";
-                html += "<div class='filename'>" + file.name + "</div>";
-                html += "</div>";
-                $("#fileListAdd").append(html);
-                fileArrayAdd.push(file);
+                $.addFile = function(inputFile) {
+                    let num = 0;
+                    for ( const file of inputFile.files ) {
+                        let html = "";
+                        html += "<div id='file" + num + "' class='filebox'>";
+                        html += "<div class='filename'>" + file.name + "</div>";
+                        html += "</div>";
+                        $("#fileListAdd").append(html);
+                        fileArrayAdd.push(file);
 
-                // 이미지 파일이면 #content에 <img> 태그 추가
-                if (file.type.startsWith("image/")) {  // MIME 타입이 "image/"로 시작하는지 확인
-                    let filename = file.name; // 파일 이름 가져오기
-                    let imageUrl = `/images/${filename}`; // 서버에서 제공하는 URL
+                        // 이미지 파일이면 #content에 <img> 태그 추가
+                        if (file.type.startsWith("image/")) {  // MIME 타입이 "image/"로 시작하는지 확인
+                            let filename = file.name; // 파일 이름 가져오기
+                            let imageUrl = `/api/v1/sbfile/images/${filename}`; // 서버에서 제공하는 URL
 
-                    let imgTag = `<img src="${imageUrl}" alt="${filename}">`;
-                    $("#content").append(imgTag);  // div에 <img> 태그 추가
-                }
+                            let imgTag = `<img src="${imageUrl}" alt="${filename}">`;
+                            $("#content").append(imgTag);  // div에 <img> 태그 추가
+                        }
 
 
 
-                num++;
+                        num++;
             }
             $("#file").val("");
         }

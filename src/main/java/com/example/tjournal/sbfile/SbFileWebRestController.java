@@ -24,6 +24,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
@@ -46,12 +48,17 @@ public class SbFileWebRestController implements IResponseController {
     private IMemberService memberService;
 
 
-    private static final String UPLOAD_DIR = "C:\\Temp\\upload\\";
+    private static final String UPLOAD_DIR = "C:\\Temp\\upload\\board\\";
 
     @ResponseBody
     @GetMapping("/images/{filename}")
     public Resource showImage(@PathVariable String filename) throws
-            MalformedURLException {
+            MalformedURLException, FileNotFoundException {
+        String fullPath = fileCtrlService.getFullPath(filename);
+        File file = new File(fullPath);
+        if (!file.exists()) {
+            throw new FileNotFoundException("파일이 존재하지 않습니다.");
+        }
         return new UrlResource("file:" + fileCtrlService.getFullPath(filename));
     }
 
