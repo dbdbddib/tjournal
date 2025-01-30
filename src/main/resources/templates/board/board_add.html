@@ -19,7 +19,7 @@
 
         $.addInsert = function () {
             let name = $("#name").val();
-            let content = $("#content").val();
+            let content = $("#content").html();
             let category = $("#category").val();
             if (!confirm(name + " 추가 하시겠습니까 ?")) {
                 return;
@@ -69,6 +69,18 @@
                 html += "</div>";
                 $("#fileListAdd").append(html);
                 fileArrayAdd.push(file);
+
+                // 이미지 파일이면 #content에 <img> 태그 추가
+                if (file.type.startsWith("image/")) {  // MIME 타입이 "image/"로 시작하는지 확인
+                    let filename = file.name; // 파일 이름 가져오기
+                    let imageUrl = `/images/${filename}`; // 서버에서 제공하는 URL
+
+                    let imgTag = `<img src="${imageUrl}" alt="${filename}">`;
+                    $("#content").append(imgTag);  // div에 <img> 태그 추가
+                }
+
+
+
                 num++;
             }
             $("#file").val("");
@@ -113,18 +125,19 @@
             <input type="text" id="name" name="name" required>
 
             <label for="content">내용</label>
-            <textarea id="content" name="content" required></textarea>
+            <!-- 기존 textarea 대신 div를 사용 -->
+            <div id="content" name="content" contenteditable="true" required></div>
 
             <label>첨부파일</label>
             <input type="file" id="file" name="file" onchange="$.addFile(this);" multiple/>
             <div id="fileListAdd" class="file-list"></div>
+    <!-- <input type="file"> 브라우저가 파일 선택 창 띄움 -->
 
             <label>카테고리</label>
             <select id="category" name="category" required>
                 <option value="">선택하세요</option>
                 <option value="food">음식</option>
                 <option value="place">장소</option>
-                <!-- 다른 음식들 추가 -->
             </select>
             <button type="submit" id="addButton">등록</button>
         </form>

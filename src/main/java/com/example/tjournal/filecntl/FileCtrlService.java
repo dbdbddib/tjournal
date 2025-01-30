@@ -16,6 +16,13 @@ public class FileCtrlService {
     @Value("${spring.servlet.multipart.location}")
     private String uploadDir;
 
+    private static final String UPLOAD_DIR = "C:\\Temp\\upload\\";
+
+    public String getFullPath(String filename) {
+        return UPLOAD_DIR + filename;
+    }
+
+
     private void checkDirectory(String directory) throws IOException {
         Path path = Paths.get(directory);
         if ( !Files.exists(path) ) {

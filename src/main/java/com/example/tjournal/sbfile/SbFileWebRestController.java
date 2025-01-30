@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +24,14 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -39,6 +44,17 @@ public class SbFileWebRestController implements IResponseController {
 
     @Autowired
     private IMemberService memberService;
+
+
+    private static final String UPLOAD_DIR = "C:\\Temp\\upload\\";
+
+    @ResponseBody
+    @GetMapping("/images/{filename}")
+    public Resource showImage(@PathVariable String filename) throws
+            MalformedURLException {
+        return new UrlResource("file:" + fileCtrlService.getFullPath(filename));
+    }
+
 
     @PostMapping("/findbyboardid")
     public ResponseEntity<ResponseDto> findByBoardId(Model model

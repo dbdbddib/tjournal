@@ -53,7 +53,7 @@ public class BoardWebController {
         return "board/board_ajx_list";
     }
 
-    @GetMapping("/board_ajx_list/{category}/{region}")
+    @GetMapping("/board_ajx_list/{region}/{category}")
     private String boardAjxRegionList(
             Model model,
             HttpServletRequest request,
