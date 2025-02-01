@@ -39,10 +39,7 @@
             $.searchItemList(1);
             $.searchFollow(id);
             $.checkFollowingStatus(id);
-        // $(function () {
-        });
 
-        $(document).ready(function() {
             $("#addButton").on("click", function() {
                 // 클릭 시 실행되는 코드
                 const currentPath = window.location.pathname; // e.g., /board/board_ajx_list/seoul
@@ -68,6 +65,7 @@
             } else {
                 $("#followButton").show(); // 조건을 만족하지 않으면 버튼을 표시
             }
+        // $(function () {
         });
 
 

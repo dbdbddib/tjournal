@@ -17,10 +17,7 @@
         // HTML 문서 로딩이 완료된 후 자동적으로 한번 실행되는 jQuery 부분
         $(function () {
             $.searchItemList(1);
-        // $(function () {
-        });
 
-        $(document).ready(function() {
             $("#addButton").on("click", function() {
                 // 클릭 시 실행되는 코드
                 const currentPath = window.location.pathname; // e.g., /board/board_ajx_list/seoul
@@ -36,8 +33,8 @@
 
                 window.location.href = newUrl;
             });
+        // $(function () {
         });
-
 
         // 게시판 리스트 검색
         $.searchItemList = function (pPage) {
