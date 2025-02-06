@@ -14,6 +14,12 @@
         let region = "{{region}}";
         let category = "{{category}}";
 
+        const regionList = [
+            "seoul", "busan", "daegu", "incheon", "gwangju", "daejeon", "ulsan", "sejong",
+            "gyeonggi", "gangwon", "chungbuk", "chungnam", "jeonbuk", "jeonnam",
+            "gyeongbuk", "gyeongnam", "jeju"
+        ];
+
         // HTML 문서 로딩이 완료된 후 자동적으로 한번 실행되는 jQuery 부분
         $(function () {
             $.searchItemList(1);
@@ -22,15 +28,14 @@
                 // 클릭 시 실행되는 코드
                 const currentPath = window.location.pathname; // e.g., /board/board_ajx_list/seoul
                 const parts = currentPath.split("/"); // URL을 "/" 기준으로 나누기
-                const region = parts[parts.length - 1]; // 마지막 부분 가져오기 (seoul)
+                const region = parts[parts.length - 2]; // 마지막 부분 가져오기 (seoul)
 
                 let newUrl;
-                if (region === "place" || region === "food") {
-                    newUrl = "/board/board_add";
+                if (regionList.includes(region)) {
+                    newUrl = `/board/board_add/${region}`; // region이 유효하면 해당 값 사용
                 } else {
-                    newUrl = `/board/board_add/${region}`; // region가 없거나 "board_add"이면 기본 경로
+                    newUrl = "/board/board_add"; // region이 유효하지 않으면 기본 경로 사용
                 }
-
                 window.location.href = newUrl;
             });
         // $(function () {

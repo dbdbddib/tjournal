@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        #content {
+            min-height: 100px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
     <script>
         $(function () {
             const id = getId();
@@ -33,7 +40,7 @@
                 if (status === "success" && data.responseData) {
                     const item = data.responseData;
                     $('#name').val(item.name);
-                    $('#content').val(item.content);
+                    $('#content').html(item.content);
                     $.getBoardFiles(id);
                 }
             }).fail(function (jqXHR, status, errorThrown) {
@@ -84,13 +91,21 @@
 
         $.addFile = function (input) {
             const files = input.files;
-            if ($.fileArrayView.length + files.length > 2) {
-                alert("파일은 최대 2개까지 업로드할 수 있습니다.");
-                return;
-            }
+
+
             for (const file of files) {
                 $.fileArrayView.push(file);
+
+                if (file.type.startsWith("image/")) {  // MIME 타입이 "image/"로 시작하는지 확인
+                    let filename = file.name; // 파일 이름 가져오기
+                    let imageUrl = `/api/v1/sbfile/images/${filename}`; // 서버에서 제공하는 URL
+
+                    let imgTag = `<img src="${imageUrl}" alt="${filename}">`;
+                    $("#content").append(imgTag);  // div에 <img> 태그 추가
+                }
+
             }
+
             $.showBoardFiles([...$.fileArrayView]);
             $("#file").val("");
         }
@@ -122,7 +137,7 @@
                 const updateData = {
                     id: id,
                     name: $('#name').val(),
-                    content: $('#content').val(),
+                    content: $('#content').html(),
                 };
 
                 let formData = new FormData();
@@ -190,11 +205,12 @@
                 <label for="name">제목</label>
                 <input type="text" id="name" name="name" required>
             </div>
-            <div class="form-group">
-                <label for="content">내용</label>
-                <textarea id="content" name="content" required></textarea>
-            </div>
-            <div>첨부파일</div>
+
+            <label for="content">내용</label>
+            <div id="content" name="content" contenteditable="true" required></div>
+<!--contenteditable="true" 속성은 HTML 요소를 사용자가 직접 수정할 수 있도록 만드는 속성-->
+
+                <div>첨부파일</div>
             <div id="fileListView" class="attachments"></div>
             <input type="file" id="file" name="file" onchange="$.addFile(this);" multiple/>
             <div class="actions">
