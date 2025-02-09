@@ -48,15 +48,13 @@ public class SbFileWebRestController implements IResponseController {
     private IMemberService memberService;
 
 
-    private static final String UPLOAD_DIR = "C:\\Temp\\upload\\";
+    private static final String UPLOAD_DIR = "C:\\Temp\\upload\\board\\";
 
     @ResponseBody
     @GetMapping("/images/{filename}")
-    public Resource showImage(@PathVariable String filename, Model model) throws
+    public Resource showImage(@PathVariable String filename) throws
             MalformedURLException, FileNotFoundException {
-        CUDInfoDto cudInfoDto = makeResponseCheckLogin(model);
-
-        String fullPath = fileCtrlService.getFullPath(cudInfoDto.getLoginUser().getNickname(), filename);
+        String fullPath = fileCtrlService.getFullPath(filename);
         File file = new File(fullPath);
         if (!file.exists()) {
             throw new FileNotFoundException("파일이 존재하지 않습니다.");

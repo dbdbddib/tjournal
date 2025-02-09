@@ -18,6 +18,9 @@ public interface IBoard extends IBase {
     String getCategory();
     void setCategory(String category);
 
+    String getUuid();
+    void setUuid(String uuid);
+
     String getTbl();
 
 
@@ -40,6 +43,9 @@ public interface IBoard extends IBase {
         }
         if (from.getCategory() != null && !from.getCategory().isEmpty()) {
             this.setCategory(from.getCategory());
+        }
+        if (from.getUuid() != null && !from.getUuid().isEmpty()) {
+            this.setUuid(from.getUuid());
         }
         IBase.super.copyFields(from);
     }

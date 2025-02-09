@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/board")
@@ -82,6 +84,7 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
             , @Validated @RequestPart(value = "boardDto") BoardDto dto
             , @RequestPart(value = "files", required = false) List<MultipartFile> files) {
         try {
+            log.info("Received DTO: " + dto);
             if (dto == null) {
                 return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
             }
@@ -91,13 +94,15 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
                 return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, "로그인 필요", null);
             }
             CUDInfoDto cudInfoDto = new CUDInfoDto(loginUser);
+            String uploadedFiles = UUID.randomUUID().toString();
+            dto.setUuid(uploadedFiles);
             IBoard result = this.boardService.insert(cudInfoDto, dto, files);
             if (result == null) {
                 return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R000011, "서버 입력 에러", null);
             }
-            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", result);
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", uploadedFiles);
         } catch (Exception ex) {
-            log.error(ex.toString());
+            log.error("Error Occurred: ", ex);
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
         }
     }

@@ -16,10 +16,10 @@ public class FileCtrlService {
     @Value("${spring.servlet.multipart.location}")
     private String uploadDir;
 
-    private static final String UPDIR = "C:\\Temp\\upload\\";
+    private static final String UPDIR = "C:\\Temp\\upload\\board\\";
 
-    public String getFullPath(String nick, String filename) {
-        return UPDIR  + nick + "\\" + filename;
+    public String getFullPath(String filename) {
+        return UPDIR  + filename;
     }
 
 
