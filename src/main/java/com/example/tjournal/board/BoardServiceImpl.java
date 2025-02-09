@@ -35,7 +35,7 @@ public class BoardServiceImpl implements IBoardService {
         insert.copyFields(dto);
         cudInfoDto.setCreateInfo(insert);
         this.boardMybatisMapper.insert(insert);
-        this.sbFileService.insertFiles(insert, files);
+        this.sbFileService.insertFiles(insert, files, cudInfoDto.getLoginUser().getNickname());
         return insert;
     }
 
@@ -50,7 +50,7 @@ public class BoardServiceImpl implements IBoardService {
         info.setUpdateInfo(update);
         this.boardMybatisMapper.update(update);
         this.sbFileService.updateFiles(sbFileDtoList);
-        this.sbFileService.insertFiles(update, files);
+        this.sbFileService.insertFiles(update, files, info.getLoginUser().getNickname());
         return update;
     }
 

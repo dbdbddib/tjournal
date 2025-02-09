@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ISbFileService extends IServiceCRUD<ISbFile> {
     List<ISbFile> findAllByTblBoardId(ISbFile search);
-    Boolean insertFiles(IBoard boardDto, List<MultipartFile> files) throws RuntimeException;
+    Boolean insertFiles(IBoard boardDto, List<MultipartFile> files, String nick) throws RuntimeException;
     Boolean updateFiles(List<SbFileDto> sbFileDtoList);
     byte[] getBytesFromFile(ISbFile down);
 }

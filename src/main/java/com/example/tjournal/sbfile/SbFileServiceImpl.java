@@ -91,7 +91,7 @@ public class SbFileServiceImpl implements ISbFileService {
     }
 
     @Override
-    public Boolean insertFiles(IBoard boardDto, List<MultipartFile> files) {
+    public Boolean insertFiles(IBoard boardDto, List<MultipartFile> files, String nick) {
         if ( boardDto == null || files == null ) {
             return false;
         }
@@ -108,7 +108,7 @@ public class SbFileServiceImpl implements ISbFileService {
                         .boardId(boardDto.getId())
                         .build();
                 this.sbFileMybatisMapper.insert(insert);
-                this.fileCtrlService.saveFile(file, insert.getTbl(), insert.getUniqName() + insert.getFileType());
+                this.fileCtrlService.saveFile(file, nick, insert.getName());
             }
             return true;
         } catch (Exception ex) {
