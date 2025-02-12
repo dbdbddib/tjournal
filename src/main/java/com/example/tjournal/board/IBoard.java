@@ -2,6 +2,8 @@ package com.example.tjournal.board;
 
 import com.example.tjournal.commons.dto.IBase;
 
+import java.util.List;
+
 public interface IBoard extends IBase {
     Long getId();
     void setId(Long id);
@@ -18,8 +20,8 @@ public interface IBoard extends IBase {
     String getCategory();
     void setCategory(String category);
 
-    String getUuid();
-    void setUuid(String uuid);
+    List<String> getUuid();
+    void setUuid(List<String> uuid);
 
     String getTbl();
 

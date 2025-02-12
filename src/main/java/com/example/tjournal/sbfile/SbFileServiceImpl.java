@@ -96,19 +96,24 @@ public class SbFileServiceImpl implements ISbFileService {
             return false;
         }
         int ord = 0;
+        List<String> uploadedFiles = boardDto.getUuid();  // 리스트 형태의 UUID
+        int index = 0;
         try {
             for ( MultipartFile file : files ) {
+                String uniqueUuid = uploadedFiles.get(index);
                 SbFileDto insert = SbFileDto.builder()
                         .name(file.getOriginalFilename())
                         .ord(ord++)
                         .fileType(this.getFileType(Objects.requireNonNull(file.getOriginalFilename())))
-                        .uniqName(boardDto.getUuid())
+                        .uniqName(uniqueUuid)
                         .length(file.getSize())
                         .tbl(boardDto.getTbl())
                         .boardId(boardDto.getId())
                         .build();
                 this.sbFileMybatisMapper.insert(insert);
                 this.fileCtrlService.saveFile(file, insert.getTbl(), insert.getUniqName() + insert.getFileType());
+
+                index++;
             }
             return true;
         } catch (Exception ex) {

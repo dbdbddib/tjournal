@@ -23,6 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -94,13 +95,17 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
                 return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, "로그인 필요", null);
             }
             CUDInfoDto cudInfoDto = new CUDInfoDto(loginUser);
-            String uploadedFiles = UUID.randomUUID().toString();
+            List<String> uploadedFiles = new ArrayList<>();
+            for (MultipartFile file : files) {
+                uploadedFiles.add(UUID.randomUUID().toString());
+            }
             dto.setUuid(uploadedFiles);
             IBoard result = this.boardService.insert(cudInfoDto, dto, files);
             if (result == null) {
                 return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R000011, "서버 입력 에러", null);
             }
-            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", uploadedFiles);
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", uploadedFiles.stream().map(name -> name + ".png").toList());
+            // data.responseData  ->  uploadedFiles(UUID 파일명)
         } catch (Exception ex) {
             log.error("Error Occurred: ", ex);
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.toString(), null);
