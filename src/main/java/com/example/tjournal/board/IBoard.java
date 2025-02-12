@@ -3,6 +3,7 @@ package com.example.tjournal.board;
 import com.example.tjournal.commons.dto.IBase;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IBoard extends IBase {
     Long getId();
@@ -20,8 +21,8 @@ public interface IBoard extends IBase {
     String getCategory();
     void setCategory(String category);
 
-    List<String> getUuid();
-    void setUuid(List<String> uuid);
+    Map<String, String> getUuidMap();
+    void setUuidMap(Map<String, String> UuidMap);
 
     String getTbl();
 
@@ -46,8 +47,8 @@ public interface IBoard extends IBase {
         if (from.getCategory() != null && !from.getCategory().isEmpty()) {
             this.setCategory(from.getCategory());
         }
-        if (from.getUuid() != null && !from.getUuid().isEmpty()) {
-            this.setUuid(from.getUuid());
+        if (from.getUuidMap() != null && !from.getUuidMap().isEmpty()) {
+            this.setUuidMap(from.getUuidMap());
         }
         IBase.super.copyFields(from);
     }

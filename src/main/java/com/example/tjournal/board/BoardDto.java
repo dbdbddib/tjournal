@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -25,7 +26,7 @@ public class BoardDto extends BaseDto implements IBoard{
     private String category;
     private Integer viewQty;
     private Integer likeQty;
-    private List<String> uuid;
+    private Map<String, String> uuidMap;
     public String getTbl() {
         return "board";
     }

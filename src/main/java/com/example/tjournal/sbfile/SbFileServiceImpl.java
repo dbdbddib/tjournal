@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -96,11 +97,13 @@ public class SbFileServiceImpl implements ISbFileService {
             return false;
         }
         int ord = 0;
-        List<String> uploadedFiles = boardDto.getUuid();  // 리스트 형태의 UUID
-        int index = 0;
+        Map<String, String> uploadedFiles = boardDto.getUuidMap();
         try {
             for ( MultipartFile file : files ) {
-                String uniqueUuid = uploadedFiles.get(index);
+
+                String originalFilename = file.getOriginalFilename();
+                String uniqueUuid = uploadedFiles.get(originalFilename);
+
                 SbFileDto insert = SbFileDto.builder()
                         .name(file.getOriginalFilename())
                         .ord(ord++)
@@ -110,10 +113,9 @@ public class SbFileServiceImpl implements ISbFileService {
                         .tbl(boardDto.getTbl())
                         .boardId(boardDto.getId())
                         .build();
-                this.sbFileMybatisMapper.insert(insert);
-                this.fileCtrlService.saveFile(file, insert.getTbl(), insert.getUniqName() + insert.getFileType());
 
-                index++;
+                this.sbFileMybatisMapper.insert(insert);
+                this.fileCtrlService.saveFile(file, insert.getTbl(), insert.getUniqName());
             }
             return true;
         } catch (Exception ex) {
