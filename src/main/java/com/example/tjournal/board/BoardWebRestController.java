@@ -64,6 +64,9 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
             }
 
             IBoard result = this.boardService.findById(id);
+            if(result.getDeleteDt() == null) {
+                result.setDeleteDt("0");
+            }
             return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", result);
 
         } catch (LoginAccessException ex) {
