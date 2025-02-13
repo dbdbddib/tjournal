@@ -105,7 +105,7 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
             if (result == null) {
                 return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R000011, "서버 입력 에러", null);
             }
-            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", uploadedFilesMap);
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", result);
             // data.responseData  ->  uploadedFiles(UUID 파일명)
         } catch (Exception ex) {
             log.error("Error Occurred: ", ex);
@@ -145,6 +145,40 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
             return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, ex.getMessage(), null);
         } catch (Exception ex) {
             log.error(ex.toString());
+            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.getMessage(), null);
+        }
+    }
+
+    @PatchMapping("/updateContent/{id}")
+    public ResponseEntity<ResponseDto> updateContent(
+            HttpSession session,
+            @PathVariable Long id,
+            @Validated @RequestBody BoardDto dto) {
+        try {
+            if (dto == null || dto.getContent() == null || dto.getContent().isEmpty()) {
+                return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "내용이 비어 있음", null);
+            }
+
+            String nickname = (String) session.getAttribute(SecurityConfig.LOGINUSER);
+            IMember loginUser = this.memberService.findByNickname(nickname);
+            if (loginUser == null) {
+                return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, "로그인 필요", null);
+            }
+
+            // ✅ ID 비교 불필요 (PathVariable을 신뢰)
+            dto.setId(id);
+
+            IBoard result = this.boardService.updateContent(dto);
+            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", result);
+
+        } catch (LoginAccessException ex) {
+            log.error("❌ 접근 권한 오류:", ex);
+            return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.getMessage(), null);
+        } catch (IdNotFoundException ex) {
+            log.error("❌ ID 찾을 수 없음:", ex);
+            return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, ex.getMessage(), null);
+        } catch (Exception ex) {
+            log.error("❌ 서버 오류:", ex);
             return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.getMessage(), null);
         }
     }

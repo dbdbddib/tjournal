@@ -16,7 +16,7 @@ spring:
   mustache:
     enabled: true
     charset: UTF-8
-    suffix": .html
+    suffix: .html
     check-template-location: true
 
 # mybatis (MyBatisConfig.java same functions)

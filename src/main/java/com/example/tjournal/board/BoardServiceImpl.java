@@ -55,6 +55,14 @@ public class BoardServiceImpl implements IBoardService {
     }
 
     @Override
+    public BoardDto updateContent(BoardDto dto) throws RuntimeException {
+        BoardDto update = BoardDto.builder().build();
+        update.copyFields(dto);
+        this.boardMybatisMapper.updateContent(update);
+        return null;
+    }
+
+    @Override
     public void addViewQty(Long id) {
         if (id == null || id <= 0) {
             return;

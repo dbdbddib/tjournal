@@ -33,6 +33,12 @@
         WHERE id = #{id}
     </update>
 
+    <update id="updateContent" parameterType="BoardDto">
+        UPDATE board_tbl
+        SET content = #{content}
+        WHERE id = #{id}
+    </update>
+
     <update id="updateDeleteFlag" parameterType="BoardDto">
         UPDATE board_tbl
         SET deleteFlag = #{deleteFlag}

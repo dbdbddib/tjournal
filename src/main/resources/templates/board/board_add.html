@@ -14,7 +14,6 @@
     <script>
 
     let region = "{{region}}";
-
         $(document).ready(function () {
             $("#postForm").on("submit", function (event) {
                 event.preventDefault();
@@ -23,6 +22,9 @@
         });
 
         let fileArrayAdd = new Array();
+
+        // 서버에 저장이 안된 상태에서 done만 돌리니 안나오지
+        // ajax에서 보낼때 formData를 db에 저장하고 view에서는 db를 참조하니 안나오는거였다...................
 
         $.addInsert = function () {
             let name = $("#name").val();
@@ -52,12 +54,15 @@
                 processData: false,
             }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
-                // insert 완료시
-                $("#postForm")[0].reset();
-                fileArrayAdd = new Array();
-                $("#fileListAdd").children().remove();
-                alert("등록이 완료되었습니다.");
-                history.back();
+
+                if (data.responseData.uuidMap) {
+                    for (const [originalFilename, uuid] of Object.entries(data.responseData.uuidMap)) {
+                        const imageSelector = `img[alt="${originalFilename.toLowerCase().trim()}"]`;
+                        $(imageSelector).attr("src", `/api/v1/sbfile/images/${uuid}`);
+                    }
+                }
+                $.updateContent(data.responseData.id)
+
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
                 let message = getErrorMessage(jqXHR.responseJSON);
@@ -65,11 +70,38 @@
             });
         }
 
+    $.updateContent = function (id) {
+        content = $("#content").html();
+
+        let requestData = JSON.stringify({ "content": content });
+
+        $.ajax({
+            url: "/api/v1/board/updateContent/" + id,
+            type: "PATCH",
+            datatype: "JSON",
+            data: requestData,
+            contentType: "application/json; charset=UTF-8",  // ✅ JSON으로 변경
+            processData: false,
+        }).done(function (updateData, updateStatus, updateXhr) {
+            console.log("✅ 게시글 내용 업데이트 완료:", updateData);
+            alert("등록이 완료되었습니다.");
+            setTimeout(() => {
+                location.href = document.referrer || "board_ajx_list";
+            }, 100);
+        }).fail(function (jqXHR, updateStatus, updateErrorThrown) {
+            console.error("❌ 게시글 내용 업데이트 실패:", jqXHR);
+        });
+    };
+
         let fileArrayModity = new Array();
 
         $.addFile = function(inputFile) {
             let num = 0;
             for ( const file of inputFile.files ) {
+                if (fileArrayAdd.some(f => f.name === file.name && f.size === file.size)) {
+                    alert(`이미 추가된 파일: ${file.name}`);
+                    continue;
+                }
                 let html = "";
                 html += "<div id='file" + num + "' class='filebox'>";
                 html += "<div class='filename'>" + file.name + "</div>";
@@ -79,10 +111,9 @@
 
                 // 이미지 파일이면 #content에 <img> 태그 추가
                 if (file.type.startsWith("image/")) {  // MIME 타입이 "image/"로 시작하는지 확인
-                    let filename = file.name; // 파일 이름 가져오기
-                    let imageUrl = `/api/v1/sbfile/images/${filename}`; // 서버에서 제공하는 URL
 
-                    let imgTag = `<img src="${imageUrl}" alt="${filename}">`;
+                    let filename = file.name; // 파일 이름 가져오기
+                    let imgTag = `<img src="" alt="${filename.toLowerCase().trim()}" data-temp="true">`;
                     $("#content").append(imgTag);  // div에 <img> 태그 추가
                 }
                 num++;
