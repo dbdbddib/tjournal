@@ -99,8 +99,8 @@
             $('#writer').text(item.createName);
             $('#viewQty').text(item.viewQty);
             $("#likeQty2").text(item.likeQty);
-            let count = item.deleteDt;
-            if (count === "0") {
+            let count = item.likeQty;
+            if (count === 0) {
                 $("#heartIcon").attr("src", "/svg/heartOff.svg");
             } else {
                 $("#heartIcon").attr("src", "/svg/heartOn.svg");
