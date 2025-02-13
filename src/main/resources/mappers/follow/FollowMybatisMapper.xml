@@ -21,7 +21,7 @@
     </delete>
 
 <!--  특정 사용자가 팔로우한 다른 사용자 목록을 조회.  -->
-    <select id="getFollowingsByUserId" parameterType="long" resultType="Integer">
+    <select id="getFollowersByUserId" parameterType="long" resultType="Integer">
         SELECT COUNT(*)
         FROM follower_tbl
         WHERE follower_id = #{id};
@@ -29,7 +29,7 @@
     </select>
 
 <!--  특정 사용자를 팔로우한 사람들의 목록을 조회.  -->
-    <select id="getFollowersByUserId" parameterType="long" resultType="Integer">
+    <select id="getFollowingsByUserId" parameterType="long" resultType="Integer">
         SELECT COUNT(*)
         FROM follower_tbl
         WHERE following_id = #{id};
