@@ -76,6 +76,13 @@
           AND bt.deleteFlag = false
     </select>
 
+    <select id="countLike"  resultType="Integer">
+        SELECT COUNT(*)
+        FROM sblike_tbl
+        WHERE createId = #{loginId}
+          AND boardId = #{boardId};
+    </select>
+
     <select id="countAllByNameContains" parameterType="SearchAjaxDto" resultType="Integer">
         SELECT count(*)
         FROM board_tbl

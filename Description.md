@@ -25,16 +25,21 @@ IResponseController 클래스의 makeResponseEntity 메서드는 응답 데이�
 
 
 # html 실행순서
-
-1. <head> 태그 파싱 및 처리:
+```
+- <head> 태그 파싱 및 처리:
   - <title>, <style>, <script> 등이 실행됨.
   - <script>는 순서대로 실행되며, 이후 코드는 바로 실행됩니다.
 
-2. HTML <body> 태그 파싱:
+- HTML <body> 태그 파싱:
   - <body>의 HTML 요소가 렌더링되고 DOM에 추가됨.
 
-3. $(function () { ... })와 $(document).ready(function () { ... }) 실행
-   - DOM 트리가 완전히 구성된 후 실행됨.
+- $(function () { ... })와 $(document).ready(function () { ... }) 실행
+  - DOM 트리가 완전히 구성된 후 실행됨.
 
-$(function() { ... })
-축약형 표현으로, jQuery가 제공하는 $(document).ready()의 단축 문법
+- $(function() { ... })
+  - 축약형 표현으로, jQuery가 제공하는 $(document).ready()의 단축 문법
+```
+
+# uuid
+- UUID.randomUUID()는 Java에서 랜덤한 UUID(Universally Unique Identifier, 범용 고유 식별자) 를 생성하는 메서드입니다.
+- UUID는 전 세계에서 중복될 가능성이 극히 낮은 128비트(16바이트) 식별자를 의미하며, java.util.UUID 클래스에서 제공됩니다.

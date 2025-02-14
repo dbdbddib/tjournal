@@ -63,6 +63,11 @@ public class BoardServiceImpl implements IBoardService {
     }
 
     @Override
+    public Integer countLike(Long loginId, Long boardId) {
+        return this.boardMybatisMapper.countLike(loginId, boardId);
+    }
+
+    @Override
     public void addViewQty(Long id) {
         if (id == null || id <= 0) {
             return;

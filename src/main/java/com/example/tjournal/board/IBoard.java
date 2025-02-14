@@ -24,6 +24,9 @@ public interface IBoard extends IBase {
     Map<String, String> getUuidMap();
     void setUuidMap(Map<String, String> UuidMap);
 
+    Integer getCountLike();
+    void setCountLike(Integer countLike);
+
     String getTbl();
 
 

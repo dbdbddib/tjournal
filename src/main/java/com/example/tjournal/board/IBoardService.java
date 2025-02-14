@@ -16,8 +16,11 @@ public interface IBoardService extends IServiceCRUD<BoardDto> {
     BoardDto insert(CUDInfoDto info, BoardDto dto, List<MultipartFile> files) throws RuntimeException;
     BoardDto update(CUDInfoDto info, BoardDto dto, List<SbFileDto> sbFileDtoList, List<MultipartFile> files) throws RuntimeException;
     BoardDto updateContent(BoardDto dto) throws RuntimeException;
+
+    Integer countLike(Long loginId, Long boardId);
     Integer countAllByNameContains(SearchAjaxDto searchAjaxDto);
     Integer countIdByNameContains(SearchAjaxDto searchAjaxDto);
+
     List<BoardDto> findAllByNameContains(SearchAjaxDto searchAjaxDto);
     List<BoardDto> findIdByNameContains(SearchAjaxDto searchAjaxDto);
 }

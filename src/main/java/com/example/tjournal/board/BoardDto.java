@@ -26,6 +26,7 @@ public class BoardDto extends BaseDto implements IBoard{
     private String category;
     private Integer viewQty;
     private Integer likeQty;
+    private Integer countLike;
     private Map<String, String> uuidMap;
     public String getTbl() {
         return "board";

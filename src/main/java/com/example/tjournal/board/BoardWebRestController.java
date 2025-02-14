@@ -62,8 +62,12 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
                 // System.currentTimeMillis() 현재 시간 호출
                 // 세션에 viewKey 라는 키와 현재 시간 set
             }
-
+            IMember loginUser = this.memberService.findByNickname(nickname);
             IBoard result = this.boardService.findById(id);
+
+            Integer countLike = this.boardService.countLike(loginUser.getId(), id);
+            result.setCountLike(countLike);
+
             return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", result);
 
         } catch (LoginAccessException ex) {
@@ -310,36 +314,6 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
         }
     }
 
-    // 게시판 카테고리별 리스트 검색
-    // 메소드 및 mapper 새로 만들자
-//    @PostMapping("/searchName/{region}")
-//    public ResponseEntity<ResponseDto> findAllByNameContains(Model model,
-//                                                             @Validated @RequestBody SearchAjaxDto searchAjaxDto) {
-//        try {
-//            if (searchAjaxDto == null) {
-//                return makeResponseEntity(HttpStatus.BAD_REQUEST, ResponseCode.R000051, "입력 매개변수 에러", null);
-//            }
-//            makeResponseCheckLogin(model);
-//
-//            int total = this.boardService.countRegionByNameContains(searchAjaxDto);
-//
-//            List<BoardDto> list = this.boardService.findRegionByNameContains(searchAjaxDto);
-//
-//            searchAjaxDto.setTotal(total);
-//            searchAjaxDto.setDataList(list);
-//            // 요청한 곳의 ajax done()함수로 데이터 전송
-//            return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "OK", searchAjaxDto);
-//        } catch (LoginAccessException ex) {
-//            log.error(ex.toString());
-//            return makeResponseEntity(HttpStatus.FORBIDDEN, ResponseCode.R888881, ex.getMessage(), null);
-//        } catch (IdNotFoundException ex) {
-//            log.error(ex.toString());
-//            return makeResponseEntity(HttpStatus.NOT_FOUND, ResponseCode.R000041, ex.getMessage(), null);
-//        } catch (Exception ex) {
-//            log.error(ex.toString());
-//            return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R999999, ex.getMessage(), null);
-//        }
-//    }
 
     @GetMapping("/like/{id}")
     public ResponseEntity<ResponseDto> addLikeQty(Model model, @Validated @PathVariable Long id) {
@@ -396,8 +370,7 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
                 .boardId(id)
                 .build();
         Integer likeCount = this.sbLikeService.countByTableUserBoard(boardLikeDto);
-        // deleteDt 0 or 1 -> heartIcon src = off or on 값 설정
-        result.setDeleteDt(likeCount.toString());
+        result.setCountLike(likeCount);
         return result;
     }
 }
