@@ -28,6 +28,7 @@
             }).done(function (data, status, xhr) {
                 if (status === "success") {
                     $.showItemInfo(data.responseData);
+                    $.showItemlike(data.responseData);
                     $.getBoardFiles(id);
                     $.getCommentList(id, true);
                     if (item.fileListView) {
@@ -99,7 +100,10 @@
             $('#content').html(item.content);
             $('#writer').text(item.createName);
             $('#viewQty').text(item.viewQty);
-            $("#likeQty2").text(item.likeQty);
+        }
+
+        $.showItemlike = function (item) {
+            $("#likeQty").text(item.likeQty);
             let count = item.countLike;
             if (count === 0) {
                 $("#heartIcon").attr("src", "/svg/heartOff.svg");
@@ -128,7 +132,7 @@
                 }).done(function (data, status, xhr) {
                     console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                     if (status === "success") {
-                        $.showItemInfo(data.responseData);
+                        $.showItemlike(data.responseData);
                     }
                 }).fail(function (jqXHR, status, errorThrown) {
                     console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
@@ -143,7 +147,7 @@
                 }).done(function (data, status, xhr) {
                     console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                     if (status === "success") {
-                        $.showItemInfo(data.responseData);
+                        $.showItemlike(data.responseData);
                     }
                 }).fail(function (jqXHR, status, errorThrown) {
                     console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
@@ -281,7 +285,7 @@
 
     <div>
         <img id="heartIcon" src="/svg/heartOff.svg" width="40px" alt="Like" onclick="$.likeItem();"/>
-        <span id="likeQty2"></span>
+        <span id="likeQty"></span>
     </div>
 
     <div id="commentList" class="comment-list"></div>

@@ -61,6 +61,7 @@
                         $(imageSelector).attr("src", `/api/v1/sbfile/images/${uuid}`);
                     }
                 }
+
                 $.updateContent(data.responseData.id)
 
             }).fail(function (jqXHR, status, errorThrown) {
