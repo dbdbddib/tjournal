@@ -64,25 +64,26 @@
         }
 
         let fileArrayView = new Array();
-        $.showBoardFiles = function (fileList) {
-            if (fileList == null) {
-                return;
-            }
-            let html = "";
-            fileArrayView = fileList;
-            for (const file of fileArrayView) {
-                let id = file.id;
-                let tbl = file.tbl;
-                let name = file.name;
-                let uniqName = file.uniqName;
-                let fileType = file.fileType;
-                let size = file.length;
-                html += "<div id='fileView_" + id + "' class='row'>";
-                html += "<div class='filename col-md-6' onclick=\"$.downloadFile('" + tbl + "', '" + name + "', '" + uniqName + "', '" + fileType + "')\">" + name + "</div>";
-                html += "</div>";
-            }
-            $("#fileListView").append(html);
-        }
+
+        // $.showBoardFiles = function (fileList) {
+        //     if (fileList == null) {
+        //         return;
+        //     }
+        //     let html = "";
+        //     fileArrayView = fileList;
+        //     for (const file of fileArrayView) {
+        //         let id = file.id;
+        //         let tbl = file.tbl;
+        //         let name = file.name;
+        //         let uniqName = file.uniqName;
+        //         let fileType = file.fileType;
+        //         let size = file.length;
+        //         html += "<div id='fileView_" + id + "' class='row'>";
+        //         html += "<div class='filename col-md-6' onclick=\"$.downloadFile('" + tbl + "', '" + name + "', '" + uniqName + "', '" + fileType + "')\">" + name + "</div>";
+        //         html += "</div>";
+        //     }
+        //     $("#fileListView").append(html);
+        // }
 
 
         // $(selector).attr(attributeName);               // 속성 값 가져오기
@@ -271,9 +272,11 @@
         </div>
         <div class="content" id="content">
         </div>
-        <div id="fileListView" class="attachments">
-            <div class="file-title">파일</div>
-        </div>
+
+<!--        <div id="fileListView" class="attachments">-->
+<!--            <div class="file-title">파일</div>-->
+<!--        </div>-->
+
     </div>
 
     <div>

@@ -93,27 +93,32 @@
         });
     };
 
-        let fileArrayModity = new Array();
-
         $.addFile = function(inputFile) {
             let num = 0;
             for ( const file of inputFile.files ) {
+
+                if (!file.type.startsWith("image/")) {
+                    alert(`이미지 파일만 추가할 수 있습니다: ${file.name}`);
+                    continue;
+                }
+
                 if (fileArrayAdd.some(f => f.name === file.name && f.size === file.size)) {
                     alert(`이미 추가된 파일: ${file.name}`);
                     continue;
                 }
+
                 let html = "";
                 html += "<div id='file" + num + "' class='filebox'>";
                 html += "<div class='filename'>" + file.name + "</div>";
                 html += "</div>";
-                $("#fileListAdd").append(html);
+
                 fileArrayAdd.push(file);
 
                 // 이미지 파일이면 #content에 <img> 태그 추가
                 if (file.type.startsWith("image/")) {  // MIME 타입이 "image/"로 시작하는지 확인
 
                     let filename = file.name; // 파일 이름 가져오기
-                    let imgTag = `<img src="" alt="${filename.toLowerCase().trim()}" data-temp="true">`;
+                    let imgTag = `<img src="" alt="${filename.toLowerCase().trim()}" data-temp="true"><br>`;
                     $("#content").append(imgTag);  // div에 <img> 태그 추가
                 }
                 num++;
@@ -121,19 +126,6 @@
             $("#file").val("");
         }
 
-        $.addFileModity = function(inputFile) {
-            let num = 0;
-            for ( const file of inputFile.files ) {
-                let html = "";
-                html += "<div id='fileView_" + num + "' class='filebox'>";
-                html += "<div class='filename'>" + file.name + "</div>";
-                html += "</div>";
-                $("#fileListView").append(html);
-                fileArrayModity.push(file);
-                num--;
-            }
-            $("#fileModity").val("");
-        }
 
         function validation(obj) {
             if (obj.name.length > 100) {
@@ -165,7 +157,6 @@
 
             <label>첨부파일</label>
             <input type="file" id="file" name="file" onchange="$.addFile(this);" multiple/>
-            <div id="fileListAdd" class="file-list"></div>
     <!-- <input type="file"> 브라우저가 파일 선택 창 띄움 -->
 
             <label>카테고리</label>
