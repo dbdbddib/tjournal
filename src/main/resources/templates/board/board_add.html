@@ -115,13 +115,11 @@
 
                 fileArrayAdd.push(file);
 
-                // 이미지 파일이면 #content에 <img> 태그 추가
-                if (file.type.startsWith("image/")) {  // MIME 타입이 "image/"로 시작하는지 확인
 
-                    let filename = file.name; // 파일 이름 가져오기
-                    let imgTag = `<img src="" alt="${filename.toLowerCase().trim()}" data-temp="true"><br>`;
-                    $("#content").append(imgTag);  // div에 <img> 태그 추가
-                }
+                let filename = file.name; // 파일 이름 가져오기
+                let imgTag = `<img src="" alt="${filename.toLowerCase().trim()}" data-temp="true"><br>`;
+                $("#content").append(imgTag);  // div에 <img> 태그 추가
+
                 num++;
             }
             $("#file").val("");
@@ -156,7 +154,7 @@
             <!-- 기존 textarea 대신 div를 사용 -->
             <div id="content" name="content" contenteditable="true" required></div>
 
-            <label>첨부파일</label>
+            <label>이미지 등록</label>
             <input type="file" id="file" name="file" onchange="$.addFile(this);" multiple/>
     <!-- <input type="file"> 브라우저가 파일 선택 창 띄움 -->
 
