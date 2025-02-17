@@ -139,6 +139,15 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
             String nickname = (String) session.getAttribute(SecurityConfig.LOGINUSER);
             IMember loginUser = this.memberService.findByNickname(nickname);
             CUDInfoDto cudInfoDto = new CUDInfoDto(loginUser);
+
+            Map<String, String> uploadedFilesMap = new HashMap<>();
+
+            for (MultipartFile file : files) {
+                String originalFilename = file.getOriginalFilename();
+                String uuid = UUID.randomUUID().toString() + ".png";
+                uploadedFilesMap.put(originalFilename, uuid);
+            }
+            dto.setUuidMap(uploadedFilesMap);
             IBoard result = this.boardService.update(cudInfoDto, dto, sbFileDtoList, files);
             return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", result);
         } catch (LoginAccessException ex) {

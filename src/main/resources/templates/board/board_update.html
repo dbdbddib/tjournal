@@ -89,23 +89,98 @@
             $("#fileListView").html(html);
         }
 
+
+
+        $.update = function (id) {
+            if (confirm("게시글을 수정하시겠습니까?")) {
+                const updateData = {
+                    id: id,
+                    name: $('#name').val(),
+                    content: $('#content').html(),
+                };
+
+                let formData = new FormData();
+                formData.append("boardDto", new Blob([JSON.stringify(updateData)], {type: "application/json"}));
+                for (const file of $.fileArrayView) {
+                    formData.append("files", file);
+                }
+                formData.append("sbfiles", new Blob([JSON.stringify($.fileArrayView)], {type: "application/json"}));
+                // files: 업데이트 파일
+                // sbfiles: 기존 파일
+
+                $.ajax({
+                    url: "/api/v1/board/" + id,
+                    type: "PATCH",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                }).done(function (data, status, xhr) {
+
+                    if (data.responseData.uuidMap) {
+                        for (const [originalFilename, uuid] of Object.entries(data.responseData.uuidMap)) {
+                            const imageSelector = `img[alt="${originalFilename.toLowerCase().trim()}"]`;
+                            $(imageSelector).attr("src", `/api/v1/sbfile/images/${uuid}`);
+                        }
+                    }
+
+                    $.updateContent(data.responseData.id)
+
+
+                }).fail(function (jqXHR, status, errorThrown) {
+                    console.error("게시글 수정에 실패했습니다.", status, errorThrown);
+                    alert("게시글 수정에 실패했습니다.");
+                });
+            }
+        }
+        $.updateContent = function (id) {
+            content = $("#content").html();
+
+            let requestData = JSON.stringify({ "content": content });
+
+            $.ajax({
+                url: "/api/v1/board/updateContent/" + id,
+                type: "PATCH",
+                datatype: "JSON",
+                data: requestData,
+                contentType: "application/json; charset=UTF-8",  // ✅ JSON으로 변경
+                processData: false,
+            }).done(function (updateData, updateStatus, updateXhr) {
+                console.log("✅ 게시글 내용 업데이트 완료:", updateData);
+                alert("게시글이 성공적으로 수정되었습니다.");
+                    location.href = document.referrer || "board_view?id=" + id;
+            }).fail(function (jqXHR, updateStatus, updateErrorThrown) {
+                console.error("❌ 게시글 내용 업데이트 실패:", jqXHR);
+            });
+        };
+
         $.addFile = function (input) {
             const files = input.files;
+            let now = new Date();
+
+            // 날짜 및 시간을 YYYYMMDD_HHMMSS 형식으로 변환
+            let timestamp = now.getFullYear().toString() +
+                String(now.getMonth() + 1).padStart(2, '0') +
+                String(now.getDate()).padStart(2, '0') + "_" +
+                String(now.getHours()).padStart(2, '0') +
+                String(now.getMinutes()).padStart(2, '0') +
+                String(now.getSeconds()).padStart(2, '0');
 
 
             for (const file of files) {
-                $.fileArrayView.push(file);
-
-                if (file.type.startsWith("image/")) {  // MIME 타입이 "image/"로 시작하는지 확인
-                    let filename = file.name; // 파일 이름 가져오기
-                    let imageUrl = `/api/v1/sbfile/images/${filename}`; // 서버에서 제공하는 URL
-
-                    let imgTag = `<img src="${imageUrl}" alt="${filename}">`;
-                    $("#content").append(imgTag);  // div에 <img> 태그 추가
+                if (!file.type.startsWith("image/")) {
+                    alert(`이미지 파일만 추가할 수 있습니다: ${file.name}`);
+                    continue;
                 }
 
-            }
+                let modifiedName = `${timestamp}_${file.name}`;
+                let newFile = new File([file], modifiedName, { type: file.type });
 
+                $.fileArrayView.push(newFile);
+
+
+                let imgTag = `<img src="" alt="${modifiedName.toLowerCase().trim()}" data-temp="true"><br>`;
+                $("#content").append(imgTag);  // div에 <img> 태그 추가
+            }
             $.showBoardFiles([...$.fileArrayView]);
             $("#file").val("");
         }
@@ -132,44 +207,7 @@
             }
         }
 
-        $.update = function (id) {
-            if (confirm("게시글을 수정하시겠습니까?")) {
-                const updateData = {
-                    id: id,
-                    name: $('#name').val(),
-                    content: $('#content').html(),
-                };
 
-                let formData = new FormData();
-                formData.append("boardDto", new Blob([JSON.stringify(updateData)], {type: "application/json"}));
-                for (const file of $.fileArrayView) {
-                    formData.append("files", file);
-                }
-                formData.append("sbfiles", new Blob([JSON.stringify($.fileArrayView)], {type: "application/json"}));
-
-                // 디버깅 코드 추가
-                // 크롬 개발자 도구 console 에서 확인
-                console.log("업데이트 데이터:", updateData);
-                console.log("FormData 내용:", Array.from(formData.entries()));
-                console.log("$.fileArrayView:", $.fileArrayView);
-
-                $.ajax({
-                    url: "/api/v1/board/" + id,
-                    type: "PATCH",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                }).done(function (data, status, xhr) {
-                    if (status === "success") {
-                        alert("게시글이 성공적으로 수정되었습니다.");
-                        window.location.href = "board_view?id=" + id;
-                    }
-                }).fail(function (jqXHR, status, errorThrown) {
-                    console.error("게시글 수정에 실패했습니다.", status, errorThrown);
-                    alert("게시글 수정에 실패했습니다.");
-                });
-            }
-        }
 
         $.deleteBoard = function (id) {
             if (confirm("게시글을 삭제하시겠습니까?")) {

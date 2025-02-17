@@ -96,30 +96,37 @@
 
         $.addFile = function(inputFile) {
             let num = 0;
-            for ( const file of inputFile.files ) {
+            let now = new Date();
 
+            // 날짜 및 시간을 YYYYMMDD_HHMMSS 형식으로 변환
+            let timestamp = now.getFullYear().toString() +
+                String(now.getMonth() + 1).padStart(2, '0') +
+                String(now.getDate()).padStart(2, '0') + "_" +
+                String(now.getHours()).padStart(2, '0') +
+                String(now.getMinutes()).padStart(2, '0') +
+                String(now.getSeconds()).padStart(2, '0');
+
+
+
+            for ( const file of inputFile.files ) {
                 if (!file.type.startsWith("image/")) {
                     alert(`이미지 파일만 추가할 수 있습니다: ${file.name}`);
                     continue;
                 }
 
-                if (fileArrayAdd.some(f => f.name === file.name && f.size === file.size)) {
-                    alert(`이미 추가된 파일: ${file.name}`);
-                    continue;
-                }
+                let modifiedName = `${timestamp}_${file.name}`;
 
                 let html = "";
                 html += "<div id='file" + num + "' class='filebox'>";
                 html += "<div class='filename'>" + file.name + "</div>";
                 html += "</div>";
 
-                fileArrayAdd.push(file);
+                let newFile = new File([file], modifiedName, { type: file.type });
 
+                fileArrayAdd.push(newFile);
 
-                let filename = file.name; // 파일 이름 가져오기
-                let imgTag = `<img src="" alt="${filename.toLowerCase().trim()}" data-temp="true"><br>`;
+                let imgTag = `<img src="" alt="${modifiedName.toLowerCase().trim()}" data-temp="true"><br>`;
                 $("#content").append(imgTag);  // div에 <img> 태그 추가
-
                 num++;
             }
             $("#file").val("");
