@@ -9,6 +9,22 @@
             border: 1px solid #ccc;
             padding: 10px;
         }
+        .image-wrapper {
+            display: inline-block;
+            position: relative;
+            margin: 5px;
+            width: 300px; /* 초기 크기 */
+            height: auto;
+            overflow: hidden;
+            resize: both; /* 크기 조절 가능하게 설정 */
+            border: 1px solid #ccc;
+        }
+
+        .image-wrapper img {
+            width: 100%; /* 부모 div 크기에 맞게 조절 */
+            height: auto;
+        }
+
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -40,7 +56,7 @@
             }
             formData.append("boardDto", new Blob([JSON.stringify({
                 "name": name,
-                "content": content,
+                "content": name,
                 "region": region,
                 "category": category
             })], {type:"application/json"}));
@@ -123,10 +139,15 @@
 
                 let newFile = new File([file], modifiedName, { type: file.type });
 
+                let tempUUID = modifiedName.toLowerCase().trim();
                 fileArrayAdd.push(newFile);
 
-                let imgTag = `<img src="" alt="${modifiedName.toLowerCase().trim()}" data-temp="true"><br>`;
-                $("#content").append(imgTag);  // div에 <img> 태그 추가
+                // Object URL로 미리보기 생성 (base64 사용 X)
+                let objectURL = URL.createObjectURL(file);
+                let imgTag = `<div class="image-wrapper">
+                        <img src="${objectURL}" alt="${tempUUID}" data-temp="true">
+                      </div>`;
+                    $("#content").append(imgTag);
                 num++;
             }
             $("#file").val("");

@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 @Service
 public class FileCtrlService {
     @Value("${spring.servlet.multipart.location}")
-    private String uploadDir;
+    private String uploadDir; // @Value 설정된 경로 값이 자동으로 주입됨  yml 파일에 설정된 이미지 저장 경로
 
     private static final String UPDIR = "C:\\Temp\\upload\\board\\";
 

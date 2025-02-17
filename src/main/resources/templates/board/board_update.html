@@ -10,6 +10,21 @@
             border: 1px solid #ccc;
             padding: 10px;
         }
+        .image-wrapper {
+            display: inline-block;
+            position: relative;
+            margin: 5px;
+            width: 300px; /* 초기 크기 */
+            height: auto;
+            overflow: hidden;
+            resize: both; /* 크기 조절 가능하게 설정 */
+            border: 1px solid #ccc;
+        }
+
+        .image-wrapper img {
+            width: 100%; /* 부모 div 크기에 맞게 조절 */
+            height: auto;
+        }
     </style>
     <script>
         $(function () {
