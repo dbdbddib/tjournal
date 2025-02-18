@@ -23,7 +23,8 @@
 
         .image-wrapper img {
             width: 100%; /* 부모 div 크기에 맞게 조절 */
-            height: auto;
+            height: 100%;
+            object-fit: contain;
         }
     </style>
     <script>
@@ -192,8 +193,10 @@
 
                 $.fileArrayView.push(newFile);
 
-
-                let imgTag = `<img src="" alt="${modifiedName.toLowerCase().trim()}" data-temp="true"><br>`;
+                let objectURL = URL.createObjectURL(file);
+                let imgTag = `<div class="image-wrapper">
+                                <img src="${objectURL}" alt="${modifiedName.toLowerCase().trim()}" data-temp="true"><br>
+                                </div>`;
                 $("#content").append(imgTag);  // div에 <img> 태그 추가
             }
             $.showBoardFiles([...$.fileArrayView]);

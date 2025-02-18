@@ -16,13 +16,14 @@
             width: 300px; /* 초기 크기 */
             height: auto;
             overflow: hidden;
-            resize: both; /* 크기 조절 가능하게 설정 */
+            resize: both; /* div 사용자가 직접 조정 */
             border: 1px solid #ccc;
         }
 
         .image-wrapper img {
-            width: 100%; /* 부모 div 크기에 맞게 조절 */
-            height: auto;
+            width: 100%; /* div 크기가 변하면 내부 이미지도 그 크기에 맞춰 자동 조정 */
+            height: 100%;
+            object-fit: contain;
         }
 
     </style>
@@ -54,6 +55,8 @@
             for ( const file of fileArrayAdd ) {
                 formData.append("files", file);
             }
+            // Blob 으로 감싸는 이유
+            // JSON + 바이너리(file) 데이터를 함께 전송하기 위함
             formData.append("boardDto", new Blob([JSON.stringify({
                 "name": name,
                 "content": name,
@@ -104,6 +107,9 @@
             alert("등록이 완료되었습니다.");
             setTimeout(() => {
                 location.href = document.referrer || "board_ajx_list";
+            //     document.referrer: 이전 URL 정보를 담고 있는 브라우저 내장 변수
+            //     값이 있으면, 이전 페이지(이전 URL)로 이동
+            //     document.referrer 값이 없으면 "board_view?id=" + id 페이지로 이동
             }, 100);
         }).fail(function (jqXHR, updateStatus, updateErrorThrown) {
             console.error("❌ 게시글 내용 업데이트 실패:", jqXHR);
@@ -131,25 +137,21 @@
                 }
 
                 let modifiedName = `${timestamp}_${file.name}`;
-
-                let html = "";
-                html += "<div id='file" + num + "' class='filebox'>";
-                html += "<div class='filename'>" + file.name + "</div>";
-                html += "</div>";
-
                 let newFile = new File([file], modifiedName, { type: file.type });
 
                 let tempUUID = modifiedName.toLowerCase().trim();
                 fileArrayAdd.push(newFile);
 
-                // Object URL로 미리보기 생성 (base64 사용 X)
+                // URL.createObjectURL(file)
+                // 해당 파일을 참조하는 Blob URL(예: blob:http://example.com/12345-6789)이 생성
+                // URL은 브라우저에서만 유효
                 let objectURL = URL.createObjectURL(file);
                 let imgTag = `<div class="image-wrapper">
                         <img src="${objectURL}" alt="${tempUUID}" data-temp="true">
                       </div>`;
                     $("#content").append(imgTag);
-                num++;
             }
+
             $("#file").val("");
         }
 
