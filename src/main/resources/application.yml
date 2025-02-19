@@ -25,3 +25,4 @@ mybatis:
   type-aliases-package: com.example.tjournal
   configuration:
     map-underscore-to-camel-case: true
+

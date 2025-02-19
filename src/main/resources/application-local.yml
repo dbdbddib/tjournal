@@ -18,9 +18,23 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: 200MB
-      max-request-size: 100MB
+      # 개별 파일 최대 크기 제한 사이즈
+      max-file-size: 50MB
+      # 요청 전체 크기 제한 사이즈
+      max-request-size: 250MB
       location: c:\\Temp\\upload   # 자기 PC에 첨부파일 저장할때
+
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY_ID}
+        secret-key: ${AWS_SECRET_ACCESS_KEY}
+      s3:
+        bucket: banglog
+      region:
+        static: ap-southeast-2 # 리전 정보(서울)
+      stack:
+        auto: false
 
 # application-local.yml (or application-dev.yml)
 logging:

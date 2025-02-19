@@ -31,6 +31,7 @@
     <script>
 
     let region = "{{region}}";
+
         $(document).ready(function () {
             $("#postForm").on("submit", function (event) {
                 event.preventDefault();
@@ -155,6 +156,37 @@
             $("#file").val("");
         }
 
+    $.addAwsFile = function(input) {
+        let formData = new FormData();
+
+        if (input.files.length > 0) {
+            for (const file of input.files) {
+                formData.append("image", file);
+            }
+        } else {
+            console.error("❌ 파일이 선택되지 않았습니다.");
+            alert("파일을 선택해주세요.");
+            return;
+        }
+
+        $.ajax({
+            url: "/aws/s3/upload",
+            type: "POST",
+            datatype: "JSON",
+            data: formData,
+            contentType: false,
+            processData: false,
+        }).done(function (data, status, xhr) {
+            console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+
+
+        }).fail(function (jqXHR, status, errorThrown) {
+            console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+            let message = getErrorMessage(jqXHR.responseJSON);
+            alert("추가를 실패했습니다. " + message);
+        });
+    }
+
 
         function validation(obj) {
             if (obj.name.length > 100) {
@@ -181,12 +213,17 @@
             <input type="text" id="name" name="name" required>
 
             <label for="content">내용</label>
+
             <!-- 기존 textarea 대신 div를 사용 -->
             <div id="content" name="content" contenteditable="true" required></div>
 
+            <!-- <input type="file"> 브라우저가 파일 선택 창 띄움 -->
             <label>이미지 등록</label>
-            <input type="file" id="file" name="file" onchange="$.addFile(this);" multiple/>
-    <!-- <input type="file"> 브라우저가 파일 선택 창 띄움 -->
+            <input type="file" id="file" name="file" onchange="$.addFile(this);" multiple/><br>
+
+            <label>aws 이미지 등록</label>
+            <input type="file" id="awsFile" name="file" onchange="$.addAwsFile(this);" multiple/><br>
+
 
             <label>카테고리</label>
             <select id="category" name="category" required>

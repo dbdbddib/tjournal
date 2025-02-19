@@ -33,6 +33,15 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
+//	aws s3
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+// 파일 업로드를 위한 의존성 추가
+// https://mvnrepository.com/artifact/commons-io/commons-io
+	implementation 'commons-io:commons-io:2.6'
+// https://mavenlibs.com/maven/dependency/commons-fileupload/commons-fileupload
+	implementation 'commons-fileupload:commons-fileupload:1.4'
+
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
