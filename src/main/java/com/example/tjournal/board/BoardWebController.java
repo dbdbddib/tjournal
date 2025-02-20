@@ -141,6 +141,23 @@ public class BoardWebController {
         return "board/board_add";
     }
 
+    @GetMapping("/board_aws_add")
+    private String allAwsBoardAdd(Model model) {
+        model.addAttribute("region", "");
+        return "board/board_aws_add";
+    }
+
+    @GetMapping("/board_aws_add/{region}")
+    private String regionAwsBoardAdd(Model model, @PathVariable String region) {
+        model.addAttribute("region", region);
+        try {
+            regionEnum.valueOf(region); // 예외 발생 시 유효하지 않은 값
+        } catch (IllegalArgumentException e) {
+            return "error/400"; // 유효하지 않은 값에 대한 처리
+        }
+        return "board/board_aws_add";
+    }
+
     @GetMapping("/board_view")
     private String allNoticeBoardView(@RequestParam("id") Long id, Model model) {
         BoardDto boardDto = boardService.findById(id);

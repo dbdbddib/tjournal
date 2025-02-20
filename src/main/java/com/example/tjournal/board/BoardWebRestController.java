@@ -99,10 +99,12 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
             CUDInfoDto cudInfoDto = new CUDInfoDto(loginUser);
 
             Map<String, String> uploadedFilesMap = new HashMap<>();
-            for (MultipartFile file : files) {
-                String originalFilename = file.getOriginalFilename();
-                String uuid = UUID.randomUUID().toString() + ".png";
-                uploadedFilesMap.put(originalFilename, uuid);
+            if(files != null) {
+                for (MultipartFile file : files) {
+                    String originalFilename = file.getOriginalFilename();
+                    String uuid = UUID.randomUUID().toString() + ".png";
+                    uploadedFilesMap.put(originalFilename, uuid);
+                }
             }
             dto.setUuidMap(uploadedFilesMap);
             IBoard result = this.boardService.insert(cudInfoDto, dto, files);

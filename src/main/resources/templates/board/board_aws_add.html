@@ -30,7 +30,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
 
-    let region = "{{region}}";
+        let region = "{{region}}";
 
         $(document).ready(function () {
             $("#postForm").on("submit", function (event) {
@@ -61,7 +61,7 @@
             // JSON + 바이너리(file) 데이터를 함께 전송하기 위함
             formData.append("boardDto", new Blob([JSON.stringify({
                 "name": name,
-                "content": name,
+                "content": content,
                 "region": region,
                 "category": category
             })], {type:"application/json"}));
@@ -75,15 +75,43 @@
                 processData: false,
             }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+                alert("등록이 완료되었습니다.");
+                setTimeout(() => {
+                    location.href = document.referrer || "board_ajx_list";
+                }, 100);
+            }).fail(function (jqXHR, status, errorThrown) {
+                console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                let message = getErrorMessage(jqXHR.responseJSON);
+                alert("추가를 실패했습니다. " + message);
+            });
+        }
 
-                if (data.responseData.uuidMap) {
-                    for (const [originalFilename, uuid] of Object.entries(data.responseData.uuidMap)) {
-                        const imageSelector = `img[alt="${originalFilename.toLowerCase().trim()}"]`;
-                        $(imageSelector).attr("src", `/api/v1/sbfile/images/${uuid}`);
-                    }
+        $.addAwsFile = function(input) {
+            let formData = new FormData();
+
+            if (input.files.length > 0) {
+                for (const file of input.files) {
+                    formData.append("image", file);
                 }
+            } else {
+                console.error("❌ 파일이 선택되지 않았습니다.");
+                alert("파일을 선택해주세요.");
+                return;
+            }
 
-                $.updateContent(data.responseData.id)
+            $.ajax({
+                url: "/aws/s3/upload",
+                type: "POST",
+                datatype: "JSON",
+                data: formData,
+                contentType: false,
+                processData: false,
+            }).done(function (data, status, xhr) {
+                console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+                let imgTag = `<div class="image-wrapper">
+                        <img src="${data.responseData}">
+                      </div>`;
+                $("#content").append(imgTag);
 
             }).fail(function (jqXHR, status, errorThrown) {
                 console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
@@ -92,68 +120,6 @@
             });
         }
 
-    $.updateContent = function (id) {
-        content = $("#content").html();
-
-        let requestData = JSON.stringify({ "content": content });
-
-        $.ajax({
-            url: "/api/v1/board/updateContent/" + id,
-            type: "PATCH",
-            datatype: "JSON",
-            data: requestData,
-            contentType: "application/json; charset=UTF-8",  // ✅ JSON으로 변경
-            processData: false,
-        }).done(function (updateData, updateStatus, updateXhr) {
-            console.log("✅ 게시글 내용 업데이트 완료:", updateData);
-            alert("등록이 완료되었습니다.");
-            setTimeout(() => {
-                location.href = document.referrer || "board_ajx_list";
-            //     document.referrer: 이전 URL 정보를 담고 있는 브라우저 내장 변수
-            //     값이 있으면, 이전 페이지(이전 URL)로 이동
-            //     document.referrer 값이 없으면 "board_view?id=" + id 페이지로 이동
-            }, 100);
-        }).fail(function (jqXHR, updateStatus, updateErrorThrown) {
-            console.error("❌ 게시글 내용 업데이트 실패:", jqXHR);
-        });
-    };
-
-        $.addFile = function(inputFile) {
-            let num = 0;
-            let now = new Date();
-
-            // 날짜 및 시간을 YYYYMMDD_HHMMSS 형식으로 변환
-            let timestamp = now.getFullYear().toString() +
-                String(now.getMonth() + 1).padStart(2, '0') +
-                String(now.getDate()).padStart(2, '0') + "_" +
-                String(now.getHours()).padStart(2, '0') +
-                String(now.getMinutes()).padStart(2, '0') +
-                String(now.getSeconds()).padStart(2, '0');
-
-            for ( const file of inputFile.files ) {
-                if (!file.type.startsWith("image/")) {
-                    alert(`이미지 파일만 추가할 수 있습니다: ${file.name}`);
-                    continue;
-                }
-
-                let modifiedName = `${timestamp}_${file.name}`;
-                let newFile = new File([file], modifiedName, { type: file.type });
-
-                let tempUUID = modifiedName.toLowerCase().trim();
-                fileArrayAdd.push(newFile);
-
-                // URL.createObjectURL(file)
-                // 해당 파일을 참조하는 Blob URL(예: blob:http://example.com/12345-6789)이 생성
-                // URL은 브라우저에서만 유효
-                let objectURL = URL.createObjectURL(file);
-                let imgTag = `<div class="image-wrapper">
-                        <img src="${objectURL}" alt="${tempUUID}" data-temp="true">
-                      </div>`;
-                    $("#content").append(imgTag);
-            }
-
-            $("#file").val("");
-        }
 
         // function validation(obj) {
         //     if (obj.name.length > 100) {
@@ -185,8 +151,8 @@
             <div id="content" name="content" contenteditable="true" required></div>
 
             <!-- <input type="file"> 브라우저가 파일 선택 창 띄움 -->
-            <label>이미지 등록</label>
-            <input type="file" id="file" name="file" onchange="$.addFile(this);" multiple/><br>
+            <label>aws 이미지 등록</label>
+            <input type="file" id="awsFile" name="file" onchange="$.addAwsFile(this);" multiple/><br>
 
 
             <label>카테고리</label>

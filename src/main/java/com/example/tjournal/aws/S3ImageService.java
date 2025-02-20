@@ -84,7 +84,8 @@ public class S3ImageService {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
 
         try{
-            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, s3FileName, byteArrayInputStream, metadata);
+            PutObjectRequest putObjectRequest =
+                    new PutObjectRequest(bucketName, s3FileName, byteArrayInputStream, metadata);
             amazonS3.putObject(putObjectRequest);
         }catch (Exception e){
             throw new S3Exception(ErrorCode.PUT_OBJECT_EXCEPTION);
@@ -92,7 +93,6 @@ public class S3ImageService {
             byteArrayInputStream.close();
             is.close();
         }
-
         return amazonS3.getUrl(bucketName, s3FileName).toString();
     }
 

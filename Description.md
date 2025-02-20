@@ -56,3 +56,33 @@ IResponseController 클래스의 makeResponseEntity 메서드는 응답 데이�
 
 - 파일을 다룰 때 유용
   - 웹 브라우저에서 파일을 읽거나 다운로드, 미리보기할 때 사용됩니다.
+
+
+# Bean
+1. @Configuration의 역할
+   - @Configuration은 이 클래스가 Spring의 설정 클래스임을 나타냅니다.
+   -  설정 클래스 내부에서 @Bean을 사용하면 Spring 컨테이너가 해당 객체를 Spring Bean으로 관리합니다.
+2. @Bean의 역할
+   - @Bean이 붙은 메서드는 Spring이 애플리케이션 시작 시 자동으로 실행하여 반환된 객체를 Spring 컨테이너에 등록합니다.
+   -  즉, amazonS3() 메서드가 애플리케이션 시작 시 한 번 실행되고, 그 결과인 AmazonS3 객체가 Spring 컨테이너에 등록됩니다.
+   -  이후에는 @Autowired 또는 ApplicationContext.getBean(AmazonS3.class) 등을 통해 재사용할 수 있습니다
+   - 싱글톤(Singleton) 패턴은 객체의 인스턴스를 하나만 생성하여 애플리케이션 전역에서 공유
+3. Spring Boot가 자동으로 @Bean 메서드를 호출하는 과정
+   - Spring Boot가 실행되면서 ApplicationContext를 생성함.
+   - @Configuration 클래스를 스캔하여 @Bean이 붙은 메서드를 실행.
+   - amazonS3() 메서드가 실행되어 AmazonS3 객체가 생성됨.
+   - 생성된 AmazonS3 객체가 Spring 컨테이너에 등록됨 (싱글톤으로 관리).
+4. Spring의 기본 동작 방식
+   - Spring Boot는 애플리케이션 시작 시 모든 @Bean 메서드를 한 번 실행하여 객체를 생성하고, 이를 컨테이너에서 관리합니다.
+    
+  
+
+# 싱글톤을 쓰는 이유
+1. 불필요한 객체 생성을 방지 → 메모리 절약
+   - 동일한 객체를 여러 번 생성하지 않고 하나만 유지하므로 메모리 낭비를 줄일 수 있음.
+
+2. 객체 간의 데이터 일관성 유지
+   - 같은 인스턴스를 공유하기 때문에 전역 상태를 유지할 수 있음.
+
+3. 객체 생성 비용 절감
+   - 생성 비용이 큰 객체(DB Connection, AmazonS3 Client 등)를 매번 새로 만들지 않고, 하나의 객체만 유지함으로써 성능 최적화.
