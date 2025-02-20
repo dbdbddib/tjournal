@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
@@ -23,5 +21,11 @@ public class S3RestController implements IResponseController {
     public ResponseEntity<?> s3Upload(@RequestPart(value = "image", required = false) MultipartFile image){
         String profileImage = s3ImageService.upload(image);
         return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", profileImage);
+    }
+
+    @DeleteMapping("/s3/image")
+    public ResponseEntity<?> deleteImage(@RequestParam  String imageUrl) {
+        s3ImageService.deleteImageFromS3(imageUrl);
+        return makeResponseEntity(HttpStatus.OK, ResponseCode.R000000, "성공", null);
     }
 }

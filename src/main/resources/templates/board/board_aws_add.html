@@ -39,7 +39,7 @@
             });
         });
 
-        let fileArrayAdd = new Array();
+        let imgUrlArrayAdd = new Array();
 
         // 서버에 저장이 안된 상태에서 done만 돌리니 안나오지
         // ajax에서 보낼때 formData를 db에 저장하고 view에서는 db를 참조하니 안나오는거였다...................
@@ -54,7 +54,7 @@
             }
 
             let formData = new FormData();
-            for ( const file of fileArrayAdd ) {
+            for ( const file of imgUrlArrayAdd ) {
                 formData.append("files", file);
             }
             // Blob 으로 감싸는 이유
@@ -108,8 +108,24 @@
                 processData: false,
             }).done(function (data, status, xhr) {
                 console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+
+                let imgUrl = `${data.responseData}`;
+                imgUrlArrayAdd.push(imgUrl);
+
+                let fileId = imgUrlArrayAdd.length; // 고유 ID 부여
+                let fileName = imgUrl.split('/').pop(); // 파일명 추출
+
+                let html = `<div class='file-item' id='fileView_${fileId}' data-file-name="${imgUrl}" data-file-id="${fileId}">
+                        <div class='filename col-md-7'>${fileName}</div>
+                        <div class='col-md-5'>
+                            <span class='delete-label' data-file-name="${imgUrl}" data-file-id="${fileId}">삭제</span>
+                        </div>
+                    </div>`;
+
+                $("#fileListView").append(html);
+
                 let imgTag = `<div class="image-wrapper">
-                        <img src="${data.responseData}">
+                        <img src="${imgUrl}">
                       </div>`;
                 $("#content").append(imgTag);
 
@@ -119,6 +135,30 @@
                 alert("추가를 실패했습니다. " + message);
             });
         }
+
+        $(document).on("click", ".delete-label", function () {
+            let fileName = $(this).data("file-name");
+            let fileId = $(this).data("file-id");
+
+            if (confirm("파일을 삭제하시겠습니까?")) {
+                $.ajax({
+                    url: "/aws/s3/image?imageUrl=" + encodeURIComponent(fileName),
+                    type: "DELETE",
+                    dataType: "json",
+                }).done(function (data, status, xhr) {
+                    if (status === "success") {
+                        alert("파일이 삭제되었습니다.");
+                        $("#fileView_" + fileId).remove(); // 삭제된 항목 제거
+                        imgUrlArrayAdd.splice(fileId - 1, 1); // 배열에서도 삭제
+                        $("#content img[src='" + fileName + "']").parent().remove();
+
+                    }
+                }).fail(function (jqXHR, status, errorThrown) {
+                    console.error("파일 삭제에 실패했습니다.", status, errorThrown);
+                    alert("파일 삭제에 실패했습니다.");
+                });
+            }
+        });
 
 
         // function validation(obj) {
@@ -149,6 +189,9 @@
 
             <!-- 기존 textarea 대신 div를 사용 -->
             <div id="content" name="content" contenteditable="true" required></div>
+
+            <div>첨부파일</div>
+            <div id="fileListView" class="attachments"></div>
 
             <!-- <input type="file"> 브라우저가 파일 선택 창 띄움 -->
             <label>aws 이미지 등록</label>
