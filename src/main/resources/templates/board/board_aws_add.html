@@ -146,6 +146,7 @@
                     type: "DELETE",
                     dataType: "json",
                 }).done(function (data, status, xhr) {
+                    console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
                     if (status === "success") {
                         alert("파일이 삭제되었습니다.");
                         $("#fileView_" + fileId).remove(); // 삭제된 항목 제거
