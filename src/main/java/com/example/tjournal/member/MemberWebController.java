@@ -24,6 +24,7 @@ public class MemberWebController {
         if ( loginUser.getRole().equals(MemberRole.ADMIN.toString()) ) {
             model.addAttribute("adminUser", true);
         }
+        model.addAttribute("loginId", loginUser.getId());
         return "member/member_list";
     }
 }

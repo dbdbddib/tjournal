@@ -13,6 +13,7 @@
 // $(document).ready(function () { ... })
 // $(function() { ... }): 축약형 표현으로, jQuery가 제공하는 $(document).ready()의 단축 문법
 
+let loginId = "{{loginId}}";
 
         $(function () {
 
@@ -45,6 +46,7 @@
                         "sortColumn": "name",
                         "sortAscDsc": "ASC",
                         "rowsOnePage": rowsOnePage,
+                        "searchId": loginId
                     }),
                     contentType: "application/json; charset=UTF-8"
                 }).done(function (data, status, xhr) {      // data(json): 서버에서 받은 값, status: 성공적으로 요청이 완료되면 "success"라는 문자열이 전달, xhr: XMLHttpRequest 객체, HTTP 요청에 대한 다양한 정보를 담고 있으며, 응답 헤더나 상태 코드 등을 확인

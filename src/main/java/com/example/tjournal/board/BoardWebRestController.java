@@ -282,6 +282,8 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
             }
             makeResponseCheckLogin(model);
             int total = this.boardService.countAllByNameContains(searchAjaxDto);
+
+            // 게시판 제목 검색
             List<BoardDto> list = this.boardService.findAllByNameContains(searchAjaxDto);
 
             searchAjaxDto.setTotal(total);

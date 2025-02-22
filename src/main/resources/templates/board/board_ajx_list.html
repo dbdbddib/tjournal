@@ -67,7 +67,7 @@
             let searchName = $("#searchName").val();
             // id="searchName" 요소의 value 속성의 값을 가져온다.
             $.ajax({    // jQuery Ajax 비동기 서버와 통신
-                url: "/api/v1/board/searchName",  // 서버 주소
+                url: "/api/v1/board/searchName",  // 게시판 제목 검색
                 type: "POST",   // method 방식
                 datatype: "JSON",   // 전송하는 데이터 방식
                 data: JSON.stringify({

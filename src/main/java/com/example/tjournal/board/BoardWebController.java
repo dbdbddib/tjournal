@@ -119,9 +119,11 @@ public class BoardWebController {
         }
         IMember memberDto = this.memberService.findById(loginUser.getId());
         model.addAttribute("memberDto", memberDto);
+        model.addAttribute("region", "");
+        model.addAttribute("loginId", loginUser.getId());
         model.addAttribute("category", category);
 
-        return "board/board_ajx_my_list";
+        return "board/board_ajx_Id_list";
     }
 
     @GetMapping("/board_add")

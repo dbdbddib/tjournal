@@ -176,23 +176,26 @@
 
     <select id="findAllByNameContains" parameterType="SearchAjaxDto" resultType="MemberDto">
         SELECT id
-             , name
-             , nickname
-             , loginId
-             , email
-             , role
-             , active
-             , createDt
-             , createId
-             , updateDt
-             , updateId
-             , deleteDt
-             , deleteId
-             , deleteFlag
+        , name
+        , nickname
+        , loginId
+        , email
+        , role
+        , active
+        , createDt
+        , createId
+        , updateDt
+        , updateId
+        , deleteDt
+        , deleteId
+        , deleteFlag
         FROM member_tbl
-        WHERE name like CONCAT('%',#{searchName},'%')
-            AND deleteFlag = false
+        WHERE name LIKE CONCAT('%', #{searchName}, '%')
+        AND deleteFlag = false
+        <if test="searchId != null and searchId != ''">
+            AND id != #{searchId}
+        </if>
         ORDER BY ${orderByWord}
-            LIMIT #{rowsOnePage} OFFSET #{firstIndex}
+        LIMIT #{rowsOnePage} OFFSET #{firstIndex}
     </select>
 </mapper>
