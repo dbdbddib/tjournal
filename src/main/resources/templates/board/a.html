@@ -1,0 +1,31 @@
+function searchAddress(address) {
+console.log("map 객체:", map);
+console.log("입력된 주소:", address);
+
+naver.maps.Service.geocode({ query: address }, function(status, response) {
+console.log("geocode status:", status);
+console.log("geocode response:", response);
+
+if (status !== naver.maps.Service.Status.OK) {
+alert('주소를 찾지 못했습니다. 다시 시도해 주세요.');
+return;
+}
+
+// 변경된 응답 구조: response.v2.addresses 배열 확인
+if (response && response.v2 && response.v2.addresses && response.v2.addresses.length > 0) {
+var addrInfo = response.v2.addresses[0];
+// x: 경도, y: 위도 (문자열이므로 숫자로 변환)
+var lat = parseFloat(addrInfo.y);
+var lng = parseFloat(addrInfo.x);
+// naver.maps.LatLng 생성: 첫번째 파라미터는 위도, 두번째 파라미터는 경도
+var point = new naver.maps.LatLng(lat, lng);
+map.setCenter(point);
+new naver.maps.Marker({
+position: point,
+map: map
+});
+} else {
+alert("검색 결과가 없습니다.");
+}
+});
+}
