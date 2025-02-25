@@ -32,6 +32,22 @@
             margin-top: 20px;
         }
 
+        #searchResults {
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .search-item {
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .search-item:hover {
+            background-color: #f0f0f0;
+        }
+
         /* Autocomplete 기본 스타일 커스터마이징 (선택사항) */
         .ui-autocomplete {
             max-height: 200px;
@@ -124,6 +140,15 @@
                 "region": region,
                 "category": category
             })], {type:"application/json"}));
+
+            let markerInfo = markerDataList.map(function(item) {
+                return {
+                    lat: item.position.lat(),
+                    lng: item.position.lng(),
+                    content: item.content
+                };
+            });
+            formData.append("markerData", new Blob([JSON.stringify(markerInfo)], { type: "application/json" }));
 
             $.ajax({
                 url: "/api/v1/board",
@@ -250,11 +275,22 @@
     }
 
     function addMarker(position) {
+        var content = prompt("마커에 삽입할 내용을 입력하세요: (필수)");
+        if (content == null || content.trim() === "") {
+            alert("내용은 필수입니다. 마커가 생성되지 않습니다.");
+            return null;  // 내용이 없으면 마커 생성 취소
+        }
         var marker = new naver.maps.Marker({
             position: position,
             map: map
         });
+        marker.customContent = content; // 필수로 입력된 내용 저장
         markers.push(marker);
+        markerDataList.push({
+            marker: marker,
+            position: position,
+            content: content
+        });
 
         // 마커 우클릭: 해당 마커 삭제
         naver.maps.Event.addListener(marker, 'rightclick', function(e) {
@@ -279,29 +315,36 @@
 
         // 마커 좌클릭: 내용 입력 및 리스트에 저장
         naver.maps.Event.addListener(marker, 'click', function(e) {
-            var content = prompt("마커에 삽입할 내용을 입력하세요:");
-            if (content) {
-                // 마커 객체에 커스텀 속성으로 내용 저장 (선택사항)
-                marker.customContent = content;
-                // markerDataList 배열에 추가 (마커 객체, 위치, 내용 저장)
-                markerDataList.push({
-                    marker: marker,
-                    position: position,
-                    content: content
-                });
-                if (marker.infoWindow) {
-                    marker.infoWindow.close();
-                    marker.infoWindow = null;
+            // 기존 내용을 기본값으로 하여 prompt를 띄움
+            var newContent = prompt("마커의 내용을 수정하세요:", marker.customContent);
+            // 사용자가 취소하면(null) 아무것도 변경하지 않음
+            if (newContent === null) {
+                return;
+            }
+            // 빈 문자열은 허용하지 않음 (입력하지 않으면 기존 내용 유지)
+            if (newContent.trim() === "") {
+                alert("내용은 필수입니다. 수정이 취소됩니다.");
+                return;
+            }
+            // 내용이 변경되었으면 업데이트
+            marker.customContent = newContent;
+            // markerDataList에서도 해당 항목의 content를 업데이트
+            for (var i = 0; i < markerDataList.length; i++) {
+                if (markerDataList[i].marker === marker) {
+                    markerDataList[i].content = newContent;
+                    break;
                 }
-                // 선택적으로 InfoWindow로 내용을 표시할 수도 있습니다.
+            }
+            // 이미 열려있는 InfoWindow가 있으면 업데이트하고, 없으면 새로 생성
+            if (marker.infoWindow) {
+                marker.infoWindow.setContent(newContent);
+            } else {
                 var infoWindow = new naver.maps.InfoWindow({
-                    content: content,
-                    position: position
+                    content: newContent,
+                    position: marker.getPosition()
                 });
                 infoWindow.open(map, marker);
                 marker.infoWindow = infoWindow;
-                // 콘솔에 현재 저장된 마커 내용 리스트 출력 (디버깅용)
-                console.log("현재 마커 데이터 리스트:", markerDataList);
             }
         });
 
@@ -367,17 +410,12 @@
                     return;
                 }
 
-                var marker = addMarker(point);
-
-                // 100ms 후 confirm 창을 띄워 마커 추가 여부를 확인
                 setTimeout(function() {
-                    if (!confirm("해당 위치에 마커를 추가하시겠습니까?")) {
-                        // "아니오" 선택 시 마커 삭제
-                        marker.setMap(null);
-                        var idx = markers.indexOf(marker);
-                        if (idx > -1) {
-                            markers.splice(idx, 1);
-                        }
+                    var marker = addMarker(point);
+                    // addMarker 함수 내부에서 prompt로 내용 입력을 필수로 받음
+                    if (marker == null) {
+                        // 내용 입력이 취소되어 마커 생성이 취소된 경우
+                        return;
                     }
                 }, 100);
             } else {
@@ -388,8 +426,6 @@
 
 
     </script>
-    <!-- 네이버 지도 API (geocoder 서브모듈 포함), 로드 시 initMap 호출 -->
-
 </head>
 <body>
 {{>layout/headermenu}}
@@ -427,9 +463,13 @@
 
 <!-- 지도 표시 영역 -->
 <div id="map"></div>
+
 <script type="text/javascript"
         src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=jchd9s8hn9&submodules=geocoder"
         onload="initMap()">
 </script>
+
+<div id="searchResults"></div>
+
 </body>
 </html>

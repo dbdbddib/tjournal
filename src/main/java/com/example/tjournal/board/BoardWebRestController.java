@@ -9,6 +9,7 @@ import com.example.tjournal.commons.exeption.LoginAccessException;
 import com.example.tjournal.commons.inif.ICommonRestController;
 import com.example.tjournal.member.IMember;
 import com.example.tjournal.member.IMemberService;
+import com.example.tjournal.naverAPI.MarkerDataDto;
 import com.example.tjournal.sbfile.SbFileDto;
 import com.example.tjournal.sblike.ISbLikeService;
 import com.example.tjournal.sblike.SbLikeDto;
@@ -85,7 +86,8 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
     @PostMapping
     public ResponseEntity<ResponseDto> insert(HttpSession session
             , @Validated @RequestPart(value = "boardDto") BoardDto dto
-            , @RequestPart(value = "files", required = false) List<MultipartFile> files) {
+            , @RequestPart(value = "files", required = false) List<MultipartFile> files,
+              @RequestPart(value = "markerData", required = false) List<MarkerDataDto> markerData) {
         try {
             log.info("Received DTO: " + dto);
             if (dto == null) {
