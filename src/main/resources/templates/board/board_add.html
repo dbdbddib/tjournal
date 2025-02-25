@@ -70,7 +70,6 @@
                         data: { query: request.term },
                         success: function(data) {
                             let suggestions = [];
-                            let resultsHtml = ""; // 검색 결과 목록을 표시할 HTML 누적용
 
                             if (data && data.items) {
                                 $.each(data.items, function(index, item) {
@@ -230,19 +229,123 @@
         // }
 
     var map;
+    var markers = [];           // 지도에 추가된 마커들을 저장하는 배열
+    var markerDataList = [];    // 각 마커에 입력한 내용과 관련 정보를 저장하는 리스트
+
     function initMap() {
         var mapOptions = {
             center: new naver.maps.LatLng(37.3595704, 127.105399),
             zoom: 10
         };
         map = new naver.maps.Map('map', mapOptions);
+
+        // 지도 빈 영역에서 우클릭 시 마커 추가
+        naver.maps.Event.addListener(map, 'rightclick', function(e) {
+            // 마커 위가 아닌 빈 영역을 우클릭했을 경우
+            if (!e.overlay) {
+                var clickPos = new naver.maps.LatLng(e.coord.y, e.coord.x);
+                addMarker(clickPos);
+            }
+        });
     }
+
+    function addMarker(position) {
+        var marker = new naver.maps.Marker({
+            position: position,
+            map: map
+        });
+        markers.push(marker);
+
+        // 마커 우클릭: 해당 마커 삭제
+        naver.maps.Event.addListener(marker, 'rightclick', function(e) {
+            if (marker.infoWindow) {
+                marker.infoWindow.close();
+                marker.infoWindow = null;
+            }
+            marker.setMap(null);
+            // markers 배열에서 제거
+            var index = markers.indexOf(marker);
+            if (index > -1) {
+                markers.splice(index, 1);
+            }
+            // markerDataList 배열에서도 해당 마커 데이터 제거
+            for (var i = 0; i < markerDataList.length; i++) {
+                if (markerDataList[i].marker === marker) {
+                    markerDataList.splice(i, 1);
+                    break;
+                }
+            }
+        });
+
+        // 마커 좌클릭: 내용 입력 및 리스트에 저장
+        naver.maps.Event.addListener(marker, 'click', function(e) {
+            var content = prompt("마커에 삽입할 내용을 입력하세요:");
+            if (content) {
+                // 마커 객체에 커스텀 속성으로 내용 저장 (선택사항)
+                marker.customContent = content;
+                // markerDataList 배열에 추가 (마커 객체, 위치, 내용 저장)
+                markerDataList.push({
+                    marker: marker,
+                    position: position,
+                    content: content
+                });
+                if (marker.infoWindow) {
+                    marker.infoWindow.close();
+                    marker.infoWindow = null;
+                }
+                // 선택적으로 InfoWindow로 내용을 표시할 수도 있습니다.
+                var infoWindow = new naver.maps.InfoWindow({
+                    content: content,
+                    position: position
+                });
+                infoWindow.open(map, marker);
+                marker.infoWindow = infoWindow;
+                // 콘솔에 현재 저장된 마커 내용 리스트 출력 (디버깅용)
+                console.log("현재 마커 데이터 리스트:", markerDataList);
+            }
+        });
+
+        // 마우스 오버 이벤트: 마커 위에 커스텀 내용이 있으면 InfoWindow 표시
+        naver.maps.Event.addListener(marker, 'mouseover', function(e) {
+            if (marker.customContent) {
+                // InfoWindow가 이미 열려있으면 중복 생성 방지
+                if (!marker.infoWindow) {
+                    var infoWindow = new naver.maps.InfoWindow({
+                        content: marker.customContent,
+                        position: marker.getPosition()
+                    });
+                    infoWindow.open(map, marker);
+                    marker.infoWindow = infoWindow;
+                }
+            }
+        });
+
+        // 마우스 아웃 이벤트: InfoWindow 닫기
+        naver.maps.Event.addListener(marker, 'mouseout', function(e) {
+            if (marker.infoWindow) {
+                marker.infoWindow.close();
+                marker.infoWindow = null;
+            }
+        });
+    }
+
+    function isDuplicate(point) {
+        for (var i = 0; i < markers.length; i++) {
+            var markerPos = markers[i].getPosition();
+            if (markerPos.lat() === point.lat() && markerPos.lng() === point.lng()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     // 입력된 주소를 지오코딩하여 지도 중심 이동 및 마커 추가
     function searchAddress(address) {
         console.log("map 객체:", map);
         console.log("입력된 주소:", address);
 
+        // gecoding api (좌표값)
         naver.maps.Service.geocode({ query: address }, function(status, response) {
             if (status === naver.maps.Service.Status.ERROR) {
                 console.log("geocode status:", status);
@@ -252,16 +355,31 @@
             }
             if (response && response.v2 && response.v2.addresses && response.v2.addresses.length > 0) {
                 var addrInfo = response.v2.addresses[0];
-
                 var lat = parseFloat(addrInfo.y);
                 var lng = parseFloat(addrInfo.x);
-
                 var point = new naver.maps.LatLng(lat, lng);
+
                 map.setCenter(point);
-                new naver.maps.Marker({
-                    position: point,
-                    map: map
-                });
+                map.setZoom(16);
+
+                if (isDuplicate(point)) {
+                    alert("이미 해당 위치에 마커가 있습니다.");
+                    return;
+                }
+
+                var marker = addMarker(point);
+
+                // 100ms 후 confirm 창을 띄워 마커 추가 여부를 확인
+                setTimeout(function() {
+                    if (!confirm("해당 위치에 마커를 추가하시겠습니까?")) {
+                        // "아니오" 선택 시 마커 삭제
+                        marker.setMap(null);
+                        var idx = markers.indexOf(marker);
+                        if (idx > -1) {
+                            markers.splice(idx, 1);
+                        }
+                    }
+                }, 100);
             } else {
                 alert("검색 결과가 없습니다.");
             }
@@ -300,7 +418,7 @@
         </form>
     </div>
 </main>
-
+<br><br>
 <!-- 주소 입력창 (autocomplete 적용됨) 및 검색 버튼 (수동 검색용) -->
 <div style="margin-bottom: 10px;">
     <input type="text" id="address" placeholder="주소를 입력하세요" style="width: 300px; padding: 5px;">
