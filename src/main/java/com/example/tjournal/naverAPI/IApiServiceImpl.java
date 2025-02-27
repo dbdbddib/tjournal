@@ -9,4 +9,5 @@ import java.util.List;
 
 public interface IApiServiceImpl extends IServiceCRUD<IMarkerData> {
     Boolean insertMarker(IBoard boardDto, List<MarkerDataDto> markerData) throws RuntimeException;
+    List<IMarkerData> findAllByBoardId(IMarkerData search);
 }

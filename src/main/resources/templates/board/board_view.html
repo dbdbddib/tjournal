@@ -47,13 +47,14 @@
                 if (status === "success") {
                     $.showItemInfo(data.responseData);
                     $.showItemlike(data.responseData);
-                    $.getBoardFiles(id);
+                    $.getMarkerData(id);
                     $.getCommentList(id, true);
-                    if (item.fileListView) {
-                        $('#fileListView').html(item.fileListView.map(file => `<a href="${file.url}">${file.name}</a>`).join('<br>'));
-                    } else {
-                        $('#fileListView').html("첨부파일 없음");
-                    }
+
+                    // if (item.fileListView) {
+                    //     $('#fileListView').html(item.fileListView.map(file => `<a href="${file.url}">${file.name}</a>`).join('<br>'));
+                    // } else {
+                    //     $('#fileListView').html("첨부파일 없음");
+                    // }
                 }
             }).fail(function (jqXHR, status, errorThrown) {
                 console.error("게시글을 불러오는 데 실패했습니다.", status, errorThrown);
@@ -61,26 +62,53 @@
             });
         }
 
-        $.getBoardFiles = function (id) {
+        // $.getBoardFiles = function (id) {
+        //     if (id <= 0) {
+        //         return;
+        //     }
+        //     $.ajax({
+        //         url: "/api/v1/sbfile/findbyboardid",
+        //         type: "POST",
+        //         datatype: "JSON",
+        //         data: JSON.stringify({"tbl": "{{boardTbl}}", "boardId": id}),
+        //         contentType: "application/json; charset=UTF-8",
+        //     }).done(function (data, status, xhr) {
+        //         console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+        //         if (status === "success") {
+        //             $.showBoardFiles(data.responseData);
+        //         }
+        //     }).fail(function (jqXHR, status, errorThrown) {
+        //         console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+        //         alert("첨부파일 보기 실패했습니다. " + jqXHR.responseJSON.message);
+        //     });
+        // }
+
+        $.getMarkerData = function (id) {
             if (id <= 0) {
                 return;
             }
             $.ajax({
-                url: "/api/v1/sbfile/findbyboardid",
-                type: "POST",
+                url: "/api/server/findbyboardid",
+                type: "GET",
                 datatype: "JSON",
-                data: JSON.stringify({"tbl": "{{boardTbl}}", "boardId": id}),
+                data: { boardId: id },
                 contentType: "application/json; charset=UTF-8",
             }).done(function (data, status, xhr) {
-                console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+                console.log("getMarkerData:data=" + data + ", status=", status, ", xhr=", xhr);
                 if (status === "success") {
-                    $.showBoardFiles(data.responseData);
+
                 }
             }).fail(function (jqXHR, status, errorThrown) {
-                console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
-                alert("첨부파일 보기 실패했습니다. " + jqXHR.responseJSON.message);
+                console.log("fail:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                alert("마커 보기 실패했습니다.");
             });
+
         }
+
+
+
+
+
 
         let fileArrayView = new Array();
 

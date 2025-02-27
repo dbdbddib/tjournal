@@ -20,4 +20,15 @@
                )
     </insert>
 
+    <select id="findAllByBoardId" parameterType="MarkerDataDto" resultType="MarkerDataDto">
+        SELECT id,
+               lat,
+               lng,
+               content,
+               boardId
+        FROM marker_data_tbl
+        WHERE boardId = #{boardId}
+        ORDER BY id
+    </select>
+
 </mapper>

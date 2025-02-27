@@ -2,6 +2,7 @@ package com.example.tjournal.naverAPI;
 
 import com.example.tjournal.board.IBoard;
 import com.example.tjournal.commons.dto.CUDInfoDto;
+import com.example.tjournal.sbfile.ISbFile;
 import com.example.tjournal.sbfile.SbFileDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,28 @@ public class ApiServiceImpl implements IApiServiceImpl {
             // 예외 발생 시 처리
             throw new RuntimeException(ex);
         }
+    }
+
+    @Override
+    public List<IMarkerData> findAllByBoardId(IMarkerData search) {
+        if (search == null) {
+            return List.of();
+        }
+
+        MarkerDataDto dto = MarkerDataDto.builder().build();
+        dto.copyFields(search);
+
+        List<MarkerDataDto> list = this.apiMybatisMapper.findAllByBoardId(dto);
+        List<IMarkerData> result = this.getInterfaceList(list);
+        return result;
+    }
+
+    private List<IMarkerData> getInterfaceList(List<MarkerDataDto> list) {
+        if (list == null) {
+            return List.of();
+        }
+        List<IMarkerData> result = list.stream().map(x -> (IMarkerData) x).toList();
+        return result;
     }
 
     @Override
