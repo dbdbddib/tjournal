@@ -12,8 +12,10 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MarkerDataDto {
+public class MarkerDataDto implements IMarkerData {
+    private Long id;
     private double lat;
     private double lng;
     private String content;
+    private Long boardId;
 }
