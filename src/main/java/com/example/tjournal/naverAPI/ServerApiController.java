@@ -7,6 +7,7 @@ import com.example.tjournal.commons.exeption.LoginAccessException;
 import com.example.tjournal.commons.inif.IResponseController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,12 @@ public class ServerApiController implements IResponseController {
 
     @Autowired
     private IApiServiceImpl apiService;
+
+    @Value("${naver.client.id}")
+    private String naverClientId;
+
+    @Value("${naver.client.secret}")
+    private String naverClientSecret;
 
     @GetMapping("/naver")
     public String naver(@RequestParam("query") String query) {
@@ -52,8 +59,8 @@ public class ServerApiController implements IResponseController {
         // Header를 위함
         RequestEntity<Void> req = RequestEntity
                 .get(uri)
-                .header("X-Naver-Client-Id", "7I3RXbAtnLVCIM8q67kB")
-                .header("X-Naver-Client-Secret", "gSghi79Nte")
+                .header("X-Naver-Client-Id", naverClientId)
+                .header("X-Naver-Client-Secret", naverClientSecret)
                 .build();
 
         // 응답 받을 클래스 지정

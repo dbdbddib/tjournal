@@ -36,6 +36,12 @@ spring:
       stack:
         auto: false
 
+naver:
+  client:
+    id: ${NAVER_CLIENT_ID}
+    secret: ${NAVER_CLIENT_SECRET}
+
+
 # application-local.yml (or application-dev.yml)
 logging:
   level:
