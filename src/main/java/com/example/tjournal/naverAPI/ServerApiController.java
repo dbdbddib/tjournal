@@ -5,8 +5,6 @@ import com.example.tjournal.commons.dto.ResponseDto;
 import com.example.tjournal.commons.exeption.IdNotFoundException;
 import com.example.tjournal.commons.exeption.LoginAccessException;
 import com.example.tjournal.commons.inif.IResponseController;
-import com.example.tjournal.sbfile.ISbFile;
-import com.example.tjournal.sbfile.SbFileDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

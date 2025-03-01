@@ -53,7 +53,8 @@
                 event.preventDefault();
                 $.addInsert();
             });
-            // 주소 입력창에 autocomplete 적용
+
+            // jQuery UI Autocomplete는 jQuery UI 라이브러리
             $("#address").autocomplete({
                 minLength: 2, // 2글자 이상 입력 시 추천 시작
                 source: function(request, response) {
@@ -65,17 +66,20 @@
                             let suggestions = [];
 
                             if (data && data.items) {
+                                // data.items 배열 내의 모든 요소를 순회하며 반복 작업
                                 $.each(data.items, function(index, item) {
                                     // title에 <b> 태그 등이 포함될 수 있으므로 제거
                                     let cleanedTitle = item.title.replace(/<[^>]*>/g, "");
 
                                     // 자동완성용 데이터
                                     suggestions.push({
-                                        label: cleanedTitle, // 자동완성 목록에 표시
-                                        value: cleanedTitle  // 선택 시 input에 채워질 값
+                                        label: cleanedTitle, // 자동완성 목록에 표시될 텍스트
+                                        value: cleanedTitle  // 사용자가 항목을 선택할 때 입력창에 채워질 값
                                     });
                                 });
                             }
+                            // 입력창 아래에 추천 항목들이 표시
+                            // jQuery UI Autocomplete 위젯의 response 함수가 추천 항목들 표시
                             response(suggestions);
                         },
                         error: function() {
@@ -90,10 +94,12 @@
                     event.preventDefault();
                     $("#address").val(ui.item.label);
                     $("#address").autocomplete("close");
+                    // .blur() 입력창 포커스 제거
                     $("#address").blur();
                     searchAddress(ui.item.label);
                 }
             });
+
         });
 
 
@@ -242,6 +248,8 @@
 
     function initMap() {
         var mapOptions = {
+            // new naver.maps.LatLng
+            // 지도 상의 특정 좌표를 나타내는 객체를 생성
             center: new naver.maps.LatLng(37.3595704, 127.105399),
             zoom: 10
         };
@@ -250,6 +258,7 @@
         // 지도 빈 영역에서 우클릭 시 마커 추가
         naver.maps.Event.addListener(map, 'rightclick', function(e) {
             // 마커 위가 아닌 빈 영역을 우클릭했을 경우
+            // overlay: 'rightclick' 이벤트가 발생한 위치에 오버레이(예: 마커, 정보 창 등)가 있는지를 나타내는 속성
             if (!e.overlay) {
                 var clickPos = new naver.maps.LatLng(e.coord.y, e.coord.x);
                 addMarker(clickPos);
@@ -266,8 +275,6 @@
             }
             customContent = content;
         }
-        console.log("customContent:", customContent);
-
 
         var marker = new naver.maps.Marker({
             position: position,
