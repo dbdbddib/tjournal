@@ -198,5 +198,16 @@ CREATE TABLE `follower_tbl` (
   KEY `follower_tbl_following_id_fk` (`following_id`),
   CONSTRAINT `follower_tbl_follower_id_fk` FOREIGN KEY (`follower_id`) REFERENCES `member_tbl` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `follower_tbl_following_id_fk` FOREIGN KEY (`following_id`) REFERENCES `member_tbl` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+CREATE TABLE `marker_data_tbl` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `lat` double NOT NULL,
+  `lng` double NOT NULL,
+  `content` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `boardId` bigint unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `marker_data_tbl_boardId_IDX` (`boardId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 ```

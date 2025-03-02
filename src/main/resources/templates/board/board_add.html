@@ -39,29 +39,6 @@
             max-height: 300px;
             overflow-y: auto;
         }
-        .search-item {
-            padding: 5px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-        }
-        .search-item:hover {
-            background-color: #f0f0f0;
-        }
-
-        /* Autocomplete 기본 스타일 커스터마이징 (선택사항) */
-        .ui-autocomplete {
-            max-height: 200px;
-            overflow-y: auto;
-            /* 필요한 스타일을 추가로 지정 */
-            background-color: #fff;
-            border: 1px solid #ddd;
-            font-size: 14px;
-            z-index: 1000; /* 지도나 다른 요소 위에 표시되도록 z-index 조정 */
-        }
-        /* 항목에 마우스 오버 시 */
-        .ui-menu-item:hover {
-            background-color: #f0f0f0;
-        }
 
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -76,7 +53,8 @@
                 event.preventDefault();
                 $.addInsert();
             });
-            // 주소 입력창에 autocomplete 적용
+
+            // jQuery UI Autocomplete는 jQuery UI 라이브러리
             $("#address").autocomplete({
                 minLength: 2, // 2글자 이상 입력 시 추천 시작
                 source: function(request, response) {
@@ -88,17 +66,20 @@
                             let suggestions = [];
 
                             if (data && data.items) {
+                                // data.items 배열 내의 모든 요소를 순회하며 반복 작업
                                 $.each(data.items, function(index, item) {
                                     // title에 <b> 태그 등이 포함될 수 있으므로 제거
                                     let cleanedTitle = item.title.replace(/<[^>]*>/g, "");
 
                                     // 자동완성용 데이터
                                     suggestions.push({
-                                        label: cleanedTitle, // 자동완성 목록에 표시
-                                        value: item.address  // 선택 시 input에 채워질 값
+                                        label: cleanedTitle, // 자동완성 목록에 표시될 텍스트
+                                        value: cleanedTitle  // 사용자가 항목을 선택할 때 입력창에 채워질 값
                                     });
                                 });
                             }
+                            // 입력창 아래에 추천 항목들이 표시
+                            // jQuery UI Autocomplete 위젯의 response 함수가 추천 항목들 표시
                             response(suggestions);
                         },
                         error: function() {
@@ -106,11 +87,19 @@
                         }
                     });
                 },
+                focus: function(event, ui) {
+                    event.preventDefault();
+                },
                 select: function(event, ui) {
-                    // 추천어 선택 시 지도 검색 실행
-                    searchAddress(ui.item.value);
+                    event.preventDefault();
+                    $("#address").val(ui.item.label);
+                    $("#address").autocomplete("close");
+                    // .blur() 입력창 포커스 제거
+                    $("#address").blur();
+                    searchAddress(ui.item.label);
                 }
             });
+
         });
 
 
@@ -259,6 +248,8 @@
 
     function initMap() {
         var mapOptions = {
+            // new naver.maps.LatLng
+            // 지도 상의 특정 좌표를 나타내는 객체를 생성
             center: new naver.maps.LatLng(37.3595704, 127.105399),
             zoom: 10
         };
@@ -267,6 +258,7 @@
         // 지도 빈 영역에서 우클릭 시 마커 추가
         naver.maps.Event.addListener(map, 'rightclick', function(e) {
             // 마커 위가 아닌 빈 영역을 우클릭했을 경우
+            // overlay: 'rightclick' 이벤트가 발생한 위치에 오버레이(예: 마커, 정보 창 등)가 있는지를 나타내는 속성
             if (!e.overlay) {
                 var clickPos = new naver.maps.LatLng(e.coord.y, e.coord.x);
                 addMarker(clickPos);
@@ -274,22 +266,26 @@
         });
     }
 
-    function addMarker(position) {
-        var content = prompt("마커에 삽입할 내용을 입력하세요: (필수)");
-        if (content == null || content.trim() === "") {
-            alert("내용은 필수입니다. 마커가 생성되지 않습니다.");
-            return null;  // 내용이 없으면 마커 생성 취소
+    function addMarker(position, customContent) {
+        if (!customContent) {
+            var content = prompt("마커에 삽입할 내용을 입력하세요: (필수)");
+            if (content == null || content.trim() === "") {
+                alert("내용은 필수입니다. 마커가 생성되지 않습니다.");
+                return null;
+            }
+            customContent = content;
         }
+
         var marker = new naver.maps.Marker({
             position: position,
             map: map
         });
-        marker.customContent = content; // 필수로 입력된 내용 저장
+        marker.customContent = customContent; // 필수로 입력된 내용 저장
         markers.push(marker);
         markerDataList.push({
             marker: marker,
             position: position,
-            content: content
+            content: customContent
         });
 
         // 마커 우클릭: 해당 마커 삭제
@@ -385,44 +381,75 @@
 
     // 입력된 주소를 지오코딩하여 지도 중심 이동 및 마커 추가
     function searchAddress(address) {
-        console.log("map 객체:", map);
-        console.log("입력된 주소:", address);
+        $.ajax({
+            url: "/api/server/naver",
+            dataType: "json",
+            data: { query: address },
+            success: function(data) {
+                // 기존 내용을 비우고 새로 채워넣기
+                $('#searchResults').empty();
 
-        // gecoding api (좌표값)
-        naver.maps.Service.geocode({ query: address }, function(status, response) {
-            if (status === naver.maps.Service.Status.ERROR) {
-                console.log("geocode status:", status);
-                console.log("geocode response:", response);
-                alert('주소를 찾지 못했습니다. 다시 시도해 주세요.');
-                return;
-            }
-            if (response && response.v2 && response.v2.addresses && response.v2.addresses.length > 0) {
-                var addrInfo = response.v2.addresses[0];
-                var lat = parseFloat(addrInfo.y);
-                var lng = parseFloat(addrInfo.x);
-                var point = new naver.maps.LatLng(lat, lng);
+                if (data && data.items && data.items.length > 0) {
+                    data.items.forEach(function(item) {
+                        // title의 <b> 등 HTML 태그 제거
+                        let cleanedTitle = item.title.replace(/<[^>]*>/g, "");
 
-                map.setCenter(point);
-                map.setZoom(16);
+                        // 검색 결과를 표시할 DOM 요소 생성
+                        // 클릭 시 해당 주소로 좌표 검색 → 지도 이동 및 마커 표시
+                        let resultItem = $('<div>')
+                            .text("Title: " + cleanedTitle + ", Address: " + item.address)
+                            .css({
+                                cursor: 'pointer',        // 마우스 포인터로 표시
+                                padding: '5px',
+                                borderBottom: '1px solid #ccc'
+                            })
+                            .on('click', function() {
+                                // 클릭 시 naver.maps.Service.geocode 사용해 좌표 찾기
+                                naver.maps.Service.geocode(
+                                    { query: item.address },
+                                    function(status, response) {
+                                        if (status === naver.maps.Service.Status.OK) {
+                                            if (response.v2.addresses.length > 0) {
+                                                let addrInfo = response.v2.addresses[0];
+                                                let lat = parseFloat(addrInfo.y);
+                                                let lng = parseFloat(addrInfo.x);
+                                                let point = new naver.maps.LatLng(lat, lng);
 
-                if (isDuplicate(point)) {
-                    alert("이미 해당 위치에 마커가 있습니다.");
-                    return;
+                                                if (isDuplicate(point)) {
+                                                    alert("이미 해당 위치에 마커가 있습니다.");
+                                                    return;
+                                                }
+
+                                                // 지도 이동
+                                                map.setCenter(point);
+                                                map.setZoom(16);
+
+                                                // 기존 예시의 addMarker 함수 재사용
+                                                // (지도에 마커 찍고, 클릭/마우스오버/우클릭 이벤트 부여)
+                                                setTimeout(function() {
+                                                    addMarker(point, "Title: " + cleanedTitle + ", Address: " + item.address);
+                                                }, 100);
+                                            }
+                                        } else {
+                                            alert("좌표를 가져오지 못했습니다.");
+                                        }
+                                    }
+                                );
+                            });
+
+                        // #searchResults 영역에 추가
+                        $('#searchResults').append(resultItem);
+                    });
+                } else {
+                    $('#searchResults').text("검색 결과가 없습니다.");
                 }
-
-                setTimeout(function() {
-                    var marker = addMarker(point);
-                    // addMarker 함수 내부에서 prompt로 내용 입력을 필수로 받음
-                    if (marker == null) {
-                        // 내용 입력이 취소되어 마커 생성이 취소된 경우
-                        return;
-                    }
-                }, 100);
-            } else {
-                alert("검색 결과가 없습니다.");
+            },
+            error: function() {
+                $('#searchResults').text("검색 결과를 가져오는 중 오류가 발생했습니다.");
             }
         });
     }
+
 
 
     </script>

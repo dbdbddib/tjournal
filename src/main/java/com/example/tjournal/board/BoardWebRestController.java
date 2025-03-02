@@ -109,7 +109,7 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
                 }
             }
             dto.setUuidMap(uploadedFilesMap);
-            IBoard result = this.boardService.insert(cudInfoDto, dto, files);
+            IBoard result = this.boardService.insert(cudInfoDto, dto, files, markerData);
             if (result == null) {
                 return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, ResponseCode.R000011, "서버 입력 에러", null);
             }

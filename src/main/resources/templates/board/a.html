@@ -4,11 +4,6 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <style>
-        #content {
-            min-height: 100px;
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
         .image-wrapper {
             display: inline-block;
             position: relative;
@@ -16,421 +11,323 @@
             width: 300px; /* 초기 크기 */
             height: auto;
             overflow: hidden;
-            resize: both; /* div 사용자가 직접 조정 */
+            resize: none; /* 크기 조절 가능여부 설정 */
             border: 1px solid #ccc;
         }
-
         .image-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+            width: 100%; /* 부모 div 크기에 맞게 조절 */
+            height: auto;
         }
-
-        #map {
-            width: 100%;
-            height: 400px;
-            margin-top: 20px;
-        }
-
-        /* 검색 결과 리스트 스타일 예시 */
-        #searchResults {
+        /* 마커 정보 표시용 스타일 (원하는 대로 수정 가능) */
+        #markerInfoContainer {
             margin-top: 10px;
-            border: 1px solid #ccc;
             padding: 10px;
-            max-height: 300px;
-            overflow-y: auto;
+            border: 1px solid #ccc;
         }
-        .search-item {
+        .marker-item {
+            margin-bottom: 8px;
             padding: 5px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px dashed #aaa;
             cursor: pointer;
         }
-        .search-item:hover {
-            background-color: #f0f0f0;
-        }
-
-        /* Autocomplete 기본 스타일 커스터마이징 (선택사항) */
-        .ui-autocomplete {
-            max-height: 200px;
-            overflow-y: auto;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            font-size: 14px;
-            z-index: 1000;
-        }
-        .ui-menu-item:hover {
-            background-color: #f0f0f0;
+        .marker-item:hover {
+            background-color: #f5f5f5;
         }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
-        let region = "{{region}}";
-
-        // 지도, 마커 관련 전역 변수
         var map;
-        var markers = [];
-        var markerDataList = [];
-
-        // 파일 업로드 배열
-        let fileArrayAdd = [];
-
-        $(document).ready(function () {
-            // 게시글 폼 전송
-            $("#postForm").on("submit", function (event) {
-                event.preventDefault();
-                $.addInsert();
-            });
-
-            // 주소 입력창에 autocomplete 적용
-            $("#address").autocomplete({
-                minLength: 2,
-                source: function(request, response) {
-                    $.ajax({
-                        url: "/api/server/naver", // 네이버 검색 API 호출
-                        dataType: "json",
-                        data: { query: request.term },
-                        success: function(data) {
-                            // data.items에 지역 검색 결과가 들어있음
-                            // autocomplete 제안 목록
-                            let suggestions = [];
-
-                            if (data && data.items) {
-                                // 먼저 #searchResults 영역을 비우고
-                                $("#searchResults").empty();
-
-                                // 목록을 만들어 화면에 표시
-                                $.each(data.items, function(index, item) {
-                                    let cleanedTitle = item.title.replace(/<[^>]*>/g, "");
-                                    let address = item.address;
-                                    let mapx = parseFloat(item.mapx); // 경도
-                                    let mapy = parseFloat(item.mapy); // 위도
-
-                                    // 검색 결과 목록에 표시할 HTML 생성
-                                    let listItemHtml = `
-                                        <div class="search-item"
-                                             data-title="${cleanedTitle}"
-                                             data-address="${address}"
-                                             data-lat="${mapy}"
-                                             data-lng="${mapx}">
-                                            <strong>${cleanedTitle}</strong><br>
-                                            <span>${address}</span>
-                                        </div>
-                                    `;
-                                    $("#searchResults").append(listItemHtml);
-
-                                    // autocomplete 제안 목록에도 추가
-                                    suggestions.push({
-                                        label: cleanedTitle,
-                                        value: address
-                                    });
-                                });
-                            }
-                            response(suggestions);
-                        },
-                        error: function() {
-                            response([]);
-                        }
-                    });
-                },
-                select: function(event, ui) {
-                    // 만약 autocomplete 제안 중 하나를 선택하면,
-                    // 우선 searchAddress를 호출해서 기존처럼 지오코딩 할 수도 있음
-                    // 혹은, 여기서 직접 처리할 수도 있습니다.
-                    searchAddress(ui.item.value);
-                }
-            });
-
-            // 검색 결과 항목 클릭 시
-            $(document).on("click", ".search-item", function() {
-                let title = $(this).data("title");
-                let address = $(this).data("address");
-                let lat = parseFloat($(this).data("lat"));
-                let lng = parseFloat($(this).data("lng"));
-
-                // 지도 이동
-                let point = new naver.maps.LatLng(lat, lng);
-                map.setCenter(point);
-                map.setZoom(16);
-
-                // 마커 찍기 (content에 "제목 + 주소")
-                let content = title + " / " + address;
-                addMarkerWithContent(point, content);
-            });
-        });
-
-        // 게시글 등록
-        $.addInsert = function () {
-            let name = $("#name").val();
-            let content = $("#content").html();
-            let category = $("#category").val();
-
-            if (!confirm(name + " 추가 하시겠습니까 ?")) {
-                return;
-            }
-
-            let formData = new FormData();
-            for ( const file of fileArrayAdd ) {
-                formData.append("files", file);
-            }
-
-            // boardDto
-            formData.append("boardDto", new Blob([JSON.stringify({
-                "name": name,
-                "content": name,
-                "region": region,
-                "category": category
-            })], {type:"application/json"}));
-
-            // 마커 정보
-            let markerInfo = markerDataList.map(function(item) {
-                return {
-                    lat: item.position.lat(),
-                    lng: item.position.lng(),
-                    content: item.content
-                };
-            });
-            formData.append("markerData", new Blob([JSON.stringify(markerInfo)], { type: "application/json" }));
-
-            $.ajax({
-                url: "/api/v1/board",
-                type: "POST",
-                datatype: "JSON",
-                data: formData,
-                contentType: false,
-                processData: false,
-            }).done(function (data, status, xhr) {
-                console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
-
-                if (data.responseData.uuidMap) {
-                    for (const [originalFilename, uuid] of Object.entries(data.responseData.uuidMap)) {
-                        const imageSelector = `img[alt="${originalFilename.toLowerCase().trim()}"]`;
-                        $(imageSelector).attr("src", `/api/v1/sbfile/images/${uuid}`);
-                    }
-                }
-
-                $.updateContent(data.responseData.id);
-
-            }).fail(function (jqXHR, status, errorThrown) {
-                console.log("done:jqXHR=", jqXHR, ", status=", status, ", errorThrown=", errorThrown);
-                let message = getErrorMessage(jqXHR.responseJSON);
-                alert("추가를 실패했습니다. " + message);
-            });
-        }
-
-        // 게시글 내용 업데이트
-        $.updateContent = function (id) {
-            let content = $("#content").html();
-            let requestData = JSON.stringify({ "content": content });
-
-            $.ajax({
-                url: "/api/v1/board/updateContent/" + id,
-                type: "PATCH",
-                datatype: "JSON",
-                data: requestData,
-                contentType: "application/json; charset=UTF-8",
-                processData: false,
-            }).done(function (updateData, updateStatus, updateXhr) {
-                console.log("✅ 게시글 내용 업데이트 완료:", updateData);
-                alert("등록이 완료되었습니다.");
-                setTimeout(() => {
-                    location.href = document.referrer || "board_ajx_list";
-                }, 100);
-            }).fail(function (jqXHR, updateStatus, updateErrorThrown) {
-                console.error("❌ 게시글 내용 업데이트 실패:", jqXHR);
-            });
-        };
-
-        // 이미지 파일 추가
-        $.addFile = function(inputFile) {
-            let now = new Date();
-            let timestamp = now.getFullYear().toString() +
-                String(now.getMonth() + 1).padStart(2, '0') +
-                String(now.getDate()).padStart(2, '0') + "_" +
-                String(now.getHours()).padStart(2, '0') +
-                String(now.getMinutes()).padStart(2, '0') +
-                String(now.getSeconds()).padStart(2, '0');
-
-            for (const file of inputFile.files) {
-                if (!file.type.startsWith("image/")) {
-                    alert(`이미지 파일만 추가할 수 있습니다: ${file.name}`);
-                    continue;
-                }
-
-                let modifiedName = `${timestamp}_${file.name}`;
-                let newFile = new File([file], modifiedName, { type: file.type });
-
-                let tempUUID = modifiedName.toLowerCase().trim();
-                fileArrayAdd.push(newFile);
-
-                let objectURL = URL.createObjectURL(file);
-                let imgTag = `
-                    <div class="image-wrapper">
-                        <img src="${objectURL}" alt="${tempUUID}" data-temp="true">
-                    </div>
-                `;
-                $("#content").append(imgTag);
-            }
-            $("#file").val("");
-        }
-
-        // 지도 초기화
         function initMap() {
             var mapOptions = {
                 center: new naver.maps.LatLng(37.3595704, 127.105399),
                 zoom: 10
             };
             map = new naver.maps.Map('map', mapOptions);
+        }
 
-            // 지도 빈 영역에서 우클릭 -> 직접 마커 추가(내용 prompt)
-            naver.maps.Event.addListener(map, 'rightclick', function(e) {
-                if (!e.overlay) {
-                    var clickPos = new naver.maps.LatLng(e.coord.y, e.coord.x);
-                    // 우클릭 시에는 prompt로 입력받도록 (원하는 경우)
-                    addMarkerByPrompt(clickPos);
+        // HTML 문서 로딩이 완료된 후 자동적으로 실행
+        $(function () {
+            $.viewItem(Number("{{boardDto.id}}"));
+        });
+
+        function getId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        $.viewItem = function (id) {
+            $.ajax({
+                url: "/api/v1/board/" + id,
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+            }).done(function (data, status, xhr) {
+                if (status === "success") {
+                    $.showItemInfo(data.responseData);
+                    $.showItemlike(data.responseData);
+                    $.getMarkerData(id);
+                    $.getCommentList(id, true);
                 }
+            }).fail(function (jqXHR, status, errorThrown) {
+                console.error("게시글을 불러오는 데 실패했습니다.", status, errorThrown);
+                alert("게시글을 불러오는 데 실패했습니다.");
             });
         }
 
-        // (A) 검색 목록 클릭 시: 자동으로 title + address 설정
-        function addMarkerWithContent(position, content) {
-            var marker = new naver.maps.Marker({
-                position: position,
-                map: map
-            });
-            marker.customContent = content;
-            markers.push(marker);
-            markerDataList.push({
-                marker: marker,
-                position: position,
-                content: content
-            });
-
-            // 우클릭: 마커 삭제
-            naver.maps.Event.addListener(marker, 'rightclick', function(e) {
-                if (marker.infoWindow) {
-                    marker.infoWindow.close();
-                    marker.infoWindow = null;
-                }
-                marker.setMap(null);
-                let idx = markers.indexOf(marker);
-                if (idx > -1) markers.splice(idx, 1);
-                for (let i = 0; i < markerDataList.length; i++) {
-                    if (markerDataList[i].marker === marker) {
-                        markerDataList.splice(i, 1);
-                        break;
-                    }
-                }
-            });
-
-            // 좌클릭: 내용 수정
-            naver.maps.Event.addListener(marker, 'click', function(e) {
-                let newContent = prompt("마커 내용을 수정하세요:", marker.customContent);
-                if (newContent === null) {
-                    return; // 취소 시 아무것도 안 함
-                }
-                if (newContent.trim() === "") {
-                    alert("내용은 필수입니다. 수정 취소");
-                    return;
-                }
-                marker.customContent = newContent;
-                // markerDataList 갱신
-                for (let i = 0; i < markerDataList.length; i++) {
-                    if (markerDataList[i].marker === marker) {
-                        markerDataList[i].content = newContent;
-                        break;
-                    }
-                }
-                // InfoWindow가 열려있으면 업데이트
-                if (marker.infoWindow) {
-                    marker.infoWindow.setContent(newContent);
-                } else {
-                    var infoWindow = new naver.maps.InfoWindow({
-                        content: newContent,
-                        position: marker.getPosition()
-                    });
-                    infoWindow.open(map, marker);
-                    marker.infoWindow = infoWindow;
-                }
-            });
-
-            // 마우스 오버/아웃 -> InfoWindow 표시
-            naver.maps.Event.addListener(marker, 'mouseover', function(e) {
-                if (marker.customContent && !marker.infoWindow) {
-                    var infoWindow = new naver.maps.InfoWindow({
-                        content: marker.customContent,
-                        position: marker.getPosition()
-                    });
-                    infoWindow.open(map, marker);
-                    marker.infoWindow = infoWindow;
-                }
-            });
-            naver.maps.Event.addListener(marker, 'mouseout', function(e) {
-                if (marker.infoWindow) {
-                    marker.infoWindow.close();
-                    marker.infoWindow = null;
-                }
-            });
-        }
-
-        // (B) 지도 우클릭 시: 사용자에게 prompt로 입력받아 생성
-        function addMarkerByPrompt(position) {
-            var content = prompt("마커에 삽입할 내용을 입력하세요 (필수)");
-            if (!content || content.trim() === "") {
-                alert("내용은 필수입니다. 마커가 생성되지 않습니다.");
+        $.getMarkerData = function (id) {
+            if (id <= 0) {
                 return;
             }
-            addMarkerWithContent(position, content);
+            $.ajax({
+                url: "/api/server/findbyboardid",
+                type: "GET",
+                datatype: "JSON",
+                data: { boardId: id },
+                contentType: "application/json; charset=UTF-8",
+            }).done(function (data, status, xhr) {
+                console.log("getMarkerData:data=" + data + ", status=", status, ", xhr=", xhr);
+                if (status === "success" && data.responseData) {
+                    // #markerInfoContainer 초기화
+                    $("#markerInfoContainer").empty();
+
+                    data.responseData.forEach(function(markerData) {
+                        // 지도 위에 마커 추가
+                        var markerPosition = new naver.maps.LatLng(markerData.lat, markerData.lng);
+                        var marker = new naver.maps.Marker({
+                            position: markerPosition,
+                            map: map
+                        });
+                        var infoWindow = new naver.maps.InfoWindow({
+                            content: markerData.content
+                        });
+                        naver.maps.Event.addListener(marker, 'mouseover', function(e) {
+                            infoWindow.open(map, marker);
+                        });
+                        naver.maps.Event.addListener(marker, 'mouseout', function(e) {
+                            infoWindow.close();
+                        });
+
+                        // 마커 정보를 텍스트로 #markerInfoContainer 에 추가하며, 클릭 시 지도 이동 기능 추가
+                        var markerHtml = "<div class='marker-item' onclick='moveMapTo(" + markerData.lat + ", " + markerData.lng + ")'>" +
+                            "<p><strong>ID:</strong> " + markerData.id + "</p>" +
+                            "<p><strong>위도:</strong> " + markerData.lat + ", <strong>경도:</strong> " + markerData.lng + "</p>" +
+                            "<p><strong>내용:</strong> " + markerData.content + "</p>" +
+                            "</div>";
+                        $("#markerInfoContainer").append(markerHtml);
+                    });
+                }
+            }).fail(function (jqXHR, status, errorThrown) {
+                console.log("fail:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                alert("마커 보기 실패했습니다.");
+            });
         }
 
-        // 기존 geocoding API (select에서 직접 주소 검색 시 사용 가능)
-        function searchAddress(address) {
-            // 필요하다면, 여기서 naver.maps.Service.geocode 사용
-            console.log("searchAddress 호출:", address);
+        // 지도 이동 함수
+        function moveMapTo(lat, lng) {
+            var newCenter = new naver.maps.LatLng(lat, lng);
+            map.setCenter(newCenter);
+            map.setZoom(16); // 원하는 확대 레벨로 조정 가능
         }
-    </script>
-    <!-- 네이버 지도 API -->
-    <script type="text/javascript"
-            src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=jchd9s8hn9&submodules=geocoder"
-            onload="initMap()">
+
+        $.showItemInfo = function (item) {
+            if (item == null) {
+                return;
+            }
+            $('#name').text(item.name);
+            $('#createDt').text(item.createDt);
+            $('#content').html(item.content);
+            $('#writer').text(item.createName);
+            $('#viewQty').text(item.viewQty);
+        }
+
+        $.showItemlike = function (item) {
+            $("#likeQty").text(item.likeQty);
+            let count = item.countLike;
+            if (count === 0) {
+                $("#heartIcon").attr("src", "/svg/heartOff.svg");
+            } else {
+                $("#heartIcon").attr("src", "/svg/heartOn.svg");
+            }
+        }
+
+        $.likeItem = function () {
+            let heartIcon = $("#heartIcon");
+            let src = heartIcon.attr("src");
+            let bOff = src.includes("Off");
+            let id = getId();
+            if (id <= 0) {
+                return;
+            }
+            if (bOff) {
+                $.ajax({
+                    url: "/api/v1/board/like/" + id,
+                    type: "GET",
+                    datatype: "JSON",
+                    contentType: "application/json; charset=UTF-8",
+                }).done(function (data, status, xhr) {
+                    console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+                    if (status === "success") {
+                        $.showItemlike(data.responseData);
+                    }
+                }).fail(function (jqXHR, status, errorThrown) {
+                    console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                    alert("Like 실패 했습니다. " + jqXHR.responseJSON.message);
+                });
+            } else {
+                $.ajax({
+                    url: "/api/v1/board/unlike/" + id,
+                    type: "GET",
+                    datatype: "JSON",
+                    contentType: "application/json; charset=UTF-8",
+                }).done(function (data, status, xhr) {
+                    console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+                    if (status === "success") {
+                        $.showItemlike(data.responseData);
+                    }
+                }).fail(function (jqXHR, status, errorThrown) {
+                    console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                    alert("UnLike 실패 했습니다. " + jqXHR.responseJSON.message);
+                });
+            }
+        }
+
+        // 댓글 관련 메소드들
+        $.addComment = function () {
+            let id = getId();
+            let comment = $("#comment").val();
+            let tbl = "board";
+            if (!comment) {
+                alert("댓글을 입력하세요.");
+                return;
+            }
+            if (!confirm("댓글을 추가 하시겠습니까 ?")) {
+                return;
+            }
+            $.ajax({
+                url: "/api/v1/comment",
+                type: "POST",
+                datatype: "JSON",
+                data: JSON.stringify({"comment": comment, "boardId": id, "tbl": tbl}),
+                contentType: "application/json; charset=UTF-8",
+            }).done(function (data, status, xhr) {
+                $("#comment").val("");
+                $.getCommentList(id, true);
+                alert("댓글을 추가하였습니다.");
+            }).fail(function (jqXHR, status, errorThrown) {
+                let message = getErrorMessage(jqXHR.responseJSON);
+                alert("댓글 추가를 실패했습니다. " + message);
+            });
+        }
+
+        $.getCommentList = function (id, clear) {
+            let tbl = "board";
+            if (id <= 0) {
+                return;
+            }
+            $.ajax({
+                url: "/api/v1/comment/findbyboardid",
+                type: "POST",
+                dataType: "json",
+                data: JSON.stringify({"tbl": tbl, "boardId": id}),
+                contentType: "application/json; charset=UTF-8",
+            }).done(function (data, status, xhr) {
+                if (status === "success") {
+                    $.showCommentList(clear, data.responseData);
+                }
+            }).fail(function (jqXHR, status, errorThrown) {
+                alert("댓글 보기 실패했습니다. " + jqXHR.responseJSON.message);
+            });
+        }
+
+        $.showCommentList = function (clear, commentList) {
+            if (commentList == null) {
+                return;
+            }
+            if (clear) {
+                $("#commentList").children().remove();
+            }
+            let html = "";
+            for (const commentItem of commentList) {
+                let id = commentItem.id;
+                let comment = commentItem.comment;
+                let writer = commentItem.writer;
+                let createDt = commentItem.createDt;
+                html += "<div id='List_" + id + "' class='comment-item'>";
+                html += "<div class='comment-content'>" + comment + "</div>";
+                html += "<div class='comment-meta'>" + createDt + " | " + writer + "</div>";
+                html += "<div class='comment-actions'><button onclick='$.deleteComment(" + id + ")'>X</button></div>";
+                html += "</div>";
+            }
+            $("#commentList").append(html);
+        }
+
+        $.deleteComment = (id) => {
+            if (id <= 0) {
+                return;
+            }
+            if (!confirm("댓글을 삭제 하시겠습니까 ?")) {
+                return;
+            }
+            $.ajax({
+                url: "/api/v1/comment/deleteFlag/" + id,
+                type: "DELETE",
+                datatype: "JSON",
+                data: JSON.stringify({"id": id, "deleteFlag": true}),
+                contentType: "application/json; charset=UTF-8",
+            }).done(function (data, status, xhr) {
+                if (status === "success") {
+                    $.deleteCommentItem(id);
+                    alert("댓글이 삭제되었습니다.");
+                }
+            }).fail(function (jqXHR, status, errorThrown) {
+                try {
+                    const response = JSON.parse(jqXHR.responseText);
+                    alert("댓글 삭제 실패 했습니다. " + "\n\n" + (response.message || "알 수 없는 오류"));
+                } catch (e) {
+                    alert("댓글 삭제 실패 했습니다. 서버 응답을 확인할 수 없습니다.");
+                }
+            });
+        }
+
+        $.deleteCommentItem = (id) => {
+            $("#List_" + id).remove();
+        }
     </script>
 </head>
 <body>
+{{>layout/headermenu}}
 <main class="main">
     <div class="container">
-        <form id="postForm">
-            <label for="name">제목</label>
-            <input type="text" id="name" name="name" required>
-
-            <label for="content">내용</label>
-            <div id="content" name="content" contenteditable="true" required></div>
-
-            <label>이미지 등록</label>
-            <input type="file" id="file" name="file" onchange="$.addFile(this);" multiple/><br>
-
-            <label>카테고리</label>
-            <select id="category" name="category" required>
-                <option value="">선택하세요</option>
-                <option value="food">음식</option>
-                <option value="place">장소</option>
-            </select>
-            <button type="submit" id="addButton">등록</button>
-        </form>
+        <div class="header">
+            <h2 id="title">게시글 제목: <span id="name"></span></h2>
+            <div class="meta-info">
+                작성자: <span id="writer"></span> | 작성일: <span id="createDt"></span> | 조회수: <span id="viewQty"></span>
+            </div>
+        </div>
+        <div class="content" id="content">
+        </div>
+    </div>
+    <div>
+        <img id="heartIcon" src="/svg/heartOff.svg" width="40px" alt="Like" onclick="$.likeItem();"/>
+        <span id="likeQty"></span>
+    </div>
+    <div id="commentList" class="comment-list"></div>
+    <div class="comment-form">
+        <textarea id="comment" rows="4" style="width: 100%;" placeholder="댓글을 입력하세요"></textarea>
+        <button id="addCommentButton" onclick="$.addComment()">댓글 추가</button>
+    </div>
+    <div class="actions">
+        <button class="back-button" onclick="location.href='board_ajx_list'">목록으로</button>
+        <button onclick="location.href='board_update?id=' + getId()">수정</button>
     </div>
 </main>
-
-<!-- 주소 입력창 및 검색 버튼 -->
-<div style="margin-bottom: 10px;">
-    <input type="text" id="address" placeholder="주소를 입력하세요" style="width: 300px; padding: 5px;">
-    <button onclick="searchAddress(document.getElementById('address').value)">검색</button>
-</div>
-
-<!-- 지도 표시 영역 -->
-<div id="map"></div>
-
-<!-- 검색 결과 목록 표시 영역 -->
-<div id="searchResults"></div>
-
+<!-- 네이버 지도 표시 영역 -->
+<div id="map" style="width:100%; height:400px;"></div>
+<!-- 마커 정보 텍스트 표시 영역 (지도의 바로 아래에 위치) -->
+<div id="markerInfoContainer"></div>
+<script type="text/javascript"
+        src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=jchd9s8hn9&submodules=geocoder"
+        onload="initMap()">
+</script>
 </body>
 </html>

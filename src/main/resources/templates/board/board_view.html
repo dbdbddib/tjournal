@@ -20,9 +20,33 @@
             height: auto;
         }
 
+        #markerInfoContainer {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        .marker-item {
+            margin-bottom: 8px;
+            padding: 5px;
+            border-bottom: 1px dashed #aaa;
+            cursor: pointer;
+        }
+        .marker-item:hover {
+            background-color: #f5f5f5;
+        }
+
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+
+        var map;
+        function initMap() {
+            var mapOptions = {
+                center: new naver.maps.LatLng(36.2595704, 127.105399),
+                zoom: 6
+            };
+            map = new naver.maps.Map('map', mapOptions);
+        }
 
         // HTML 문서 로딩이 완료된 후 자동적으로 한번 실행되는 jQuery 부분
         $(function () {
@@ -35,8 +59,6 @@
             return urlParams.get('id');
         }
 
-
-
         $.viewItem = function (id) {
             $.ajax({
                 url: "/api/v1/board/" + id,
@@ -47,13 +69,14 @@
                 if (status === "success") {
                     $.showItemInfo(data.responseData);
                     $.showItemlike(data.responseData);
-                    $.getBoardFiles(id);
+                    $.getMarkerData(id);
                     $.getCommentList(id, true);
-                    if (item.fileListView) {
-                        $('#fileListView').html(item.fileListView.map(file => `<a href="${file.url}">${file.name}</a>`).join('<br>'));
-                    } else {
-                        $('#fileListView').html("첨부파일 없음");
-                    }
+
+                    // if (item.fileListView) {
+                    //     $('#fileListView').html(item.fileListView.map(file => `<a href="${file.url}">${file.name}</a>`).join('<br>'));
+                    // } else {
+                    //     $('#fileListView').html("첨부파일 없음");
+                    // }
                 }
             }).fail(function (jqXHR, status, errorThrown) {
                 console.error("게시글을 불러오는 데 실패했습니다.", status, errorThrown);
@@ -61,53 +84,54 @@
             });
         }
 
-        $.getBoardFiles = function (id) {
+        $.getMarkerData = function (id) {
             if (id <= 0) {
                 return;
             }
             $.ajax({
-                url: "/api/v1/sbfile/findbyboardid",
-                type: "POST",
+                url: "/api/server/findbyboardid",
+                type: "GET",
                 datatype: "JSON",
-                data: JSON.stringify({"tbl": "{{boardTbl}}", "boardId": id}),
+                data: { boardId: id },
                 contentType: "application/json; charset=UTF-8",
             }).done(function (data, status, xhr) {
-                console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+                console.log("getMarkerData:data=" + data + ", status=", status, ", xhr=", xhr);
                 if (status === "success") {
-                    $.showBoardFiles(data.responseData);
+                    $("#markerInfoContainer").empty();
+                    data.responseData.forEach(function(markerData) {
+                        var markerPosition = new naver.maps.LatLng(markerData.lat, markerData.lng);
+                        var marker = new naver.maps.Marker({
+                            position: markerPosition,
+                            map: map
+                        });
+                        var infoWindow = new naver.maps.InfoWindow({
+                            content: markerData.content
+                        });
+                        naver.maps.Event.addListener(marker, 'mouseover', function(e) {
+                            infoWindow.open(map, marker);
+                        });
+                        naver.maps.Event.addListener(marker, 'mouseout', function(e) {
+                            infoWindow.close();
+                        });
+                        var markerHtml = "<div class='marker-item' onclick='moveMapTo(" + markerData.lat + ", " + markerData.lng + ")'>" +
+                            "<p><strong>ID:</strong> " + markerData.id + "</p>" +
+                            "<p><strong>위도:</strong> " + markerData.lat + ", <strong>경도:</strong> " + markerData.lng + "</p>" +
+                            "<p><strong>내용:</strong> " + markerData.content + "</p>" +
+                            "</div>";
+                        $("#markerInfoContainer").append(markerHtml);
+                    });
                 }
             }).fail(function (jqXHR, status, errorThrown) {
-                console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
-                alert("첨부파일 보기 실패했습니다. " + jqXHR.responseJSON.message);
+                console.log("fail:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+                alert("마커 보기 실패했습니다.");
             });
         }
 
-        let fileArrayView = new Array();
-
-        // $.showBoardFiles = function (fileList) {
-        //     if (fileList == null) {
-        //         return;
-        //     }
-        //     let html = "";
-        //     fileArrayView = fileList;
-        //     for (const file of fileArrayView) {
-        //         let id = file.id;
-        //         let tbl = file.tbl;
-        //         let name = file.name;
-        //         let uniqName = file.uniqName;
-        //         let fileType = file.fileType;
-        //         let size = file.length;
-        //         html += "<div id='fileView_" + id + "' class='row'>";
-        //         html += "<div class='filename col-md-6' onclick=\"$.downloadFile('" + tbl + "', '" + name + "', '" + uniqName + "', '" + fileType + "')\">" + name + "</div>";
-        //         html += "</div>";
-        //     }
-        //     $("#fileListView").append(html);
-        // }
-
-
-        // $(selector).attr(attributeName);               // 속성 값 가져오기
-        // $(selector).attr(attributeName, value);        // 속성 값 설정
-
+        function moveMapTo(lat, lng) {
+            var newCenter = new naver.maps.LatLng(lat, lng);
+            map.setCenter(newCenter);
+            map.setZoom(16); // 원하는 확대 레벨로 조정 가능
+        }
 
         $.showItemInfo = function (item) {
             if (item == null) {
@@ -174,10 +198,7 @@
             }
         }
 
-
-
 // 댓글
-
 
         $.addComment = function () {
             let id = getId();
@@ -279,6 +300,7 @@
         $.deleteCommentItem = (id) => {
             $("#List_" + id).remove();
         }
+
     </script>
 </head>
 <body>
@@ -295,9 +317,6 @@
         <div class="content" id="content">
         </div>
 
-<!--        <div id="fileListView" class="attachments">-->
-<!--            <div class="file-title">파일</div>-->
-<!--        </div>-->
 
     </div>
 
@@ -317,5 +336,71 @@
         <button onclick="location.href='board_update?id=' + getId()">수정</button>
     </div>
 </main>
+<br><br>
+<div id="map" style="width:100%; height:400px;"></div>
+
+<script type="text/javascript"
+        src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=jchd9s8hn9&submodules=geocoder"
+        onload="initMap()">
+</script>
+
+<div id="markerInfoContainer"></div>
+
 </body>
 </html>
+
+
+
+
+
+<!--
+
+        // $.getBoardFiles = function (id) {
+        //     if (id <= 0) {
+        //         return;
+        //     }
+        //     $.ajax({
+        //         url: "/api/v1/sbfile/findbyboardid",
+        //         type: "POST",
+        //         datatype: "JSON",
+        //         data: JSON.stringify({"tbl": "{{boardTbl}}", "boardId": id}),
+        //         contentType: "application/json; charset=UTF-8",
+        //     }).done(function (data, status, xhr) {
+        //         console.log("done:data=" + data + ", status=", status, ", xhr=", xhr);
+        //         if (status === "success") {
+        //             $.showBoardFiles(data.responseData);
+        //         }
+        //     }).fail(function (jqXHR, status, errorThrown) {
+        //         console.log("done:jqXHR=" + jqXHR + ", status=", status, ", errorThrown=", errorThrown);
+        //         alert("첨부파일 보기 실패했습니다. " + jqXHR.responseJSON.message);
+        //     });
+        // }
+        let fileArrayView = new Array();
+
+        // $.showBoardFiles = function (fileList) {
+        //     if (fileList == null) {
+        //         return;
+        //     }
+        //     let html = "";
+        //     fileArrayView = fileList;
+        //     for (const file of fileArrayView) {
+        //         let id = file.id;
+        //         let tbl = file.tbl;
+        //         let name = file.name;
+        //         let uniqName = file.uniqName;
+        //         let fileType = file.fileType;
+        //         let size = file.length;
+        //         html += "<div id='fileView_" + id + "' class='row'>";
+        //         html += "<div class='filename col-md-6' onclick=\"$.downloadFile('" + tbl + "', '" + name + "', '" + uniqName + "', '" + fileType + "')\">" + name + "</div>";
+        //         html += "</div>";
+        //     }
+        //     $("#fileListView").append(html);
+        // }
+
+
+        // $(selector).attr(attributeName);               // 속성 값 가져오기
+        // $(selector).attr(attributeName, value);        // 속성 값 설정
+        <div id="fileListView" class="attachments">
+          <div class="file-title">파일</div>
+        </div>
+-->

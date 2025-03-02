@@ -3,6 +3,10 @@ package com.example.tjournal.board;
 import com.example.tjournal.commons.dto.CUDInfoDto;
 import com.example.tjournal.commons.dto.SearchAjaxDto;
 import com.example.tjournal.commons.exeption.IdNotFoundException;
+//import com.example.tjournal.naverAPI.ApiServiceImpl;
+import com.example.tjournal.naverAPI.ApiServiceImpl;
+import com.example.tjournal.naverAPI.IApiServiceImpl;
+import com.example.tjournal.naverAPI.MarkerDataDto;
 import com.example.tjournal.sbfile.ISbFileService;
 import com.example.tjournal.sbfile.SbFileDto;
 import com.example.tjournal.sblike.ISbLikeMybatisMapper;
@@ -25,9 +29,12 @@ public class BoardServiceImpl implements IBoardService {
     @Autowired
     private ISbFileService sbFileService;
 
+    @Autowired
+    private IApiServiceImpl apiService;
+
     @Override
     @Transactional
-    public BoardDto insert(CUDInfoDto cudInfoDto, BoardDto dto, List<MultipartFile> files) {
+    public BoardDto insert(CUDInfoDto cudInfoDto, BoardDto dto, List<MultipartFile> files, List<MarkerDataDto> markerData) {
         if ( cudInfoDto == null || dto == null ) {
             return null;
         }
@@ -36,6 +43,7 @@ public class BoardServiceImpl implements IBoardService {
         cudInfoDto.setCreateInfo(insert);
         this.boardMybatisMapper.insert(insert);
         this.sbFileService.insertFiles(insert, files);
+        this.apiService.insertMarker(insert, markerData);
         return insert;
     }
 
