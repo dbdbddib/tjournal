@@ -1,31 +1,307 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-    <script language="JavaScript" src="/js/jquery-3.7.1.min.js"></script>
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tjournal 로그인</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        $.ready(function(){
-            $("#signForm").on("submit", function() {
-                if ( $("#loginId").val() === "" || $("#password").val() === "" ) {
-                    alert("로그인 ID, 암호 를 입력하세요");
-                    return false;
-                }
-                return true;
-            });
-        });
+      function clearInput() {
+        document.getElementById("loginId").value = "";
+      }
+      function togglePassword() {
+        var passwordField = document.getElementById("password");
+        var toggleButton = document.getElementById("passwordToggle");
+        if (passwordField.type === "password") {
+          passwordField.type = "text";
+          toggleButton.textContent = "👁️"; // 눈 아이콘 (보이기)
+        } else {
+          passwordField.type = "password";
+          toggleButton.textContent = ""; // 자물쇠 아이콘 (숨기기)
+        }
+      }
     </script>
-</head>
-<body>
-<div>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="login-page">
+    <div class="login-container">
+      <header class="login-header">
+        <nav class="main-nav">
+          <a href="#" class="nav-link">Home</a>
+          <a href="#" class="nav-link">카테고리</a>
+          <a href="#" class="nav-link">전체블로그</a>
+          <a href="#" class="nav-link">회원검색</a>
+          <a href="#" class="nav-link">마이페이지</a>
+        </nav>
+        <div class="auth-buttons">
+          <div class="login-link-container">
+            <a href="#" class="login-link">로그인</a>
+            <div class="login-underline"></div>
+          </div>
+          <a href="/selogin/signup" class="signup-button">회원가입</a>
+        </div>
+      </header>
 
-    <form id="signForm" method="post" action="signin">
-        <label for="loginId">로그인아이디</label> <input type="text" id="loginId" name="loginId" />
-        <label for="password">암호</label> <input type="password" id="password" name="password" />
-        <input type="submit" value="로그인" />
-    </form>
+      <div class="main-content">
+        <h1 class="logo">Tjournal</h1>
+        <p class="description">
+          여행의 운율을 담아, Tjournal에<br />
+          당신의 모험을 기록하세요.<br />
+          <a href="/selogin/signup" class="signup-link">가입하기</a>
+        </p>
+      </div>
 
-</div>
-</body>
+      <img src="/images/login.png" alt="login" class="login-image" />
+
+      <div class="login-form-container">
+        <form id="signForm" method="post" action="signin">
+          <div class="input-group">
+            <input
+              type="text"
+              id="loginId"
+              name="loginId"
+              placeholder="아이디를 입력하세요"
+              class="login-input"
+            />
+            <button type="button" onclick="clearInput()" class="input-clear">
+              ✖
+            </button>
+          </div>
+          <div class="input-group">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="비밀번호를 입력하세요"
+              class="login-input"
+            />
+            <button
+              type="button"
+              id="passwordToggle"
+              onclick="togglePassword()"
+              class="password-toggle"
+            ></button>
+          </div>
+          <div class="forgot-password" style="margin-bottom: 34px">
+            <a href="#">비밀번호를 잊으셨나요?</a>
+          </div>
+          <button
+            type="submit"
+            class="login-button"
+            style="margin-bottom: 34px"
+          >
+            로그인
+          </button>
+        </form>
+        <div class="social-login-divider" style="margin-bottom: 34px">
+          <div class="divider-line"></div>
+          간편 로그인
+          <div class="divider-line"></div>
+        </div>
+        <div class="social-login-buttons">
+          <button class="social-button">
+            <img src="/images/kakao.png" alt="kakao" />
+          </button>
+          <button class="social-button">
+            <img src="/images/naver.png" alt="naver" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .login-page {
+        background-color: #8fbde8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .login-container {
+        background-color: white;
+        width: 1440px;
+        height: 1024px;
+        border-radius: 40px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 16px;
+        position: relative;
+      }
+
+      .login-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 90px 106px 0;
+        font-size: 14px;
+      }
+
+      .main-nav {
+        display: flex;
+        space-x: 40px;
+      }
+
+      .nav-link {
+        margin-right: 40px;
+      }
+
+      .nav-link:last-child {
+        margin-right: 0;
+      }
+
+      .auth-buttons {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+      }
+
+      .login-link-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .login-link {
+        color: #4461f2;
+        font-weight: bold;
+      }
+
+      .login-underline {
+        border-bottom: 2px solid #4461f2;
+        width: 20px;
+        margin-top: 4px;
+      }
+
+      .signup-button {
+        color: #4461f2;
+        background-color: white;
+        width: 90px;
+        height: 40px;
+        border-radius: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+      }
+
+      .main-content {
+        padding-left: 106px;
+        padding-top: 100px;
+      }
+
+      .logo {
+        font-size: 80px;
+        font-weight: bold;
+        font-family: "Nunito", sans-serif;
+      }
+
+      .description {
+        margin-top: 16px;
+        font-size: 18px;
+        line-height: 1.5;
+      }
+
+      .signup-link {
+        color: #4461f2;
+        font-weight: bold;
+      }
+
+      .login-image {
+        position: absolute;
+        top: 350px;
+        left: 400px;
+        width: 350px;
+      }
+
+      .login-form-container {
+        position: absolute;
+        top: 300px;
+        right: 106px;
+        width: 380px;
+      }
+
+      .input-group {
+        position: relative;
+        margin-bottom: 26px; /* 10px 추가 */
+      }
+
+      .login-input {
+        width: 100%;
+        height: 56px;
+        background-color: #eaf0f7;
+        border-radius: 10px;
+        padding: 0 16px;
+        font-size: 18px;
+        color: #4f555a;
+      }
+
+      .input-clear,
+      .password-toggle {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      .forgot-password {
+        text-align: right;
+        font-size: 14px;
+        color: #c7cc7c7c7;
+      }
+
+      .login-button {
+        width: 100%;
+        height: 56px;
+        background-color: #4461f2;
+        color: white;
+        font-size: 18px;
+        border-radius: 10px;
+      }
+
+      .social-login-divider {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 24px;
+        margin-bottom: 24px;
+      }
+
+      .divider-line {
+        flex-grow: 1;
+        background-color: #c7c7c7;
+        height: 1px;
+        margin-left: 34px;
+        margin-right: 34px;
+      }
+
+      .social-login-buttons {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .social-button {
+        width: 180px;
+        height: 56px;
+        background-color: #dddfdd;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+      }
+
+      .social-button:hover {
+        background-color: white;
+      }
+    </style>
+  </body>
 </html>
