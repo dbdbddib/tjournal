@@ -108,6 +108,7 @@ public class BoardWebRestController implements ICommonRestController<BoardDto> {
                     uploadedFilesMap.put(originalFilename, uuid);
                 }
             }
+
             dto.setUuidMap(uploadedFilesMap);
             IBoard result = this.boardService.insert(cudInfoDto, dto, files, markerData);
             if (result == null) {
