@@ -2,9 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Naver Login Result</title>
 </head>
 <body>
-
+<h1>Naver Login Result</h1>
+{{#result.response}}
+<p>ID: {{id}}</p>
+<p>Email: {{email}}</p>
+<p>Name: {{name}}</p>
+{{/result.response}}
+<p>Result Code: {{result.resultcode}}</p>
+<p>Message: {{result.message}}</p>
 </body>
 </html>

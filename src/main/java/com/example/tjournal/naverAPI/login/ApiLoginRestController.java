@@ -10,11 +10,12 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.factory.annotation.Value;
-
+import org.springframework.ui.Model;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class ApiLoginRestController {
     private String redirectUri;
 
 
-    @RequestMapping("/naver_login")
+    @GetMapping("/naver_login")
     public String naver_login(HttpServletRequest request) {
         String state = UUID.randomUUID().toString();
         String login_url = "https://nid.naver.com/oauth2.0/authorize?response_type=code"
@@ -49,8 +50,8 @@ public class ApiLoginRestController {
         return "redirect:" + login_url;
     }
 
-    @RequestMapping("/oauth/login/naver_redirect")
-    public String naver_redirect(HttpServletRequest request) {
+    @GetMapping("/oauth/login/naver_redirect")
+    public String naver_redirect(HttpServletRequest request, Model model) {
         // 네이버에서 전달해준 code, state 값 가져오기
         String code = request.getParameter("code");
         String state = request.getParameter("state");
@@ -108,8 +109,8 @@ public class ApiLoginRestController {
             ResponseEntity<HashMap> userResult = restTemplate.postForEntity(userInfoURL, userInfoEntity, HashMap.class);
             Map<String, String> userResultMap = userResult.getBody();
 
-            //응답 데이터 확인
-            System.out.println(userResultMap);
+            model.addAttribute("result", userResultMap);
+            log.info("네이버 사용자 정보: {}", userResultMap);
 
         } catch (Exception e) {
             e.printStackTrace();
