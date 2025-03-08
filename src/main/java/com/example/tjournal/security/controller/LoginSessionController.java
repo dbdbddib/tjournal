@@ -2,6 +2,7 @@ package com.example.tjournal.security.controller;
 
 import com.example.tjournal.commons.dto.CUDInfoDto;
 import com.example.tjournal.member.IMember;
+import com.example.tjournal.member.MemberDto;
 import com.example.tjournal.member.MemberServiceImpl;
 import com.example.tjournal.security.config.SecurityConfig;
 import com.example.tjournal.security.dto.LoginRequest;
@@ -16,10 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import com.example.tjournal.commons.inif.IResponseController;
 
 import java.util.ArrayList;
@@ -61,6 +59,37 @@ public class LoginSessionController implements IResponseController{
             return "login/fail";
         }
         return "redirect:/";
+    }
+
+
+
+    @PostMapping("/signupNaver")
+    public String signupNaver(HttpServletRequest request,
+                              @RequestParam("loginId") String loginId,
+                              @RequestParam("password") String password,
+                              @RequestParam("nickname") String nickname,
+                              Model model) {
+
+        MemberDto tempMember = (MemberDto) request.getSession().getAttribute("tempMember");
+        if(tempMember == null) {
+            return "redirect:/";
+        }
+        tempMember.setLoginId(loginId);
+        tempMember.setPassword(password);
+        tempMember.setNickname(nickname);
+        tempMember.setProvider("NAVER");
+
+        // 추가 검증(닉네임 중복 체크 등)을 수행한 후 회원 가입 처리
+        try {
+            CUDInfoDto cudInfoDto = new CUDInfoDto(tempMember);
+            this.memberService.insert(cudInfoDto, tempMember);
+            // 회원가입 완료 후 세션 정리
+            request.getSession().removeAttribute("tempMember");
+            return "redirect:/";  // 또는 회원가입 완료 페이지
+        } catch (Exception e) {
+            model.addAttribute("message", "회원 가입 실패하였습니다. 다시 시도해주세요.");
+            return "login/fail";
+        }
     }
 
     @GetMapping("/login")

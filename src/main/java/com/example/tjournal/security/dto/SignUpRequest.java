@@ -23,4 +23,7 @@ public class SignUpRequest extends LoginRequest implements IMember {
     private String email;
     private String role;
     private Boolean active;
+
+    private String snsId;
+    private String provider;
 }

@@ -186,4 +186,14 @@ public class MemberServiceImpl implements IMemberService {
         );
         return result;
     }
+
+    @Override
+    public Integer countBySnsId(MemberDto memberDto) {
+        return this.memberMybatisMapper.countBySnsId(memberDto.getSnsId());
+    }
+
+    @Override
+    public Integer countByEmail(MemberDto memberDto) {
+        return this.memberMybatisMapper.countByEmail(memberDto.getSnsId());
+    }
 }

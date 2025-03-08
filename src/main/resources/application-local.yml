@@ -40,6 +40,15 @@ naver:
   client:
     id: ${NAVER_CLIENT_ID}
     secret: ${NAVER_CLIENT_SECRET}
+  login:
+    id: ${NAVER_LOGIN_CLIENT_ID}
+    secret: ${NAVER_LOGIN_CLIENT_SECRET}
+  scope:
+    - name
+    - email
+  client-name: Naver
+  authorization-grant-type: authorization_code
+  redirect-uri: http://localhost:8088/oauth/login
 
 
 # application-local.yml (or application-dev.yml)

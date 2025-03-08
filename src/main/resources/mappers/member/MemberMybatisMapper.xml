@@ -13,7 +13,9 @@
             , role
             , active
             , createDt
-            , createId)
+            , createId
+            , snsId
+            , provider)
         VALUES
             (#{name}
             , #{nickname}
@@ -23,7 +25,9 @@
             , #{role}
             , #{active}
             , #{createDt}
-            , #{createId})
+            , #{createId}
+            , #{snsId}
+            , #{provider})
     </insert>
 
     <update id="update" parameterType="MemberDto">
@@ -125,6 +129,21 @@
         WHERE loginId like CONCAT('%',#{searchName},'%')
           AND deleteFlag = false
     </select>
+
+    <select id="countBySnsId" resultType="Integer">
+        SELECT COUNT(*)
+        FROM member_tbl
+        WHERE snsId = #{snsId}
+          AND deleteFlag = false
+    </select>
+
+    <select id="countByEmail" resultType="Integer">
+        SELECT COUNT(*)
+        FROM member_tbl
+        WHERE email = #{email}
+          AND deleteFlag = false
+    </select>
+
 
     <select id="findAllByLoginIdContains" parameterType="SearchAjaxDto" resultType="MemberDto">
         SELECT id
