@@ -1,39 +1,374 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>회원 가입</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tjournal 회원가입</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="/js/jquery-3.7.1.min.js"></script>
     <script>
-        function checkPost() {
-            if ( $("#password").val()
-                !== $("#password2").val() ) {
-                alert("암호 확인을 해주세요.");
-                $("#password2").focus();
-                return false;
-            }
-            return true;
+      function checkPost() {
+        if ($("#password").val() !== $("#password2").val()) {
+          alert("암호 확인을 해주세요.");
+
+          $("#password2").focus();
+
+          return false;
         }
+
+        if (!$("#terms").is(":checked")) {
+          alert("약관 및 개인정보 동의를 해주세요.");
+
+          return false;
+        }
+
+        return true;
+      }
+
+      function togglePassword() {
+        var passwordField = document.getElementById("password");
+        var toggleButton = document.getElementById("passwordToggle");
+        if (passwordField.type === "password") {
+          passwordField.type = "text";
+          toggleButton.textContent = "👁️";
+        } else {
+          passwordField.type = "password";
+          toggleButton.textContent = "";
+        }
+      }
     </script>
-</head>
-<body>
-    <div>
-        <form name="signForm" method="post" action="signup" onsubmit="return checkPost();">
-            <label for="loginId">로그인 아이디 : </label>
-            <input type="text" id="loginId" name="loginId" maxlength="10"/>
-            <label for="password">암호 : </label>
-            <input type="password" id="password" name="password" maxlength="20"/>
-            <label for="password2">암호확인 : </label>
-            <input type="password" id="password2" name="password2" maxlength="20"/>
-            <label for="name">이름 : </label>
-            <input type="text" id="name" name="name" maxlength="20"/>
-            <label for="nickname">닉네임 : </label>
-            <input type="text" id="nickname" name="nickname" maxlength="20"/>
-            <label for="email">이메일 : </label>
-            <input type="email" id="email" name="email" maxlength="150"/>
-            <input type="submit" value="회원가입" />
-        </form>
-        <button onclick="history.back();">뒤로가기</button>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="login-page">
+    <div class="login-container">
+      {{>layout/header}}
+      <div class="main-content">
+        <div class="logo-container">
+          <h1 class="logo">Tjournal</h1>
+          <img src="/images/login.png" alt="login" class="login-image" />
+        </div>
+        <div class="signup-container">
+          <h2 class="signup-title">회원가입</h2>
+          <p class="signup-description">
+            회원가입을 위해 필요한 정보를 입력해주세요.
+          </p>
+          <form
+            name="signForm"
+            method="post"
+            action="signup"
+            onsubmit="return checkPost();"
+          >
+            <div class="input-row">
+              <div class="input-group">
+                <label for="name">이름</label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  placeholder="이름을 입력해주세요."
+                  class="signup-input"
+                />
+              </div>
+              <div class="input-group">
+                <label for="nickname">닉네임</label>
+                <input
+                  type="text"
+                  id="nickname"
+                  name="nickname"
+                  placeholder="닉네임을 입력해주세요."
+                  class="signup-input"
+                />
+              </div>
+            </div>
+            <div class="input-row">
+              <div class="input-group">
+                <label for="loginId">로그인 아이디</label>
+                <input
+                  type="text"
+                  id="loginId"
+                  name="loginId"
+                  placeholder="아이디를 입력해주세요."
+                  class="signup-input"
+                />
+              </div>
+              <div class="input-group">
+                <label for="email">이메일</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="이메일을 입력해주세요."
+                  class="signup-input"
+                />
+              </div>
+            </div>
+            <div class="input-group long-input">
+              <label for="password">암호</label>
+              <div class="password-input-container">
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="********"
+                  class="signup-input password-input"
+                />
+                <button
+                  type="button"
+                  id="passwordToggle"
+                  onclick="togglePassword()"
+                  class="password-toggle"
+                ></button>
+              </div>
+            </div>
+            <div class="input-group long-input">
+              <label for="password2">암호 확인</label>
+              <div class="password-input-container">
+                <input
+                  type="password"
+                  id="password2"
+                  name="password2"
+                  placeholder="********"
+                  class="signup-input password-input"
+                />
+                <button
+                  type="button"
+                  id="passwordToggle2"
+                  onclick="togglePassword()"
+                  class="password-toggle"
+                ></button>
+              </div>
+            </div>
+            <div class="terms-agreement">
+              <input type="checkbox" id="terms" name="terms" />
+              <label for="terms"
+                >모든 <span class="red-text">약관</span> 및
+                <span class="red-text">개인정보</span>의 동의합니다.</label
+              >
+            </div>
+            <button type="submit" class="signup-button-bottom">회원가입</button>
+          </form>
+          <div class="login-link">
+            이미 회원이신가요?
+            <a href="/selogin/signin" class="red-text">로그인하기</a>
+          </div>
+          <div class="social-login-divider">
+            <div class="divider-line"></div>
+            간편 로그인
+            <div class="divider-line"></div>
+          </div>
+          <div class="social-login-buttons">
+            <button class="social-button">
+              <img src="/images/kakao.png" alt="kakao" />
+            </button>
+            <button class="social-button">
+              <img src="/images/naver.png" alt="naver" />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-</body>
+
+    <style>
+      .login-page {
+        background-color: #8fbde8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .login-container {
+        background-color: white;
+        width: 1440px;
+        height: 1024px;
+        border-radius: 40px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 16px;
+        position: relative;
+      }
+
+      .login-button {
+        color: #4461f2;
+        background-color: white;
+        width: 90px;
+        height: 40px;
+        border-radius: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+      }
+
+      .main-content {
+        display: flex;
+        align-items: flex-start;
+        padding-left: 106px;
+        padding-right: 106px;
+        margin-top: 30px;
+      }
+
+      .logo-container {
+        display: flex;
+        flex-direction: column;
+        margin-right: 300px;
+      }
+
+      .logo {
+        font-size: 80px;
+        font-weight: bold;
+        font-family: "Nunito", sans-serif;
+      }
+
+      .login-image {
+        width: 300px;
+        margin-top: 30px;
+      }
+
+      .signup-container {
+        width: 500px;
+      }
+
+      .signup-title {
+        font-size: 30px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .signup-form-container {
+        margin-top: 10px;
+      }
+
+      .signup-description {
+        color: #313131;
+        margin-bottom: 30px;
+      }
+
+      .input-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+      }
+
+      .input-group {
+        width: 240px;
+      }
+
+      .input-group label {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .signup-input {
+        width: 100%;
+        height: 45px;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+
+      .long-input {
+        width: 100%;
+        margin-bottom: 15px;
+      }
+
+      .password-input-container {
+        position: relative;
+      }
+
+      .password-input {
+        width: 100%;
+        height: 45px;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+
+      .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+
+      .terms-agreement {
+        margin-bottom: 25px;
+        font-size: 13px;
+      }
+
+      .terms-agreement label {
+        margin-left: 3px;
+      }
+
+      .signup-button-bottom {
+        width: 100%;
+        height: 40px;
+        background-color: #4461f2;
+        color: white;
+        font-size: 15px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        margin-bottom: 12px;
+      }
+
+      .login-link {
+        text-align: center;
+        margin-bottom: 25px;
+        font-size: 13px;
+      }
+
+      .red-text {
+        color: #ff8682;
+      }
+
+      .social-login-divider {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #acadac;
+        margin-bottom: 25px;
+      }
+
+      .divider-line {
+        flex-grow: 1;
+        height: 1px;
+        background-color: #acadac;
+        margin: 0 10px;
+      }
+
+      .social-login-buttons {
+        display: flex;
+        justify-content: space-between;
+        width: 300px;
+        margin: 0 auto;
+      }
+
+      .social-button {
+        width: 140px;
+        height: 45px;
+        background-color: #dddfdd;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+      }
+
+      .social-button:hover {
+        background-color: white;
+      }
+
+      .social-button img {
+        width: 20px;
+      }
+    </style>
+  </body>
 </html>

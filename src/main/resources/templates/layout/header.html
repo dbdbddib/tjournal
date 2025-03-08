@@ -1,0 +1,110 @@
+<header class="login-header">
+  <nav class="main-nav">
+    <a href="#" class="nav-link">Home</a>
+    <a href="#" class="nav-link">카테고리</a>
+    <a href="#" class="nav-link">전체블로그</a>
+    <a href="#" class="nav-link">회원검색</a>
+    <a href="#" class="nav-link">마이페이지</a>
+  </nav>
+
+  <div class="auth-buttons">
+    <div class="button-container login">
+      <a href="/selogin/login" class="button">로그인</a>
+      <div class="underline"></div>
+    </div>
+    <div class="button-container signup">
+      <a href="/selogin/signup" class="button">회원가입</a>
+      <div class="underline"></div>
+    </div>
+  </div>
+</header>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const loginContainer = document.querySelector(".button-container.login");
+    const signupContainer = document.querySelector(".button-container.signup");
+    const loginUnderline = loginContainer.querySelector(".underline");
+    const signupUnderline = signupContainer.querySelector(".underline");
+    const currentPage = window.location.pathname;
+
+    if (currentPage === "/selogin/login") {
+      loginUnderline.style.width = "20px";
+      loginUnderline.style.opacity = "1";
+      signupContainer.classList.add("shadow-active");
+    } else if (currentPage === "/selogin/signup") {
+      signupUnderline.style.width = "20px";
+      signupUnderline.style.opacity = "1";
+      loginContainer.classList.add("shadow-active");
+    }
+  });
+</script>
+
+<style>
+  .login-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 90px 106px 0;
+    font-size: 14px;
+  }
+
+  .main-nav {
+    display: flex;
+    space-x: 40px;
+  }
+
+  .nav-link {
+    margin-right: 40px;
+    text-decoration: none;
+    color: black;
+  }
+
+  .nav-link:last-child {
+    margin-right: 0;
+  }
+
+  .auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .button {
+    color: #4461f2;
+    font-weight: bold;
+    text-decoration: none;
+    background-color: white;
+    width: 90px;
+    height: 40px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .underline {
+    border-bottom: 2px solid #4461f2;
+    width: 0;
+    margin-top: 4px;
+    opacity: 0;
+    transition: width 0.5s ease-in-out, opacity 0.3s ease-in-out;
+  }
+
+  .button-container:hover .underline {
+    width: 20px;
+    opacity: 1;
+  }
+
+  .shadow-active .button {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+    padding: 5px 10px;
+  }
+</style>
