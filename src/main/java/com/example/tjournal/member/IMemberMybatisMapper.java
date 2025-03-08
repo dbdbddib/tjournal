@@ -10,6 +10,8 @@ import java.util.List;
 public interface IMemberMybatisMapper extends IMybatisCRUD<MemberDto> {
     MemberDto findByLoginId(String loginId);
     MemberDto findByNickname(String nickname);
+    MemberDto findBySnsId(String SnsId);
+
     void changePassword(MemberDto dto);
 
     Integer countAllByNameContains(SearchAjaxDto search);

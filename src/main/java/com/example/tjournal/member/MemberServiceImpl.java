@@ -142,6 +142,13 @@ public class MemberServiceImpl implements IMemberService {
     }
 
     @Override
+    public IMember loginNaver(MemberDto dto) {
+        IMember member = this.memberMybatisMapper.findBySnsId(dto.getSnsId());
+
+        return member;
+    }
+
+    @Override
     public Boolean changePassword(IMember member) throws Exception {
         if ( member == null ) {
             return false;

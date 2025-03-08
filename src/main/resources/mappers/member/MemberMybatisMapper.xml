@@ -91,6 +91,8 @@
              , deleteDt
              , deleteId
              , deleteFlag
+             , snsId
+             , provider
         FROM member_tbl
         WHERE loginId = #{loginId}
           AND deleteFlag = false
@@ -112,8 +114,33 @@
              , deleteDt
              , deleteId
              , deleteFlag
+             , snsId
+             , provider
         FROM member_tbl
         WHERE nickname = #{nickname}
+          AND deleteFlag = false
+    </select>
+
+    <select id="findBySnsId" resultType="MemberDto">
+        SELECT id
+             , name
+             , nickname
+             , loginId
+             , password
+             , email
+             , role
+             , active
+             , createDt
+             , createId
+             , updateDt
+             , updateId
+             , deleteDt
+             , deleteId
+             , deleteFlag
+             , snsId
+             , provider
+        FROM member_tbl
+        WHERE snsId = #{snsId}
           AND deleteFlag = false
     </select>
 

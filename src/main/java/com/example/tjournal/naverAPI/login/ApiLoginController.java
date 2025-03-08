@@ -153,7 +153,8 @@ public class ApiLoginController {
                     return "/login/nicknameInput";
                 }
             } else {
-                //
+                request.getSession().setAttribute("tempMember", memberDto);
+                return "redirect:/selogin/signinnaver";
             }
 
 

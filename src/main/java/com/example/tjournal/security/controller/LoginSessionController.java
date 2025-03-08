@@ -3,6 +3,7 @@ package com.example.tjournal.security.controller;
 import com.example.tjournal.commons.dto.CUDInfoDto;
 import com.example.tjournal.member.IMember;
 import com.example.tjournal.member.MemberDto;
+import com.example.tjournal.member.MemberProviderRole;
 import com.example.tjournal.member.MemberServiceImpl;
 import com.example.tjournal.security.config.SecurityConfig;
 import com.example.tjournal.security.dto.LoginRequest;
@@ -52,6 +53,7 @@ public class LoginSessionController implements IResponseController{
                 return "login/fail";
             }
             CUDInfoDto cudInfoDto = new CUDInfoDto(dto);
+            dto.setProvider(MemberProviderRole.LOCAL.toString());
             IMember iMember = this.memberService.insert(cudInfoDto, dto);
         } catch (Exception ex) {
             log.error(ex.toString());
@@ -60,8 +62,6 @@ public class LoginSessionController implements IResponseController{
         }
         return "redirect:/";
     }
-
-
 
     @PostMapping("/signupNaver")
     public String signupNaver(HttpServletRequest request,
@@ -77,7 +77,7 @@ public class LoginSessionController implements IResponseController{
         tempMember.setLoginId(loginId);
         tempMember.setPassword(password);
         tempMember.setNickname(nickname);
-        tempMember.setProvider("NAVER");
+        tempMember.setProvider(MemberProviderRole.NAVER.toString());
 
         // 추가 검증(닉네임 중복 체크 등)을 수행한 후 회원 가입 처리
         try {
@@ -126,6 +126,34 @@ public class LoginSessionController implements IResponseController{
         }
         return "redirect:/";
     }
+
+    @GetMapping("/signinnaver")
+    public String signinNaver(HttpServletRequest request, Model model) {
+        // 세션에서 임시 memberDto 가져오기
+        MemberDto memberDto = (MemberDto) request.getSession().getAttribute("tempMember");
+        if(memberDto == null) {
+            model.addAttribute("message", "임시 회원 정보가 존재하지 않습니다.");
+            return "login/fail";
+        }
+
+        IMember loginUser = memberService.loginNaver(memberDto);
+        if(loginUser == null) {
+            model.addAttribute("message", "SNS 로그인 처리에 실패하였습니다.");
+            return "login/fail";
+        }
+
+        // 로그인 성공 시 세션에 로그인 사용자 정보 저장
+        HttpSession session = request.getSession();
+        session.setAttribute(SecurityConfig.LOGINUSER, loginUser.getNickname());
+        session.setMaxInactiveInterval(60 * 60);
+
+        // 임시 회원 정보 세션에서 제거
+        request.getSession().removeAttribute("tempMember");
+
+        return "redirect:/";  // 로그인 후 메인페이지 등으로 리다이렉트
+    }
+
+
 
     @GetMapping("/logout")
     private String logout(HttpServletResponse response) {
