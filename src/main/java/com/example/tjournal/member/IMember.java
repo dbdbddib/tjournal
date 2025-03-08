@@ -28,6 +28,11 @@ public interface IMember extends IBase {
     Boolean getActive();
     void setActive(Boolean active);
 
+    String getSnsId();
+    void setSnsId(String snsId);
+
+    String getProvider();
+    void setProvider(String provider);
     default void copyFields(IMember from) {
         if (from == null) {
             return;
@@ -55,6 +60,12 @@ public interface IMember extends IBase {
         }
         if (from.getActive() != null) {
             this.setActive(from.getActive());
+        }
+        if (from.getSnsId() != null && !from.getSnsId().isEmpty()) {
+            this.setSnsId(from.getSnsId());
+        }
+        if (from.getProvider() != null) {
+            this.setProvider(from.getProvider());
         }
         IBase.super.copyFields(from);
     }

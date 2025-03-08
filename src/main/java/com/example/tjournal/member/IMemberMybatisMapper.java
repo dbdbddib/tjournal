@@ -14,4 +14,7 @@ public interface IMemberMybatisMapper extends IMybatisCRUD<MemberDto> {
 
     Integer countAllByNameContains(SearchAjaxDto search);
     List<MemberDto> findAllByNameContains(SearchAjaxDto search);
+
+    Integer countBySnsId(String snsId);
+    Integer countByEmail(String snsId);
 }

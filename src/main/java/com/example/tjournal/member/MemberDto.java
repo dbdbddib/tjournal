@@ -22,4 +22,7 @@ public class MemberDto extends BaseDto implements IMember {
     private String email;
     private String role;
     private Boolean active;
+
+    private String snsId;
+    private String provider;
 }

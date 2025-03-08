@@ -1,7 +1,10 @@
 package com.example.tjournal.naverAPI.login;
 
+import com.example.tjournal.member.IMemberService;
+import com.example.tjournal.member.MemberDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -12,7 +15,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
@@ -25,7 +27,10 @@ import java.util.UUID;
 @Slf4j
 @Controller
 @RequestMapping
-public class ApiLoginRestController {
+public class ApiLoginController {
+
+    @Autowired
+    private IMemberService memberService;
 
     @Value("${naver.login.id}")
     private String loginClientId;
@@ -118,9 +123,39 @@ public class ApiLoginRestController {
             HttpEntity<?> userInfoEntity = new HttpEntity<>(headers);
 
             // Post 방식으로 Http 요청
-            // 응답 데이터 형식은 Hashmap 으로 지정
-            ResponseEntity<HashMap> userResult = restTemplate.postForEntity(userInfoURL, userInfoEntity, HashMap.class);
-            Map<String, String> userResultMap = userResult.getBody();
+            // 응답은 JSON 형태이므로 HashMap으로 변환되어 리턴
+            ResponseEntity<Map<String, Object>> userResult =
+                    restTemplate.postForEntity(userInfoURL, userInfoEntity, (Class) Map.class);
+
+            Map<String, Object> userResultMap = userResult.getBody();
+            Map<String, Object> responseMap = (Map<String, Object>) userResultMap.get("response");
+
+            String naverId = (String) responseMap.get("id");
+            String email   = (String) responseMap.get("email");
+            String name    = (String) responseMap.get("name");
+
+            // sns_id count -> 0 insert  1 html return
+            // 이메일이 있으면 이미 가입된 사용자 이므로 sns_id, provider(naver, kakao..) insert
+
+            MemberDto memberDto = MemberDto.builder().build();
+            memberDto.setSnsId(naverId);
+            memberDto.setEmail(email);
+            memberDto.setName(name);
+
+            Integer countSnsId = this.memberService.countBySnsId(memberDto);
+            Integer countEmail = this.memberService.countByEmail(memberDto);
+
+            if(countSnsId == 0){
+                // insert 작업 email 중복 체크
+                if (countEmail == 0) {
+                    request.getSession().setAttribute("tempMember", memberDto);
+                    model.addAttribute("dto", memberDto);
+                    return "/login/nicknameInput";
+                }
+            } else {
+                //
+            }
+
 
             model.addAttribute("result", userResultMap);
             log.info("네이버 사용자 정보: {}", userResultMap);
