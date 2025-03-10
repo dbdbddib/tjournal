@@ -36,6 +36,16 @@ public class MemberServiceImpl implements IMemberService {
         return dto;
     }
 
+    @Override
+    public IMember updateSnsInfo(IMember member) {
+        MemberDto dto = MemberDto.builder().build();
+        dto.copyFields(member);
+        dto.setProvider(MemberProviderRole.NAVER.toString());
+
+        this.memberMybatisMapper.updateSnsInfo(dto);
+        return dto;
+    }
+
     private boolean isValidInsert(IMember dto) {
         if (dto == null) {
             return false;
@@ -201,6 +211,6 @@ public class MemberServiceImpl implements IMemberService {
 
     @Override
     public Integer countByEmail(MemberDto memberDto) {
-        return this.memberMybatisMapper.countByEmail(memberDto.getSnsId());
+        return this.memberMybatisMapper.countByEmail(memberDto.getEmail());
     }
 }

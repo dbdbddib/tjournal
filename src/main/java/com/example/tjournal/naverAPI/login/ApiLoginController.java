@@ -57,6 +57,7 @@ public class ApiLoginController {
         // 브라우저는 해당 세션 ID 값을 저장 ID 값으로 통신
 
         // 네이버 요청: 네이버 로그인 창으로 응답
+        // 브라우저 주소창 url에 표시
         return "redirect:" + login_url;
     }
 
@@ -92,10 +93,12 @@ public class ApiLoginController {
         parameter.add("state", state);
 
         // HTTP 요청 헤더 설정
-        // 클라이언트가 서버로 HTTP 요청을 보낼 때 함께 전달하는 추가적인 메타데이터를 의미
-        // 네이버의 토큰 발급 API는 요청 데이터를 URL 인코딩된 폼 데이터 형식으로 받기 때문에, Content-Type 헤더를 application/x-www-form-urlencoded로 설정
+        // 헤더: 메타 정보(본문을 해석하기 위한 설명)
+        // 본문(파라미터): 실제 전송하고자 하는 데이터
+        // 메타 정보는 데이터를 이해하고 적절히 처리하기 위한 환경 설정 및 문맥 정보를 제공하는 역할
         HttpHeaders headers = new HttpHeaders();
         // Content-type을 application/x-www-form-urlencoded 로 설정
+        // form-urlencoded 형식은 데이터를 URL 쿼리 스트링이 아닌 HTTP 요청 본문에 담아 전송
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         // 헤더와 파라미터 데이터를 하나의 객체로 생성
@@ -134,6 +137,12 @@ public class ApiLoginController {
             String email   = (String) responseMap.get("email");
             String name    = (String) responseMap.get("name");
 
+
+            if (naverId == null || email == null || name == null) {
+                log.error("네이버 API 응답 값 중 null이 포함됨. naverId: {}, email: {}, name: {}", naverId, email, name);
+                return "login/fail";
+            }
+
             // sns_id count -> 0 insert  1 html return
             // 이메일이 있으면 이미 가입된 사용자 이므로 sns_id, provider(naver, kakao..) insert
 
@@ -141,33 +150,27 @@ public class ApiLoginController {
             memberDto.setSnsId(naverId);
             memberDto.setEmail(email);
             memberDto.setName(name);
+            request.getSession().setAttribute("tempMember", memberDto);
 
             Integer countSnsId = this.memberService.countBySnsId(memberDto);
             Integer countEmail = this.memberService.countByEmail(memberDto);
 
-            if(countSnsId == 0){
-                // insert 작업 email 중복 체크
-                if (countEmail == 0) {
-                    request.getSession().setAttribute("tempMember", memberDto);
-                    model.addAttribute("dto", memberDto);
-                    return "/login/nicknameInput";
-                }
+            request.getSession().removeAttribute("state");
+
+            if(countEmail == 0){
+                model.addAttribute("dto", memberDto);
+                request.getSession().removeAttribute("tempMember");
+                return "/login/nicknameInput";
             } else {
-                request.getSession().setAttribute("tempMember", memberDto);
+                if (countSnsId == 0) {
+                    this.memberService.updateSnsInfo(memberDto);
+                }
                 return "redirect:/selogin/signinnaver";
             }
 
-
-            model.addAttribute("result", userResultMap);
-            log.info("네이버 사용자 정보: {}", userResultMap);
-
         } catch (Exception e) {
             e.printStackTrace();
+            return "login/fail";  // 예외 발생 시 에러 페이지로 리턴
         }
-
-        // 세션에 저장된 state 값 삭제
-        request.getSession().removeAttribute("state");
-
-        return "/login/naver_result";
     }
 }

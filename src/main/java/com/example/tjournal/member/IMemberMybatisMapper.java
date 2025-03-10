@@ -12,6 +12,8 @@ public interface IMemberMybatisMapper extends IMybatisCRUD<MemberDto> {
     MemberDto findByNickname(String nickname);
     MemberDto findBySnsId(String SnsId);
 
+    void updateSnsInfo(MemberDto member);
+
     void changePassword(MemberDto dto);
 
     Integer countAllByNameContains(SearchAjaxDto search);

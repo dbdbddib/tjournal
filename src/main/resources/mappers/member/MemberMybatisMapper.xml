@@ -30,6 +30,13 @@
             , #{provider})
     </insert>
 
+    <update id="updateSnsInfo" parameterType="MemberDto">
+        UPDATE member_tbl
+        SET provider = #{provider},
+            snsId = #{snsId}
+        WHERE email = #{email}
+    </update>
+
     <update id="update" parameterType="MemberDto">
         UPDATE member_tbl
             SET name = #{name}

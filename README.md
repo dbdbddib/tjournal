@@ -107,8 +107,9 @@ CREATE TABLE `member_tbl` (
   `provider` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `member_tbl_uniq_loginId` (`loginId`),
-  UNIQUE KEY `member_tbl_uniq_nickname` (`nickname`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+  UNIQUE KEY `member_tbl_uniq_nickname` (`nickname`),
+  UNIQUE KEY `member_tbl_uniq_email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
 
 
 
