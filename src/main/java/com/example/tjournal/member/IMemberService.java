@@ -11,7 +11,7 @@ public interface IMemberService extends IServiceCRUD<IMember> {
     IMember loginNaver(MemberDto dto);
     Boolean changePassword(IMember dto) throws Exception;
 
-    IMember updateSnsInfo(IMember member);
+    IMember updateSnsInfo(IMember member, String provider);
     IMember findByLoginId(String loginId);
     IMember findByNickname(String nickname);
 

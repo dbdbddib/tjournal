@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,9 @@ public class MemberServiceImpl implements IMemberService {
     @Autowired
     private PasswordEncoder encoder;
 
+    // 데이터, 삽입, 수정, 삭제와 같은 작업은 데이터 일관성을 위해 트랜잭션으로 묶음
+
+    @Transactional
     @Override
     public IMember insert(CUDInfoDto cudInfoDto, IMember member) {
         if ( !this.isValidInsert(member) ) {
@@ -36,11 +40,15 @@ public class MemberServiceImpl implements IMemberService {
         return dto;
     }
 
+    @Transactional
     @Override
-    public IMember updateSnsInfo(IMember member) {
+    public IMember updateSnsInfo(IMember member, String provider) {
+        if (member == null || provider == null || provider.isEmpty()) {
+            throw new IllegalArgumentException("Member와 provider는 null 또는 빈 문자열일 수 없습니다.");
+        }
         MemberDto dto = MemberDto.builder().build();
         dto.copyFields(member);
-        dto.setProvider(MemberProviderRole.NAVER.toString());
+        dto.setProvider(provider);
 
         this.memberMybatisMapper.updateSnsInfo(dto);
         return dto;
@@ -67,6 +75,7 @@ public class MemberServiceImpl implements IMemberService {
         return true;
     }
 
+    @Transactional
     @Override
     public IMember update(CUDInfoDto cudInfoDto, IMember member) {
         if ( member == null || member.getId() == null || member.getId() <= 0 ) {
@@ -79,6 +88,7 @@ public class MemberServiceImpl implements IMemberService {
         return find;
     }
 
+    @Transactional
     @Override
     public Boolean updateDeleteFlag(CUDInfoDto cudInfoDto, IMember member) {
         if ( member == null || member.getId() == null || member.getId() <= 0 ) {
@@ -94,6 +104,7 @@ public class MemberServiceImpl implements IMemberService {
         return true;
     }
 
+    @Transactional
     @Override
     public Boolean deleteById(Long id) {
         if ( id == null || id <= 0 ) {
@@ -153,11 +164,14 @@ public class MemberServiceImpl implements IMemberService {
 
     @Override
     public IMember loginNaver(MemberDto dto) {
+        if ( dto == null || dto.getSnsId() == null) {
+            return null;
+        }
         IMember member = this.memberMybatisMapper.findBySnsId(dto.getSnsId());
-
         return member;
     }
 
+    @Transactional
     @Override
     public Boolean changePassword(IMember member) throws Exception {
         if ( member == null ) {
@@ -189,6 +203,9 @@ public class MemberServiceImpl implements IMemberService {
 
     @Override
     public Integer countAllByNameContains(SearchAjaxDto searchCategoryDto) {
+        if( searchCategoryDto == null ) {
+            return null;
+        }
         return this.memberMybatisMapper.countAllByNameContains(searchCategoryDto);
     }
 
@@ -206,11 +223,17 @@ public class MemberServiceImpl implements IMemberService {
 
     @Override
     public Integer countBySnsId(MemberDto memberDto) {
+        if( memberDto == null ) {
+            return null;
+        }
         return this.memberMybatisMapper.countBySnsId(memberDto.getSnsId());
     }
 
     @Override
     public Integer countByEmail(MemberDto memberDto) {
+        if( memberDto == null ) {
+            return null;
+        }
         return this.memberMybatisMapper.countByEmail(memberDto.getEmail());
     }
 }

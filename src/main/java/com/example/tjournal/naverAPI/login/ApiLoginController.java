@@ -2,6 +2,7 @@ package com.example.tjournal.naverAPI.login;
 
 import com.example.tjournal.member.IMemberService;
 import com.example.tjournal.member.MemberDto;
+import com.example.tjournal.member.MemberProviderRole;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,14 +138,10 @@ public class ApiLoginController {
             String email   = (String) responseMap.get("email");
             String name    = (String) responseMap.get("name");
 
-
             if (naverId == null || email == null || name == null) {
                 log.error("네이버 API 응답 값 중 null이 포함됨. naverId: {}, email: {}, name: {}", naverId, email, name);
                 return "login/fail";
             }
-
-            // sns_id count -> 0 insert  1 html return
-            // 이메일이 있으면 이미 가입된 사용자 이므로 sns_id, provider(naver, kakao..) insert
 
             MemberDto memberDto = MemberDto.builder().build();
             memberDto.setSnsId(naverId);
@@ -157,13 +154,14 @@ public class ApiLoginController {
 
             request.getSession().removeAttribute("state");
 
+
             if(countEmail == 0){
                 model.addAttribute("dto", memberDto);
                 request.getSession().removeAttribute("tempMember");
                 return "/login/nicknameInput";
             } else {
                 if (countSnsId == 0) {
-                    this.memberService.updateSnsInfo(memberDto);
+                    this.memberService.updateSnsInfo(memberDto, MemberProviderRole.NAVER.toString());
                 }
                 return "redirect:/selogin/signinnaver";
             }
