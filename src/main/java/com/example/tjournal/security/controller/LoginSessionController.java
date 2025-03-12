@@ -85,6 +85,7 @@ public class LoginSessionController implements IResponseController{
             this.memberService.insert(cudInfoDto, tempMember);
             // 회원가입 완료 후 세션 정리
             request.getSession().removeAttribute("tempMember");
+            model.addAttribute("message", "회원 가입 성공");
             return "redirect:/";  // 또는 회원가입 완료 페이지
         } catch (Exception e) {
             model.addAttribute("message", "회원 가입 실패하였습니다. 다시 시도해주세요.");

@@ -126,6 +126,8 @@ CREATE TABLE `board_tbl` (
   `deleteFlag` tinyint(1) NOT NULL DEFAULT '0',
   `viewQty` int DEFAULT '0',
   `likeQty` int DEFAULT '0',
+  `region` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `category` varchar(30) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `board_tbl_member_tbl_createId` (`createId`),
   KEY `board_tbl_member_tbl_updateId` (`updateId`),
@@ -135,7 +137,7 @@ CREATE TABLE `board_tbl` (
   CONSTRAINT `board_tbl_member_tbl_createId` FOREIGN KEY (`createId`) REFERENCES `member_tbl` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `board_tbl_member_tbl_deleteId` FOREIGN KEY (`deleteId`) REFERENCES `member_tbl` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `board_tbl_member_tbl_updateId` FOREIGN KEY (`updateId`) REFERENCES `member_tbl` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
 
 
 

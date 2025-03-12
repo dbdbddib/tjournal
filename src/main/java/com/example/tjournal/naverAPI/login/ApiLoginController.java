@@ -157,7 +157,6 @@ public class ApiLoginController {
 
             if(countEmail == 0){
                 model.addAttribute("dto", memberDto);
-                request.getSession().removeAttribute("tempMember");
                 return "/login/nicknameInput";
             } else {
                 if (countSnsId == 0) {
