@@ -28,72 +28,63 @@
   </head>
   <body class="login-page">
     <div class="login-container">
-      {{>layout/header}}
-
-      <div class="main-content">
-        <h1 class="logo">Tjournal</h1>
-        <p class="description">
-          여행의 운율을 담아, Tjournal에<br />
-          당신의 모험을 기록하세요.<br />
-          <a href="/selogin/signup" class="signup-link">가입하기</a>
-        </p>
-      </div>
-
-      <img src="/images/login.png" alt="login" class="login-image" />
-
-      <div class="login-form-container">
-        <form id="signForm" method="post" action="signin">
-          <div class="input-group">
-            <input
-              type="text"
-              id="loginId"
-              name="loginId"
-              placeholder="아이디를 입력하세요"
-              class="login-input"
-            />
-            <button type="button" onclick="clearInput()" class="input-clear">
-              ✖
-            </button>
-          </div>
-          <div class="input-group">
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="비밀번호를 입력하세요"
-              class="login-input"
-            />
-            <button
-              type="button"
-              id="passwordToggle"
-              onclick="togglePassword()"
-              class="password-toggle"
-            ></button>
-          </div>
-          <div class="forgot-password" style="margin-bottom: 34px">
-            <a href="#">비밀번호를 잊으셨나요?</a>
-          </div>
-          <button
-            type="submit"
-            class="big-login-button"
-            style="margin-bottom: 34px"
-          >
-            로그인
-          </button>
-        </form>
-        <div class="social-login-divider" style="margin-bottom: 34px">
-          <div class="divider-line"></div>
-          간편 로그인
-          <div class="divider-line"></div>
+      <div class="content-wrapper">
+        <div class="main-content">
+          <h1 class="logo">Tjournal</h1>
+          <p class="description">
+            여행의 운율을 담아, Tjournal에<br />
+            당신의 모험을 기록하세요.<br />
+            <a href="/selogin/signup" class="signup-link">가입하기</a>
+          </p>
         </div>
-        <div class="social-login-buttons">
-          <button class="social-button">
-            <img src="/images/kakao.png" alt="kakao" />
-          </button>
-          <a href="/naver_login" class="social-button">
-            <img src="/images/naver.png" alt="Naver Login" />
-          </a>
-
+        <img src="/images/login.png" alt="login" class="login-image" />
+        <div class="login-form-container">
+          <form id="signForm" method="post" action="signin">
+            <div class="input-group">
+              <input
+                type="text"
+                id="loginId"
+                name="loginId"
+                placeholder="아이디를 입력하세요"
+                class="login-input"
+              />
+              <button type="button" onclick="clearInput()" class="input-clear">
+                ✖
+              </button>
+            </div>
+            <div class="input-group">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="비밀번호를 입력하세요"
+                class="login-input"
+              />
+              <button
+                type="button"
+                id="passwordToggle"
+                onclick="togglePassword()"
+                class="password-toggle"
+              ></button>
+            </div>
+            <div class="forgot-password">
+              <a href="#">비밀번호를 잊으셨나요?</a>
+            </div>
+            <button type="submit" class="big-login-button">로그인</button>
+          </form>
+          <div class="social-login-divider">
+            <div class="divider-line"></div>
+            간편 로그인
+            <div class="divider-line"></div>
+          </div>
+          <div class="social-login-buttons">
+            <button class="social-button">
+              <img src="/images/kakao.png" alt="kakao" />
+            </button>
+            <a href="/naver_login" class="social-button">
+              <img src="/images/naver.png" alt="Naver Login" />
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -115,11 +106,27 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         padding: 16px;
         position: relative;
+        display: flex;
+        justify-content: center; /* 중앙 정렬 유지 */
+        align-items: center;
+      }
+
+      .content-wrapper {
+        display: flex;
+        align-items: flex-start; /* 내부 요소들을 상단 정렬 */
+        justify-content: space-between;
+        width: 80%;
+        height: 500px; /* 고정 높이 */
       }
 
       .main-content {
-        padding-left: 106px;
-        padding-top: 100px;
+        text-align: left;
+        max-width: 400px;
+      }
+
+      .login-form-container {
+        width: 380px;
+        margin-top: 50px;
       }
 
       .logo {
@@ -140,22 +147,14 @@
       }
 
       .login-image {
-        position: absolute;
-        top: 350px;
-        left: 400px;
         width: 350px;
-      }
-
-      .login-form-container {
-        position: absolute;
-        top: 300px;
-        right: 106px;
-        width: 380px;
+        margin-top: 50px;
+        margin-right: 100px;
       }
 
       .input-group {
         position: relative;
-        margin-bottom: 26px; /* 10px 추가 */
+        margin-bottom: 26px;
       }
 
       .login-input {
@@ -184,6 +183,7 @@
         text-align: right;
         font-size: 14px;
         color: #c7c7c7;
+        margin-bottom: 10px;
       }
 
       .big-login-button {
@@ -193,6 +193,7 @@
         color: white;
         font-size: 18px;
         border-radius: 10px;
+        margin-top: 10px;
       }
 
       .social-login-divider {

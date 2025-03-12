@@ -44,7 +44,6 @@
   </head>
   <body class="login-page">
     <div class="login-container">
-      {{>layout/header}}
       <div class="main-content">
         <div class="logo-container">
           <h1 class="logo">Tjournal</h1>
@@ -152,20 +151,7 @@
           </form>
           <div class="login-link">
             이미 회원이신가요?
-            <a href="/selogin/signin" class="red-text">로그인하기</a>
-          </div>
-          <div class="social-login-divider">
-            <div class="divider-line"></div>
-            간편 로그인
-            <div class="divider-line"></div>
-          </div>
-          <div class="social-login-buttons">
-            <button class="social-button">
-              <img src="/images/kakao.png" alt="kakao" />
-            </button>
-            <button class="social-button">
-              <img src="/images/naver.png" alt="naver" />
-            </button>
+            <a href="/selogin/login" class="red-text">로그인하기</a>
           </div>
         </div>
       </div>
@@ -188,6 +174,10 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         padding: 16px;
         position: relative;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
 
       .login-button {
@@ -214,7 +204,7 @@
       .logo-container {
         display: flex;
         flex-direction: column;
-        margin-right: 300px;
+        margin-right: 150px;
       }
 
       .logo {
@@ -224,7 +214,9 @@
       }
 
       .login-image {
-        width: 300px;
+        width: 480px;
+        height: 400px;
+        object-fit: cover; /* 비율을 유지하면서 크기를 맞추기 */
         margin-top: 30px;
       }
 
@@ -326,48 +318,6 @@
 
       .red-text {
         color: #ff8682;
-      }
-
-      .social-login-divider {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #acadac;
-        margin-bottom: 25px;
-      }
-
-      .divider-line {
-        flex-grow: 1;
-        height: 1px;
-        background-color: #acadac;
-        margin: 0 10px;
-      }
-
-      .social-login-buttons {
-        display: flex;
-        justify-content: space-between;
-        width: 300px;
-        margin: 0 auto;
-      }
-
-      .social-button {
-        width: 140px;
-        height: 45px;
-        background-color: #dddfdd;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        cursor: pointer;
-      }
-
-      .social-button:hover {
-        background-color: white;
-      }
-
-      .social-button img {
-        width: 20px;
       }
     </style>
   </body>
