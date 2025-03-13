@@ -155,6 +155,8 @@ public class MemberServiceImpl implements IMemberService {
             return null;
         }
         IMember member = this.memberMybatisMapper.findByLoginId(loginRequest.getLoginId());
+        // 입력한 비밀번호를 해시한 후, 데이터베이스에 저장된 해시값과 비교하여 일치하는지 확인하는 방식
+        // 복호화 x (엔코더 & 엔코더)
         if ( member == null || !encoder.matches(loginRequest.getPassword(),
                 member.getPassword()) ) {
             return null;
@@ -163,7 +165,7 @@ public class MemberServiceImpl implements IMemberService {
     }
 
     @Override
-    public IMember loginNaver(MemberDto dto) {
+    public IMember loginSns(MemberDto dto) {
         if ( dto == null || dto.getSnsId() == null) {
             return null;
         }

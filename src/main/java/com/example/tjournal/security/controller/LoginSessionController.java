@@ -63,7 +63,7 @@ public class LoginSessionController implements IResponseController{
         return "redirect:/";
     }
 
-    @PostMapping("/signupNaver")
+    @PostMapping("/signupsns")
     public String signupNaver(HttpServletRequest request,
                               @RequestParam("loginId") String loginId,
                               @RequestParam("password") String password,
@@ -77,7 +77,6 @@ public class LoginSessionController implements IResponseController{
         tempMember.setLoginId(loginId);
         tempMember.setPassword(password);
         tempMember.setNickname(nickname);
-        tempMember.setProvider(MemberProviderRole.NAVER.toString());
 
         // 추가 검증(닉네임 중복 체크 등)을 수행한 후 회원 가입 처리
         try {
@@ -128,8 +127,8 @@ public class LoginSessionController implements IResponseController{
         return "redirect:/";
     }
 
-    @GetMapping("/signinnaver")
-    public String signinNaver(HttpServletRequest request, Model model) {
+    @GetMapping("/signinsns")
+    public String signinSns(HttpServletRequest request, Model model) {
         // 세션에서 임시 memberDto 가져오기
         MemberDto memberDto = (MemberDto) request.getSession().getAttribute("tempMember");
         if(memberDto == null) {
@@ -137,7 +136,7 @@ public class LoginSessionController implements IResponseController{
             return "login/fail";
         }
 
-        IMember loginUser = memberService.loginNaver(memberDto);
+        IMember loginUser = memberService.loginSns(memberDto);
         if(loginUser == null) {
             model.addAttribute("message", "SNS 로그인 처리에 실패하였습니다.");
             return "login/fail";

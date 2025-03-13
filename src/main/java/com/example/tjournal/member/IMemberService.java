@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface IMemberService extends IServiceCRUD<IMember> {
     IMember login(LoginRequest loginRequest);
-    IMember loginNaver(MemberDto dto);
+    IMember loginSns(MemberDto dto);
     Boolean changePassword(IMember dto) throws Exception;
 
     IMember updateSnsInfo(IMember member, String provider);

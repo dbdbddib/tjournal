@@ -40,7 +40,24 @@ public class ApiLoginController {
     private String loginClientSecret;
 
     @Value("${naver.redirect-uri}")
-    private String redirectUri;
+    private String naverRedirectUri;
+
+    @Value("${kakao.redirect-uri}")
+    private String kakaoRedirectUri;
+
+    @Value("${kakao.login.rest-api}")
+    private String kakaoRestApiKey;
+
+    // 사용자 인증 → 인증 코드 발급
+    // 인증 코드로 → 액세스 토큰(access token) 발급
+    // 액세스 토큰으로 → 사용자 정보나 데이터 접근
+
+    // OAuth: Open Authorization
+    // 사용자 인증(Authentication) 을 통해 사용자의 리소스 접근 권한(Authorization)을 위임받는 것
+
+    // 토큰이란 사용자가 정상적으로 인증(로그인)을 마쳤다는 사실을 증명하는 디지털 키
+    // 일종의 임시 출입증 역할
+    // 일정 시간 후 만료되며, 재발급 필요
 
 
     @GetMapping("/naver_login")
@@ -50,7 +67,7 @@ public class ApiLoginController {
         String state = UUID.randomUUID().toString();
         String login_url = "https://nid.naver.com/oauth2.0/authorize?response_type=code"
                 + "&client_id=" + loginClientId
-                + "&redirect_uri=" + redirectUri + "/naver_redirect"
+                + "&redirect_uri=" + naverRedirectUri + "/naver_redirect"
                 + "&state=" + state;
 
         request.getSession().setAttribute("state", state);
@@ -147,6 +164,7 @@ public class ApiLoginController {
             memberDto.setSnsId(naverId);
             memberDto.setEmail(email);
             memberDto.setName(name);
+            memberDto.setProvider(MemberProviderRole.NAVER.toString());
             request.getSession().setAttribute("tempMember", memberDto);
 
             Integer countSnsId = this.memberService.countBySnsId(memberDto);
@@ -162,7 +180,7 @@ public class ApiLoginController {
                 if (countSnsId == 0) {
                     this.memberService.updateSnsInfo(memberDto, MemberProviderRole.NAVER.toString());
                 }
-                return "redirect:/selogin/signinnaver";
+                return "redirect:/selogin/signinsns";
             }
 
         } catch (Exception e) {
@@ -170,4 +188,107 @@ public class ApiLoginController {
             return "login/fail";  // 예외 발생 시 에러 페이지로 리턴
         }
     }
+
+
+    @GetMapping("/kakao_login")
+    public String kakao_login(HttpServletRequest request) {
+        String state = UUID.randomUUID().toString();
+        String login_url = "https://kauth.kakao.com/oauth/authorize?response_type=code"
+                + "&client_id=" + kakaoRestApiKey
+                + "&redirect_uri=" + kakaoRedirectUri
+                + "&state=" + state;
+        request.getSession().setAttribute("state", state);
+        return "redirect:" + login_url;
+    }
+
+    @GetMapping("/oauth/login/kakao_redirect")
+    public String kakao_redirect(HttpServletRequest request, Model model) {
+        String code = request.getParameter("code");
+        String state = request.getParameter("state");
+
+        String session_state = String.valueOf(request.getSession().getAttribute("state"));
+
+        if (!state.equals(session_state)) {
+            System.out.println("세션 불일치");
+            request.getSession().removeAttribute("state");
+            return "/error";
+        }
+        String tokenURL = "https://kauth.kakao.com/oauth/token";
+
+        MultiValueMap<String, String> parameter = new LinkedMultiValueMap<>();
+        parameter.add("grant_type", "authorization_code");
+        parameter.add("client_id", kakaoRestApiKey);
+        parameter.add("redirect_url", kakaoRedirectUri);
+        parameter.add("code", code);
+        parameter.add("state", state);
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+        HttpEntity<?> entity = new HttpEntity<>(parameter, headers);
+
+
+
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+
+            ResponseEntity<HashMap> result = restTemplate.postForEntity(tokenURL, entity, HashMap.class);
+            Map<String, String> resMap = result.getBody();
+
+            String access_token = resMap.get("access_token");
+
+            String userInfoURL = "https://kapi.kakao.com/v2/user/me";
+            headers.set("Authorization", "Bearer "+access_token);
+
+            HttpEntity<?> userInfoEntity = new HttpEntity<>(headers);
+
+            ResponseEntity<Map<String, Object>> userResult =
+                    restTemplate.postForEntity(userInfoURL, userInfoEntity, (Class) Map.class);
+
+            Map<String, Object> userResultMap = userResult.getBody();
+            Map<String, Object> kakaoAccount  = (Map<String, Object>) userResultMap.get("kakao_account");
+
+            String kakaoId = String.valueOf(userResultMap.get("id"));
+            String email = (String) kakaoAccount.get("email");
+
+// 프로필 내부 정보가 필요하다면 추가로 접근
+            Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+            String nickname = (String) profile.get("nickname");
+
+            if (kakaoId == null || email == null || nickname == null) {
+                log.error("네이버 API 응답 값 중 null이 포함됨. naverId: {}, email: {}, name: {}", kakaoId, email, nickname);
+                return "login/fail";
+            }
+
+            MemberDto memberDto = MemberDto.builder().build();
+            memberDto.setSnsId(kakaoId);
+            memberDto.setEmail(email);
+            memberDto.setName(nickname);
+            memberDto.setProvider(MemberProviderRole.KAKAO.toString());
+
+            request.getSession().setAttribute("tempMember", memberDto);
+
+            Integer countSnsId = this.memberService.countBySnsId(memberDto);
+            Integer countEmail = this.memberService.countByEmail(memberDto);
+
+            request.getSession().removeAttribute("state");
+
+
+            if(countEmail == 0){
+                model.addAttribute("dto", memberDto);
+                return "/login/nicknameInput";
+            } else {
+                if (countSnsId == 0) {
+                    this.memberService.updateSnsInfo(memberDto, MemberProviderRole.KAKAO.toString());
+                }
+                return "redirect:/selogin/signinsns";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "login/fail";  // 예외 발생 시 에러 페이지로 리턴
+        }
+    }
+
 }

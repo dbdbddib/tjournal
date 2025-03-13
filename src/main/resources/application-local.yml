@@ -50,6 +50,12 @@ naver:
   authorization-grant-type: authorization_code
   redirect-uri: http://localhost:8088/oauth/login
 
+kakao:
+  login:
+    rest-api: ${KAKAO_REST_API_KEY}
+  redirect-uri: http://localhost:8088/oauth/login/kakao_redirect
+
+
 
 # application-local.yml (or application-dev.yml)
 logging:
