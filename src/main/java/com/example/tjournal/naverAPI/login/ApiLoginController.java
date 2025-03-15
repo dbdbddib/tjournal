@@ -140,6 +140,8 @@ public class ApiLoginController {
             // Header에 access_token 삽입
             headers.set("Authorization", "Bearer "+access_token);
 
+            request.getSession().setAttribute("access_token", access_token);
+
             // Request entity 생성
             HttpEntity<?> userInfoEntity = new HttpEntity<>(headers);
 
@@ -189,7 +191,6 @@ public class ApiLoginController {
         }
     }
 
-
     @GetMapping("/kakao_login")
     public String kakao_login(HttpServletRequest request) {
         String state = UUID.randomUUID().toString();
@@ -237,6 +238,7 @@ public class ApiLoginController {
             Map<String, String> resMap = result.getBody();
 
             String access_token = resMap.get("access_token");
+            request.getSession().setAttribute("access_token", access_token);
 
             String userInfoURL = "https://kapi.kakao.com/v2/user/me";
             headers.set("Authorization", "Bearer "+access_token);
@@ -290,5 +292,8 @@ public class ApiLoginController {
             return "login/fail";  // 예외 발생 시 에러 페이지로 리턴
         }
     }
+
+
+
 
 }
