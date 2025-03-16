@@ -55,18 +55,23 @@ public class IndexController {
         String accessToken = (String) session.getAttribute("access_token");
 
         try {
-            if ("NAVER".equals(provider)) {
-                // 네이버 로그아웃 API 호출
-                String logoutUrl = "https://nid.naver.com/oauth2.0/token?"
-                        + "grant_type=delete"
-                        + "&client_id=" + loginClientId
-                        + "&client_secret=" + loginClientSecret
-                        + "&access_token=" + accessToken
-                        + "&service_provider=NAVER";
 
-                RestTemplate restTemplate = new RestTemplate();
-                restTemplate.getForObject(logoutUrl, String.class);
-            } else if ("KAKAO".equals(provider)) {
+            // 네이버 api 에서는 로그아웃 기능을 제공하지 않는다
+            // token 삭제시 다시 사용자 제동의를 받아야 하는 편의성 저하
+
+//            if ("NAVER".equals(provider)) {
+//                // 네이버 로그아웃 API 호출
+//                String logoutUrl = "https://nid.naver.com/oauth2.0/token?"
+//                        + "grant_type=delete"
+//                        + "&client_id=" + loginClientId
+//                        + "&client_secret=" + loginClientSecret
+//                        + "&access_token=" + accessToken
+//                        + "&service_provider=NAVER";
+//
+//                RestTemplate restTemplate = new RestTemplate();
+//                restTemplate.getForObject(logoutUrl, String.class);
+//            }
+                if ("KAKAO".equals(provider)) {
                 // 카카오 로그아웃 API 호출
                 String logoutUrl = "https://kapi.kakao.com/v1/user/logout";
 
