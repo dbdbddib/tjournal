@@ -4,122 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tjournal 로그인</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      function clearInput() {
-        document.getElementById("loginId").value = "";
-      }
-      function togglePassword() {
-        var passwordField = document.getElementById("password");
-        var toggleButton = document.getElementById("passwordToggle");
-        if (passwordField.type === "password") {
-          passwordField.type = "text";
-          toggleButton.textContent = "👁️"; // 눈 아이콘 (보이기)
-        } else {
-          passwordField.type = "password";
-          toggleButton.textContent = ""; // 자물쇠 아이콘 (숨기기)
-        }
-      }
-    </script>
     <link
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap"
       rel="stylesheet"
     />
-  </head>
-  <body class="login-page">
-    <div class="login-container">
-      <div class="content-wrapper">
-        <div class="main-content">
-          <h1 class="logo">Tjournal</h1>
-          <p class="description">
-            여행의 운율을 담아, Tjournal에<br />
-            당신의 모험을 기록하세요.<br />
-            <a href="/selogin/signup" class="signup-link">가입하기</a>
-          </p>
-        </div>
-        <img src="/images/login.png" alt="login" class="login-image" />
-        <div class="login-form-container">
-          <form id="signForm" method="post" action="signin">
-            <div class="input-group">
-              <input
-                type="text"
-                id="loginId"
-                name="loginId"
-                placeholder="아이디를 입력하세요"
-                class="login-input"
-              />
-              <button type="button" onclick="clearInput()" class="input-clear">
-                ✖
-              </button>
-            </div>
-            <div class="input-group">
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="비밀번호를 입력하세요"
-                class="login-input"
-              />
-              <button
-                type="button"
-                id="passwordToggle"
-                onclick="togglePassword()"
-                class="password-toggle"
-              ></button>
-            </div>
-            <div class="forgot-password">
-              <a href="#">비밀번호를 잊으셨나요?</a>
-            </div>
-            <button type="submit" class="big-login-button">로그인</button>
-          </form>
-          <div class="social-login-divider">
-            <div class="divider-line"></div>
-            간편 로그인
-            <div class="divider-line"></div>
-          </div>
-          <div class="social-login-buttons">
-
-            <a href="/kakao_login" class="social-button">
-              <img src="/images/kakao.png" alt="kakao" />
-            </a>
-
-            <a href="/naver_login" class="social-button">
-              <img src="/images/naver.png" alt="Naver Login" />
-            </a>
-
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <link rel="stylesheet" href="/css/container.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      .login-page {
-        background-color: #8fbde8;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-      }
-
-      .login-container {
-        background-color: white;
-        width: 1440px;
-        height: 1024px;
-        border-radius: 40px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        padding: 16px;
-        position: relative;
-        display: flex;
-        justify-content: center; /* 중앙 정렬 유지 */
-        align-items: center;
-      }
-
       .content-wrapper {
         display: flex;
-        align-items: flex-start; /* 내부 요소들을 상단 정렬 */
+        align-items: flex-start;
         justify-content: space-between;
         width: 80%;
-        height: 500px; /* 고정 높이 */
+        height: 500px;
       }
 
       .main-content {
@@ -236,5 +133,84 @@
         background-color: white;
       }
     </style>
+  </head>
+  <body class="page">
+    <div class="container">
+      <div class="content-wrapper">
+        <div class="main-content">
+          <h1 class="logo">Tjournal</h1>
+          <p class="description">
+            여행의 운율을 담아, Tjournal에<br />
+            당신의 모험을 기록하세요.<br />
+            <a href="/selogin/signup" class="signup-link">가입하기</a>
+          </p>
+        </div>
+        <img src="/images/login.png" alt="login" class="login-image" />
+        <div class="login-form-container">
+          <form id="signForm" method="post" action="signin">
+            <div class="input-group">
+              <input
+                type="text"
+                id="loginId"
+                name="loginId"
+                placeholder="아이디를 입력하세요"
+                class="login-input"
+              />
+              <button type="button" onclick="clearInput()" class="input-clear">
+                ✖
+              </button>
+            </div>
+            <div class="input-group">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="비밀번호를 입력하세요"
+                class="login-input"
+              />
+              <button
+                type="button"
+                id="passwordToggle"
+                onclick="togglePassword()"
+                class="password-toggle"
+              ></button>
+            </div>
+            <div class="forgot-password">
+              <a href="#">비밀번호를 잊으셨나요?</a>
+            </div>
+            <button type="submit" class="big-login-button">로그인</button>
+          </form>
+          <div class="social-login-divider">
+            <div class="divider-line"></div>
+            간편 로그인
+            <div class="divider-line"></div>
+          </div>
+          <div class="social-login-buttons">
+            <a href="/kakao_login" class="social-button">
+              <img src="/images/kakao.png" alt="kakao" />
+            </a>
+            <a href="/naver_login" class="social-button">
+              <img src="/images/naver.png" alt="Naver Login" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function clearInput() {
+        document.getElementById("loginId").value = "";
+      }
+      function togglePassword() {
+        var passwordField = document.getElementById("password");
+        var toggleButton = document.getElementById("passwordToggle");
+        if (passwordField.type === "password") {
+          passwordField.type = "text";
+          toggleButton.textContent = "👁️";
+        } else {
+          passwordField.type = "password";
+          toggleButton.textContent = "";
+        }
+      }
+    </script>
   </body>
 </html>

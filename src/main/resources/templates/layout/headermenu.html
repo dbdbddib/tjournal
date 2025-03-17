@@ -1,15 +1,115 @@
-<header>
-    <nav>
-        <ul>
-            <li><a href="/">Home</a>
-            <a href="/category/page">카테고리</a>
-            <a href="/board/board_ajx_list/place">전체 블로그</a>
-            <a href="/member/member_list">회원 검색</a>
-            <a href="/board/board_ajx_my_list/place">마이 페이지</a>
-            <a href="/signout">로그아웃</a></li>
-        </ul>
-    </nav>
-</header>
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modern Sidebar</title>
+    <link rel="stylesheet" href="/css/container.css" />
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      .sidebar {
+        width: 260px;
+        background: white;
+        border-radius: 30px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        height: calc(
+          1024px - 40px
+        ); /* container 높이에 맞춤 (40px는 padding) */
+        margin-right: 20px;
+      }
 
-<!--<ul>: 순서 없는 목록(unordered list)을 표시한다.
-<li>: 목록에서 각 항목(list item)은 <li>와 </li>사이에 넣는다.-->
+      .sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+      }
+
+      .sidebar ul li {
+        margin: 10px 0;
+      }
+
+      .sidebar ul li a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        padding: 12px 15px;
+        border-radius: 10px;
+        transition: 0.3s ease-in-out;
+      }
+
+      .sidebar ul li a i {
+        font-size: 18px;
+        color: #666;
+      }
+
+      .sidebar ul li a:hover {
+        background-color: rgba(143, 189, 232, 0.2);
+        color: #007acc;
+      }
+
+      .sidebar ul li a.active {
+        background-color: #8fbde8;
+        color: white;
+        font-weight: bold;
+      }
+
+      .sidebar ul li a.active i {
+        color: white;
+      }
+
+      .content {
+        flex: 1;
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body class="page">
+    <div class="container">
+      <nav class="sidebar">
+        <ul>
+          <li>
+            <a href="/" class="active"><i class="fas fa-home"></i> Home</a>
+          </li>
+          <li>
+            <a href="/category/page"
+              ><i class="fas fa-th-large"></i> 카테고리</a
+            >
+          </li>
+          <li>
+            <a href="/board/board_ajx_list/place"
+              ><i class="fas fa-blog"></i> 전체 블로그</a
+            >
+          </li>
+          <li>
+            <a href="/member/member_list"
+              ><i class="fas fa-user"></i> 회원 검색</a
+            >
+          </li>
+          <li>
+            <a href="/board/board_ajx_my_list/place"
+              ><i class="fas fa-user-circle"></i> 마이 페이지</a
+            >
+          </li>
+          <li>
+            <a href="/signout"><i class="fas fa-sign-out-alt"></i> 로그아웃</a>
+          </li>
+        </ul>
+      </nav>
+      <div class="content">
+        <h1>메인 콘텐츠 영역</h1>
+        <p>이곳에 로그인 후 보여줄 메인 콘텐츠를 추가하세요.</p>
+      </div>
+    </div>
+  </body>
+</html>
