@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.tjournal.emailapi.IEmailMybatisMapper">
+
+    <!-- VerificationCode 엔티티에 대한 ResultMap -->
+    <resultMap id="VerificationCodeResultMap" type="com.example.tjournal.emailapi.VerificationCode">
+        <id property="id" column="id" />
+        <result property="email" column="email" />
+        <result property="code" column="code" />
+        <result property="expireTime" column="expire_time" />
+    </resultMap>
+
+    <!-- 저장 메소드: VerificationCode를 DB에 저장 -->
+    <insert id="save" parameterType="com.example.tjournal.emailapi.VerificationCode" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO verification_code (email, code, expire_time)
+        VALUES (#{email}, #{code}, #{expireTime})
+    </insert>
+
+    <!-- 조회 메소드: 이메일과 코드로 VerificationCode 조회 (매개변수가 여러 개일 경우, 기본 키는 param1, param2로 매핑됨) -->
+    <select id="findByEmailAndCode" resultMap="VerificationCodeResultMap">
+        SELECT id, email, code, expire_time
+        FROM verification_code
+        WHERE email = #{param1} AND code = #{param2}
+    </select>
+
+    <!-- 삭제 메소드: 만료시간 이전의 인증 코드를 삭제 (단일 파라미터는 #{value}로 접근) -->
+    <delete id="deleteByExpireTimeBefore" parameterType="java.time.LocalDateTime">
+        DELETE FROM verification_code
+        WHERE expire_time &lt; #{value}
+    </delete>
+
+</mapper>

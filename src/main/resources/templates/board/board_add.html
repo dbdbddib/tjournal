@@ -48,7 +48,9 @@
 
     let region = "{{region}}";
 
-        $(document).ready(function () {
+
+
+    $(document).ready(function () {
             $("#postForm").on("submit", function (event) {
                 event.preventDefault();
                 $.addInsert();
@@ -218,7 +220,7 @@
                 // 해당 파일을 참조하는 Blob URL(예: blob:http://example.com/12345-6789)이 생성
                 // URL은 브라우저에서만 유효
                 let objectURL = URL.createObjectURL(file);
-                let imgTag = `<div class="image-wrapper">
+                let imgTag = `<div class="image-wrapper" contenteditable="false">
                         <img src="${objectURL}" alt="${tempUUID}" data-temp="true">
                       </div>`;
                     $("#content").append(imgTag);

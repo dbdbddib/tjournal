@@ -22,10 +22,10 @@ import org.springframework.web.client.RestTemplate;
 @Controller
 @RequestMapping("/")
 public class IndexController {
-    @Value("${naver.login.id}")
+    @Value("${spring.naver.login.id}")
     private String loginClientId;
 
-    @Value("${naver.login.secret}")
+    @Value("${spring.naver.login.secret}")
     private String loginClientSecret;
 
     @Autowired

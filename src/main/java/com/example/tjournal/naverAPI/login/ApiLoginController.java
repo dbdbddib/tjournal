@@ -33,19 +33,19 @@ public class ApiLoginController {
     @Autowired
     private IMemberService memberService;
 
-    @Value("${naver.login.id}")
+    @Value("${spring.naver.login.id}")
     private String loginClientId;
 
-    @Value("${naver.login.secret}")
+    @Value("${spring.naver.login.secret}")
     private String loginClientSecret;
 
-    @Value("${naver.redirect-uri}")
+    @Value("${spring.naver.redirect-uri}")
     private String naverRedirectUri;
 
-    @Value("${kakao.redirect-uri}")
+    @Value("${spring.kakao.redirect-uri}")
     private String kakaoRedirectUri;
 
-    @Value("${kakao.login.rest-api}")
+    @Value("${spring.kakao.login.rest-api}")
     private String kakaoRestApiKey;
 
     // 사용자 인증 → 인증 코드 발급
