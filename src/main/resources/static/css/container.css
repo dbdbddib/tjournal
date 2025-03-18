@@ -1,20 +1,25 @@
 .page {
   background-color: #8fbde8;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
   min-height: 100vh;
+  width: 100vw;
 }
 
-.container {
+.container_login {
   background-color: white;
   width: 1440px;
   height: 1024px;
+  /*width: 100vw;*/
+  /*height: 100vh;*/
   border-radius: 40px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 16px;
+  /*padding: 16px;*/
+  margin: 20px;
   position: relative;
   display: flex;
   justify-content: center; /* 중앙 정렬 유지 */
   align-items: center;
+
 }
