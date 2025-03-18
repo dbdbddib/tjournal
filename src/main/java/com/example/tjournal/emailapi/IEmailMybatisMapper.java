@@ -7,7 +7,7 @@ import java.util.Optional;
 
 @Mapper
 public interface IEmailMybatisMapper {
-    VerificationCode save(VerificationCode verificationCode);
+    void save(VerificationCode verificationCode);
     Optional<VerificationCode> findByEmailAndCode(String email, String code);
     int deleteByExpireTimeBefore(LocalDateTime now);
 }

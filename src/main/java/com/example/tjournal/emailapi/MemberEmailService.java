@@ -2,6 +2,7 @@ package com.example.tjournal.emailapi;
 
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +13,9 @@ import java.util.concurrent.ThreadLocalRandom;
 @Slf4j
 @Service
 public class MemberEmailService {
+    @Autowired
     private EmailService emailService;
+    @Autowired
     private IEmailMybatisMapper emailMapper;
 
     public void sendVerifyCode(String email) {
@@ -44,7 +47,8 @@ public class MemberEmailService {
                 .code(randomCode)
                 .expireTime(LocalDateTime.now().plusDays(1)) // 1일 후 만료
                 .build();
-        return emailMapper.save(code);
+        emailMapper.save(code);
+        return code;
     }
 
     // 랜덤 코드 생성
