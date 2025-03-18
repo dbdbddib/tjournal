@@ -193,7 +193,6 @@ CREATE TABLE `sblike_tbl` (
 ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
-
 CREATE TABLE `follower_tbl` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `follower_id` bigint unsigned NOT NULL,
@@ -215,4 +214,13 @@ CREATE TABLE `marker_data_tbl` (
   PRIMARY KEY (`id`),
   KEY `marker_data_tbl_boardId_IDX` (`boardId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+CREATE TABLE verification_code (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    email VARCHAR(255) NOT NULL,
+    code VARCHAR(50) NOT NULL,
+    expire_time DATETIME NOT NULL,
+    PRIMARY KEY (id)
+);
 ```

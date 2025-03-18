@@ -12,7 +12,7 @@
     </resultMap>
 
     <!-- 저장 메소드: VerificationCode를 DB에 저장 -->
-    <insert id="save" parameterType="com.example.tjournal.emailapi.VerificationCode" useGeneratedKeys="true" keyProperty="id">
+    <insert id="save" parameterType="VerificationCode" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO verification_code (email, code, expire_time)
         VALUES (#{email}, #{code}, #{expireTime})
     </insert>

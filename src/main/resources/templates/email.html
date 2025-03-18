@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</head>
+<body>
+
+  <form id="sendEmailForm">
+    <label for="email">이메일:</label>
+    <input type="email" id="email" name="email" required>
+    <button type="submit">인증 코드 전송</button>
+  </form>
+  <script>
+    $("#sendEmailForm").submit(function(e) {
+      e.preventDefault();
+      var email = $("#email").val();
+      $.ajax({
+        url: "/api/member/sendEmail",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ email: email }),
+        success: function(response) {
+          alert("이메일 전송 성공: " + response.message);
+        },
+        error: function(xhr, status, error) {
+          alert("이메일 전송 실패: " + error);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
