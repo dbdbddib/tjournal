@@ -13,6 +13,13 @@
     <input type="email" id="email" name="email" required>
     <button type="submit">인증 코드 전송</button>
   </form>
+
+  <form id="verifyEmailForm">
+      <label for="verifyEmail">인증 코드:</label>
+      <input type="text" id="verifyEmail" name="verifyEmail" required>
+      <button type="submit">인증 코드 확인</button>
+  </form>
+
   <script>
     $("#sendEmailForm").submit(function(e) {
       e.preventDefault();
@@ -29,6 +36,27 @@
           alert("이메일 전송 실패: " + error);
         }
       });
+    });
+
+    $("#verifyEmailForm").submit(function(e) {
+        e.preventDefault();
+        var verifyEmail = $("#verifyEmail").val();
+        var email = $("#email").val();
+        $.ajax({
+            url: "/api/member/verifyEmail",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                code: verifyEmail
+                , email: email
+            }),
+            success: function(response) {
+                alert("이메일 전송 성공: " + response.message);
+            },
+            error: function(xhr, status, error) {
+                alert("이메일 전송 실패: " + error);
+            }
+        });
     });
   </script>
 </body>

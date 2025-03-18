@@ -26,13 +26,13 @@ public class MemberEmailService {
         VerificationCode createdCode = createVerificationCode(email);
         String content = "<html>"
                 + "<body>"
-                + "<h1>Forest 이메일 인증 코드 :</h1>"
+                + "<h1>TJournal 이메일 인증 코드 :</h1>"
                 + "<p>아래 코드를 입력해주세요 : " + createdCode.getCode() + "</p>"
                 + "</body>"
                 + "</html>";
 
         try {
-            emailService.sendEmail(email, "Forest 이메일 인증 안내", content);
+            emailService.sendEmail(email, "TJournal 이메일 인증 안내", content);
         } catch (RuntimeException | MessagingException e) {
             log.error("Unable to send email in sendCodeToEmail", e);
             throw new RuntimeException("Unable to send email in sendCodeToEmail", e);

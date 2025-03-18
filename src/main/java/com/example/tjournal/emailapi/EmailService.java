@@ -25,7 +25,7 @@ public class EmailService {
         helper.setSubject(title);
         // true를 설정해서 HTML을 사용 가능하게 함
         helper.setText(content, true);
-        helper.setFrom("inforestall@gmail.com");
+        helper.setFrom("qudgns4475@gmail.com");
 
         try {
             emailSender.send(message);
