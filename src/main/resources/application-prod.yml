@@ -4,9 +4,9 @@ spring:
       on-profile: prod # production ( 실제 운영 환경 )
 
   devtools:
-    livereload:     # 코드 변경 시 브라우저에서 자동 반영
+    livereload:
       enabled: true
-    restart:        # 변경 사항이 감지되면 애플리케이션을 자동으로 재시작
+    restart:
       enabled: true
 
   datasource:
@@ -17,11 +17,9 @@ spring:
 
   servlet:
     multipart:
-      # 개별 파일 최대 크기 제한 사이즈
       max-file-size: 50MB
-      # 요청 전체 크기 제한 사이즈
       max-request-size: 250MB
-      location: c:\\Temp\\upload   # 자기 PC에 첨부파일 저장할때
+      location: c:\\Temp\\upload
 
   cloud:
     aws:
@@ -55,47 +53,28 @@ spring:
     redirect-uri: http://localhost:8088/oauth/login/kakao_redirect
 
   mail:
-    host: smtp.gmail.com  # Gmail 의 SMTP 호스트
-    port: 587            # Gmail SMTP 서비스를 587번 포트를 사용
+    host: smtp.gmail.com
+    port: 587
     username: qudgns4475@gmail.com
     password: fmil pltn paop lmzb
     properties:
       mail:
         smtp:
-          auth: true                  # SMTP 서버 인증 필요한 경우 true로 지정, Gmail은 요구함
+          auth: true
           starttls:
-            enable: true              # SMTP 서버가 TLS를 사용하여 안전한 연결을 요구하는 경우 true로 설정
+            enable: true
             required: true
-          connectiontimeout: 5000       # 클라이언트가 SMTP 서버와의 연결을 설정하는 데 대기하는 시간
-          timeout: 5000                 # 클라이언트가 SMTP 서버로부터 응답을 대기하는 시간
-          writetimeout: 5000            # 클라이언트가 작업을 완료하는데 대기하는 시간
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 
-    mail-auth-code-expiration-millis: 1800000  # 30 * 60 * 1000 => 30분, 이메일 인증 코드의 만료 시간
+    mail-auth-code-expiration-millis: 1800000
 
-
-
-# application-local.yml (or application-dev.yml)
+# application-local.yml (or application-prod.yml)
 logging:
   level:
-    root: INFO  # 기본 로그 레벨을 INFO (필요하면 DEBUG)
-    org.springframework: DEBUG  # Spring 관련 로그 출력
-    com.example.tjournal: DEBUG  # 내 프로젝트 로그는 상세하게 출력
-    org.hibernate.SQL: DEBUG  # SQL 실행 로그 출력
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # 바인딩 값까지 확인
-
-
-
-
-
-  # log4jdbc: 로깅 기능이 추가된 JDBC 드라이버를 사용합니다. SQL 쿼리 실행 기록을 로그에 남기기 위해 활용
-  # ?useSSL=false: SSL(Secure Sockets Layer) 연결을 비활성화합니다. 보안 연결이 필요하지 않은 경우 false
-  # SSL: 데이터를 암호화하여 네트워크를 통해 안전하게 전송하기 위한 보안 기술
-  # 기본적으로 MySQL 서버는 SSL 연결을 지원
-  # &characterEncoding=UTF-8: 데이터베이스에서 문자 데이터를 읽고 쓸 때 사용할 문자 인코딩을 지정
-  # &serverTimezone=UTC: 데이터베이스 서버의 시간대를 UTC로 설정
-  # UTC(Coordinated Universal Time)
-  # 세계 표준시를 의미하며, 지구상의 모든 시간대의 기준이 되는 시간
-  # 전 세계 사용자가 사용하는 애플리케이션에서는 UTC로 시간을 저장하고, 사용자 지역에 맞는 시간대로 변환하여 표시하는 방식이 일반적
-  # &allowPublicKeyRetrieval=true: 클라이언트가 서버의 공개 키를 검색할 수 있도록 허용
-  # 클라이언트는 서버에 미리 등록된 공개 키를 알 수 없기 때문에, 서버로부터 공개 키를 자동으로 검색할 수 있도록 이 옵션을 활성화
-  # attachfile
+    root: INFO
+    org.springframework: WARN
+    com.example.tjournal: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
