@@ -18,12 +18,14 @@ public class MemberEmailService {
     @Autowired
     private IEmailMybatisMapper emailMapper;
 
+    @Transactional
     public void sendVerifyCode(String email) {
+        emailMapper.deleteByEmail(email);
         sendCodeToEmail(email);
     }
 
     public void sendCodeToEmail(String email) {
-        VerificationCode createdCode = createVerificationCode(email);
+        MemberEmailDto createdCode = createVerificationCode(email);
         String content = "<html>"
                 + "<body>"
                 + "<h1>TJournal 이메일 인증 코드 :</h1>"
@@ -40,9 +42,9 @@ public class MemberEmailService {
     }
 
     // 인증 코드 생성 및 저장
-    private VerificationCode createVerificationCode(String email) {
+    private MemberEmailDto createVerificationCode(String email) {
         String randomCode = generateRandomCode(6);
-        VerificationCode code = VerificationCode.builder()
+        MemberEmailDto code = MemberEmailDto.builder()
                 .email(email)
                 .code(randomCode)
                 .expireTime(LocalDateTime.now().plusDays(1)) // 1일 후 만료
@@ -69,6 +71,9 @@ public class MemberEmailService {
         return emailMapper.findByEmailAndCode(email, code)
                 .map(vc -> vc.getExpireTime().isAfter(LocalDateTime.now()))
                 .orElse(false);
+        // emailMapper의 반환값이 비워 있으면 orElse(false) 반환
+        // 비워 있지 않으면 map(vc -> vc.getExpireTime().isAfter(LocalDateTime.now())) 실행
+        // vc는 Optional<VerificationCode> 안에 들어 있는 실제 객체, 즉 MemberEmailDto 인스턴스
     }
 
     @Transactional

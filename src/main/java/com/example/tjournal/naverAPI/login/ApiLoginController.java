@@ -259,7 +259,7 @@ public class ApiLoginController {
             String nickname = (String) profile.get("nickname");
 
             if (kakaoId == null || email == null || nickname == null) {
-                log.error("네이버 API 응답 값 중 null이 포함됨. naverId: {}, email: {}, name: {}", kakaoId, email, nickname);
+                log.error("카카오 API 응답 값 중 null이 포함됨. kakaoId: {}, email: {}, name: {}", kakaoId, email, nickname);
                 return "login/fail";
             }
 

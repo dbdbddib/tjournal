@@ -3,8 +3,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.tjournal.emailapi.IEmailMybatisMapper">
 
-    <!-- VerificationCode 엔티티에 대한 ResultMap -->
-    <resultMap id="VerificationCodeResultMap" type="com.example.tjournal.emailapi.VerificationCode">
+<!--    쿼리 결과를 MemberEmailDto 객체로 매핑하는 방법을 정의  -->
+    <resultMap id="MemberEmailDtoMap" type="com.example.tjournal.emailapi.MemberEmailDto">
         <id property="id" column="id" />
         <result property="email" column="email" />
         <result property="code" column="code" />
@@ -12,13 +12,14 @@
     </resultMap>
 
     <!-- 저장 메소드: VerificationCode를 DB에 저장 -->
-    <insert id="save" parameterType="VerificationCode" useGeneratedKeys="true" keyProperty="id">
+    <insert id="save" parameterType="MemberEmailDto" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO verification_code (email, code, expire_time)
         VALUES (#{email}, #{code}, #{expireTime})
     </insert>
 
-    <!-- 조회 메소드: 이메일과 코드로 VerificationCode 조회 (매개변수가 여러 개일 경우, 기본 키는 param1, param2로 매핑됨) -->
-    <select id="findByEmailAndCode" resultMap="VerificationCodeResultMap">
+    <!-- 조회 메소드: 이메일과 코드로 MemberEmailDto 조회 (매개변수가 여러 개일 경우, 기본 키는 param1, param2로 매핑됨) -->
+<!--  MyBatis에서 쿼리 결과를 객체로 변환할 때, resultMap을 사용하여 SQL 쿼리의 결과와 자바 객체의 필드를 매핑   -->
+    <select id="findByEmailAndCode" resultMap="MemberEmailDtoMap">
         SELECT id, email, code, expire_time
         FROM verification_code
         WHERE email = #{param1} AND code = #{param2}
@@ -28,6 +29,11 @@
     <delete id="deleteByExpireTimeBefore" parameterType="java.time.LocalDateTime">
         DELETE FROM verification_code
         WHERE expire_time &lt; #{value}
+    </delete>
+
+    <delete id="deleteByEmail" parameterType="String">
+        DELETE FROM verification_code
+        WHERE email = #{email}
     </delete>
 
 </mapper>

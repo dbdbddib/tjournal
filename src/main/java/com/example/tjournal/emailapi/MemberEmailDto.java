@@ -12,10 +12,15 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VerificationCode {
-    private Long id;
+public class MemberEmailDto {
 
+    // 이메일 인증 코드 관련 데이터
+    private Long id;
     private String email;
     private String code;
     private LocalDateTime expireTime;
+
+    // 이메일 인증 응답 데이터
+    private String message;
+
 }
