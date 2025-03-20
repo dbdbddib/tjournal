@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberEmailDto {
+public class EmailDto {
 
     // 이메일 인증 코드 관련 데이터
     private Long id;

@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <title>Title</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 </head>
 <body>
-
   <form id="sendEmailForm">
     <label for="email">이메일:</label>
     <input type="email" id="email" name="email" required>
@@ -33,7 +31,7 @@
           alert("이메일 전송 성공: " + response.message);
         },
         error: function(xhr, status, error) {
-          alert("이메일 전송 실패: " + error);
+          alert("이메일 전송 실패: " + xhr.responseJSON.message);
         }
       });
     });

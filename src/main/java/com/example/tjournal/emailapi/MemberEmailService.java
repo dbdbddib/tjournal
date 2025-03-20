@@ -25,7 +25,7 @@ public class MemberEmailService {
     }
 
     public void sendCodeToEmail(String email) {
-        MemberEmailDto createdCode = createVerificationCode(email);
+        EmailDto createdCode = createVerificationCode(email);
         String content = "<html>"
                 + "<body>"
                 + "<h1>TJournal 이메일 인증 코드 :</h1>"
@@ -42,9 +42,9 @@ public class MemberEmailService {
     }
 
     // 인증 코드 생성 및 저장
-    private MemberEmailDto createVerificationCode(String email) {
+    private EmailDto createVerificationCode(String email) {
         String randomCode = generateRandomCode(6);
-        MemberEmailDto code = MemberEmailDto.builder()
+        EmailDto code = EmailDto.builder()
                 .email(email)
                 .code(randomCode)
                 .expireTime(LocalDateTime.now().plusDays(1)) // 1일 후 만료
@@ -66,6 +66,21 @@ public class MemberEmailService {
         return sb.toString();
     }
 
+    // 이메일 전송 1분이 지나는지 여부
+    // 1분이 지났음 -> true
+    public boolean isRequestDelayedEnough(String email) {
+        EmailDto emailDto = emailMapper.findByEmail(email);
+        if (emailDto == null) {
+            return false;
+        }
+        LocalDateTime creationTime = emailDto.getExpireTime().minusHours(24);
+        boolean DelayedEnough = LocalDateTime.now().isBefore(creationTime.plusMinutes(1));
+        if (DelayedEnough) {
+            return false;
+        }
+        return true;
+    }
+
     // 인증 코드 검증
     public boolean verifyCode(String email, String code) {
         return emailMapper.findByEmailAndCode(email, code)
@@ -73,7 +88,7 @@ public class MemberEmailService {
                 .orElse(false);
         // emailMapper의 반환값이 비워 있으면 orElse(false) 반환
         // 비워 있지 않으면 map(vc -> vc.getExpireTime().isAfter(LocalDateTime.now())) 실행
-        // vc는 Optional<VerificationCode> 안에 들어 있는 실제 객체, 즉 MemberEmailDto 인스턴스
+        // vc는 Optional<VerificationCode> 안에 들어 있는 실제 객체, 즉 EmailDto 인스턴스
     }
 
     @Transactional
