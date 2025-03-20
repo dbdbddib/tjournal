@@ -151,6 +151,34 @@
       .red-text {
         color: #ff8682;
       }
+
+      @media (max-width: 1200px) {
+        .main-content {
+          flex-direction: column;
+          align-items: center;
+          padding-left: 20px;
+          padding-right: 20px;
+        }
+        .logo-container {
+          margin-right: 0;
+          align-items: center;
+        }
+        .signup-container {
+          width: 90%;
+        }
+        .input-row {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .input-group {
+          width: 100%;
+          margin-bottom: 15px;
+        }
+        .login-image {
+          width: 100%;
+          height: auto;
+        }
+      }
     </style>
   </head>
   <body class="page">
@@ -228,7 +256,7 @@
                 <button
                   type="button"
                   id="passwordToggle"
-                  onclick="togglePassword()"
+                  onclick="togglePassword('password', 'passwordToggle')"
                   class="password-toggle"
                 ></button>
               </div>
@@ -246,7 +274,7 @@
                 <button
                   type="button"
                   id="passwordToggle2"
-                  onclick="togglePassword()"
+                  onclick="togglePassword('password2', 'passwordToggle2')"
                   class="password-toggle"
                 ></button>
               </div>
@@ -286,21 +314,19 @@
         var toggleButton = document.getElementById(toggleButtonId);
         if (passwordField.type === "password") {
           passwordField.type = "text";
-          toggleButton.textContent = "👁️";
+          toggleButton.textContent = "️";
         } else {
           passwordField.type = "password";
           toggleButton.textContent = "";
         }
       }
 
-      // passwordToggle 버튼에 대한 이벤트 리스너
       document
         .getElementById("passwordToggle")
         .addEventListener("click", function () {
           togglePassword("password", "passwordToggle");
         });
 
-      // passwordToggle2 버튼에 대한 이벤트 리스너
       document
         .getElementById("passwordToggle2")
         .addEventListener("click", function () {
