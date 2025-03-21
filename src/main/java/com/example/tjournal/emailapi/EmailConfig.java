@@ -57,6 +57,7 @@ public class EmailConfig {
         return mailSender;
     }
 
+    // 설정(Properties)
     private Properties getMailProperties() {
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", auth);

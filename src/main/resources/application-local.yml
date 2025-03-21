@@ -59,7 +59,7 @@ spring:
     host: smtp.gmail.com  # Gmail 의 SMTP 호스트
     port: 587            # Gmail SMTP 서비스를 587번 포트를 사용
     username: qudgns4475@gmail.com
-    password: fmil pltn paop lmzb
+    password: ${GMAIL_PASSWORD}
     properties:
       mail:
         smtp:

@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -68,17 +69,20 @@ public class MemberEmailService {
 
     // 이메일 전송 1분이 지나는지 여부
     // 1분이 지났음 -> true
-    public boolean isRequestDelayedEnough(String email) {
+    public long getRemainingDelaySeconds(String email) {
         EmailDto emailDto = emailMapper.findByEmail(email);
         if (emailDto == null) {
-            return false;
+            return 0;
         }
         LocalDateTime creationTime = emailDto.getExpireTime().minusHours(24);
-        boolean DelayedEnough = LocalDateTime.now().isBefore(creationTime.plusMinutes(1));
-        if (DelayedEnough) {
-            return false;
+        LocalDateTime allowedTime = creationTime.plusMinutes(1);
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isBefore(allowedTime)) {
+            // 남은 시간 계산 (초 단위)
+            Duration remaining = Duration.between(now, allowedTime);
+            return remaining.getSeconds();
         }
-        return true;
+        return 0;
     }
 
     // 인증 코드 검증
