@@ -44,6 +44,9 @@ public class EmailConfig {
         return new EmailService(javaMailSender());
     }
 
+
+    // JavaMailSenderImpl 객체를 생성
+    // 인코딩, 메일 서버 정보, 그리고 추가 SMTP 프로퍼티(인증, STARTTLS, 타임아웃 등)를 설정
     @Bean
     public JavaMailSender javaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
