@@ -10,6 +10,13 @@
       crossorigin="anonymous"
     ></script>
     <style>
+      .container {
+        display: flex;
+        justify-content: flex-start; /* 왼쪽 정렬 */
+        align-items: flex-start; /* 상단 정렬 */
+        padding-left: 20px; /* 사이드바가 너무 붙지 않도록 여백 추가 */
+      }
+
       .sidebar {
         width: 260px;
         background: white;
@@ -22,7 +29,6 @@
         height: calc(
           1024px - 40px
         ); /* container 높이에 맞춤 (40px는 padding) */
-        margin-right: 20px;
       }
 
       .sidebar ul {
@@ -67,15 +73,8 @@
       .sidebar ul li a.active i {
         color: white;
       }
-
-      .content {
-        flex: 1;
-        padding: 20px;
-      }
     </style>
   </head>
-  <body class="page">
-    <div class="container">
       <nav class="sidebar">
         <ul>
           <li>
@@ -106,10 +105,5 @@
           </li>
         </ul>
       </nav>
-      <div class="content">
-        <h1>메인 콘텐츠 영역</h1>
-        <p>이곳에 로그인 후 보여줄 메인 콘텐츠를 추가하세요.</p>
-      </div>
-    </div>
   </body>
 </html>
