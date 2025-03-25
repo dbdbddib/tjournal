@@ -27,8 +27,9 @@ public class MemberEmailRestController implements IResponseController {
 
     @PostMapping("/sendEmail")
     public ResponseEntity<?> sendEmail(@RequestBody EmailDto requestDto) {
-        MemberDto memberDto = MemberDto.builder().build();
-        memberDto.setEmail(requestDto.getEmail());
+        MemberDto memberDto = MemberDto.builder().
+                email(requestDto.getEmail()).
+                build();
 
         // 중복 이메일 검사
         Integer countEmail = memberService.countByEmail(memberDto);
@@ -51,12 +52,10 @@ public class MemberEmailRestController implements IResponseController {
     @PostMapping("/verifyEmail")
     public ResponseEntity<?> verifyEmail(@RequestBody EmailDto requestDto) {
         boolean isVerified = memberEmailService.verifyCode(requestDto.getEmail(), requestDto.getCode());
-        EmailDto responseDto = new EmailDto();
-        responseDto.setEmail(requestDto.getEmail());
-        responseDto.setMessage(
-                isVerified ? "Email verified successfully." : "Invalid or expired verification code."
-        );
-
+        EmailDto responseDto = EmailDto.builder()
+                        .email(requestDto.getEmail())
+                        .message(isVerified ? "Email verified successfully." : "Invalid or expired verification code.")
+                        .build();
         if (isVerified) {
             return makeResponseEntity(
                     HttpStatus.OK, ResponseCode.R000000, responseDto.getMessage(), responseDto

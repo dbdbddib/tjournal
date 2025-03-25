@@ -162,11 +162,13 @@ public class ApiLoginController {
                 return "login/fail";
             }
 
-            MemberDto memberDto = MemberDto.builder().build();
-            memberDto.setSnsId(naverId);
-            memberDto.setEmail(email);
-            memberDto.setName(name);
-            memberDto.setProvider(MemberProviderRole.NAVER.toString());
+            MemberDto memberDto = MemberDto.builder()
+                    .snsId(naverId)
+                    .email(email)
+                    .name(name)
+                    .provider(MemberProviderRole.NAVER.toString())
+                    .build();
+
             request.getSession().setAttribute("tempMember", memberDto);
 
             Integer countSnsId = this.memberService.countBySnsId(memberDto);
@@ -263,11 +265,12 @@ public class ApiLoginController {
                 return "login/fail";
             }
 
-            MemberDto memberDto = MemberDto.builder().build();
-            memberDto.setSnsId(kakaoId);
-            memberDto.setEmail(email);
-            memberDto.setName(nickname);
-            memberDto.setProvider(MemberProviderRole.KAKAO.toString());
+            MemberDto memberDto = MemberDto.builder()
+                    .snsId(kakaoId)
+                    .email(email)
+                    .name(nickname)
+                    .provider(MemberProviderRole.KAKAO.toString())
+                    .build();
 
             request.getSession().setAttribute("tempMember", memberDto);
 
