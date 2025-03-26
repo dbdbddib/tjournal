@@ -2,13 +2,12 @@ package com.example.tjournal.board;
 
 import com.example.tjournal.category.CategoryEnum;
 import com.example.tjournal.member.IMember;
-import com.example.tjournal.member.MemberDto;
 import com.example.tjournal.member.MemberServiceImpl;
 import com.example.tjournal.security.config.SecurityConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import com.example.tjournal.category.regionEnum;
+import com.example.tjournal.category.RegionEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -67,7 +66,7 @@ public class BoardWebController {
             return "redirect:/";
         }
         try {
-            regionEnum.valueOf(region); // 예외 발생 시 유효하지 않은 값
+            RegionEnum.valueOf(region.toUpperCase()); // 예외 발생 시 유효하지 않은 값
             CategoryEnum.valueOf(category);
         } catch (IllegalArgumentException e) {
             return "error/400"; // 유효하지 않은 값에 대한 처리
@@ -136,7 +135,7 @@ public class BoardWebController {
     private String regionBoardAdd(Model model, @PathVariable String region) {
         model.addAttribute("region", region);
         try {
-            regionEnum.valueOf(region); // 예외 발생 시 유효하지 않은 값
+            RegionEnum.valueOf(region.toUpperCase()); // 예외 발생 시 유효하지 않은 값
         } catch (IllegalArgumentException e) {
             return "error/400"; // 유효하지 않은 값에 대한 처리
         }
@@ -153,7 +152,7 @@ public class BoardWebController {
     private String regionAwsBoardAdd(Model model, @PathVariable String region) {
         model.addAttribute("region", region);
         try {
-            regionEnum.valueOf(region); // 예외 발생 시 유효하지 않은 값
+            RegionEnum.valueOf(region.toUpperCase()); // 예외 발생 시 유효하지 않은 값
         } catch (IllegalArgumentException e) {
             return "error/400"; // 유효하지 않은 값에 대한 처리
         }

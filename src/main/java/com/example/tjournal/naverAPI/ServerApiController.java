@@ -1,10 +1,16 @@
 package com.example.tjournal.naverAPI;
 
+import com.example.tjournal.category.RegionEnum;
 import com.example.tjournal.commons.dto.ResponseCode;
 import com.example.tjournal.commons.dto.ResponseDto;
 import com.example.tjournal.commons.exeption.IdNotFoundException;
 import com.example.tjournal.commons.exeption.LoginAccessException;
 import com.example.tjournal.commons.inif.IResponseController;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,8 +40,15 @@ public class ServerApiController implements IResponseController {
     @Value("${naver.client.secret}")
     private String naverClientSecret;
 
+    private String regionKorean;
+
     @GetMapping("/naver")
-    public String naver(@RequestParam("query") String query) {
+    public String naver(@RequestParam("query") String query,
+                        @RequestParam(value = "region", required = false) String region) throws JsonProcessingException {
+
+        RegionEnum regionEnum = RegionEnum.valueOf(region.toUpperCase()); // RegionEnum 객체 얻기
+        String regionKorean = regionEnum.getKoreanName();
+
 
         // 공식 문서의 [파라미터] 부분 참고
         URI uri = UriComponentsBuilder
@@ -67,7 +80,26 @@ public class ServerApiController implements IResponseController {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> result = restTemplate.exchange(req, String.class);
 
-        return result.getBody();
+        // 여기서 json 값의 지역 부분을 가져와 지역과 비교 if문으로 처리
+
+        String responseBody = result.getBody();
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(responseBody);
+        ArrayNode items = (ArrayNode) root.path("items");
+        ArrayNode filteredItems = mapper.createArrayNode();
+
+        if (regionKorean != null && !regionKorean.trim().isEmpty()) {
+            for (JsonNode item : items) {
+                String address = item.path("address").asText();
+                if (address.contains(regionKorean)) {
+                    filteredItems.add(item);
+                }
+            }
+            ((ObjectNode) root).put("total", filteredItems.size());
+            ((ObjectNode) root).set("items", filteredItems);
+            responseBody = mapper.writeValueAsString(root);
+        }
+        return responseBody;
     }
 
 

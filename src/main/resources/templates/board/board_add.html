@@ -63,7 +63,9 @@
                     $.ajax({
                         url: "/api/server/naver", // 컨트롤러에서 네이버 검색 API 호출
                         dataType: "json",
-                        data: { query: request.term },
+                        data: {
+                            query: request.term
+                            , region},
                         success: function(data) {
                             let suggestions = [];
 
