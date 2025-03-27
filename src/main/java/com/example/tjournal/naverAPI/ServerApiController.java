@@ -97,7 +97,7 @@ public class ServerApiController implements IResponseController {
             }
             ((ObjectNode) root).put("total", filteredItems.size());
             ((ObjectNode) root).set("items", filteredItems);
-            responseBody = mapper.writeValueAsString(root);
+            responseBody = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(root);
         }
         return responseBody;
     }
