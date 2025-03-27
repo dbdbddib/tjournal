@@ -17,12 +17,12 @@ public enum RegionEnum {
     SEJONG("sejong", "세종"),
     GYEONGGI("gyeonggi", "경기"),
     GANGWON("gangwon", "강원"),
-    CHUNGBUK("chungbuk", "충북"),
-    CHUNGNAM("chungnam", "충남"),
+    CHUNGBUK("chungbuk", "충청북도"),
+    CHUNGNAM("chungnam", "충청남도"),
     JEONBUK("jeonbuk", "전북"),
-    JEONNAM("jeonnam", "전남"),
-    GYEONGBUK("gyeongbuk", "경북"),
-    GYEONGNAM("gyeongnam", "경남"),
+    JEONNAM("jeonnam", "전라남도"),
+    GYEONGBUK("gyeongbuk", "경상북도"),
+    GYEONGNAM("gyeongnam", "경상남도"),
     JEJU("jeju", "제주");
 
     private final String englishName;

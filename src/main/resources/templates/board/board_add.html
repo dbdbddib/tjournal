@@ -46,8 +46,8 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
 
-    let region = "{{region}}";
-
+    let region = "{{region.englishName}}";
+    let regionKorean = "{{region.koreanName}}";
 
 
     $(document).ready(function () {
@@ -261,11 +261,30 @@
 
         // 지도 빈 영역에서 우클릭 시 마커 추가
         naver.maps.Event.addListener(map, 'rightclick', function(e) {
-            // 마커 위가 아닌 빈 영역을 우클릭했을 경우
-            // overlay: 'rightclick' 이벤트가 발생한 위치에 오버레이(예: 마커, 정보 창 등)가 있는지를 나타내는 속성
             if (!e.overlay) {
-                var clickPos = new naver.maps.LatLng(e.coord.y, e.coord.x);
-                addMarker(clickPos);
+                checkRegionAndAddMarker(e.coord.y, e.coord.x);
+            }
+        });
+    }
+
+    function checkRegionAndAddMarker(lat, lng) {
+        naver.maps.Service.reverseGeocode({
+            coords: new naver.maps.LatLng(lat, lng),
+        }, function(status, response) {
+            if (status === naver.maps.Service.Status.OK) {
+                const result = response.v2.address;
+                const fullAddress = result.jibunAddress + ' ' + result.roadAddress;
+
+                if (fullAddress.includes(regionKorean)) {
+                    // 지역 일치: 마커 추가 허용
+                    var position = new naver.maps.LatLng(lat, lng);
+                    addMarker(position);
+                } else {
+                    // 지역 불일치: 마커 추가 불허
+                    alert(`"${regionKorean}" 지역 내에서만 핀을 찍을 수 있습니다.\n현재 위치: ${fullAddress}`);
+                }
+            } else {
+                alert("주소 정보를 확인할 수 없습니다. 다시 시도해 주세요.");
             }
         });
     }

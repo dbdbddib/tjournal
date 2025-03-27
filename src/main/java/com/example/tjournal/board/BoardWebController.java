@@ -1,6 +1,7 @@
 package com.example.tjournal.board;
 
 import com.example.tjournal.category.CategoryEnum;
+import com.example.tjournal.category.RegionDto;
 import com.example.tjournal.member.IMember;
 import com.example.tjournal.member.MemberServiceImpl;
 import com.example.tjournal.security.config.SecurityConfig;
@@ -133,12 +134,14 @@ public class BoardWebController {
 
     @GetMapping("/board_add/{region}")
     private String regionBoardAdd(Model model, @PathVariable String region) {
-        model.addAttribute("region", region);
+        RegionEnum regionEnum;
         try {
-            RegionEnum.valueOf(region.toUpperCase()); // 예외 발생 시 유효하지 않은 값
+            regionEnum = RegionEnum.valueOf(region.toUpperCase());
         } catch (IllegalArgumentException e) {
             return "error/400"; // 유효하지 않은 값에 대한 처리
         }
+        RegionDto regionDto = RegionDto.from(regionEnum);
+        model.addAttribute("region", regionDto);
         return "board/board_add";
     }
 
