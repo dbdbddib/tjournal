@@ -23,7 +23,8 @@ public enum RegionEnum {
     JEONNAM("jeonnam", "전라남도"),
     GYEONGBUK("gyeongbuk", "경상북도"),
     GYEONGNAM("gyeongnam", "경상남도"),
-    JEJU("jeju", "제주");
+    JEJU("jeju", "제주"),
+    ALL("all", "전국");
 
     private final String englishName;
     private final String koreanName;

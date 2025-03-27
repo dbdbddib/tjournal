@@ -45,11 +45,14 @@ public class ServerApiController implements IResponseController {
     @GetMapping("/naver")
     public String naver(@RequestParam("query") String query,
                         @RequestParam(value = "region", required = false) String region) throws JsonProcessingException {
-
-        RegionEnum regionEnum = RegionEnum.valueOf(region.toUpperCase()); // RegionEnum 객체 얻기
-        String regionKorean = regionEnum.getKoreanName();
-
-
+        RegionEnum regionEnum;
+        String regionKorean;
+        try {
+            regionEnum = RegionEnum.valueOf(region.toUpperCase());
+            regionKorean = regionEnum.getKoreanName();
+        } catch (IllegalArgumentException | NullPointerException e) {
+            regionKorean = null; // 유효하지 않은 지역이 오면 null 처리
+        }
         // 공식 문서의 [파라미터] 부분 참고
         URI uri = UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com")
@@ -80,7 +83,7 @@ public class ServerApiController implements IResponseController {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> result = restTemplate.exchange(req, String.class);
 
-        // 여기서 json 값의 지역 부분을 가져와 지역과 비교 if문으로 처리
+        if ("all".equalsIgnoreCase(region)) return result.getBody();
 
         String responseBody = result.getBody();
         ObjectMapper mapper = new ObjectMapper();

@@ -261,9 +261,13 @@
 
         // 지도 빈 영역에서 우클릭 시 마커 추가
         naver.maps.Event.addListener(map, 'rightclick', function(e) {
-            if (!e.overlay) {
-                checkRegionAndAddMarker(e.coord.y, e.coord.x);
+            if (e.overlay) return;
+            if (region === "all") {
+                var clickPos = new naver.maps.LatLng(e.coord.y, e.coord.x);
+                addMarker(clickPos);
+                return;
             }
+            checkRegionAndAddMarker(e.coord.y, e.coord.x);
         });
     }
 
@@ -402,7 +406,6 @@
     }
 
 
-    // 입력된 주소를 지오코딩하여 지도 중심 이동 및 마커 추가
     function searchAddress(address) {
         $.ajax({
             url: "/api/server/naver",

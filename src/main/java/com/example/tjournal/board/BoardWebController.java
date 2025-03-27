@@ -128,7 +128,14 @@ public class BoardWebController {
 
     @GetMapping("/board_add")
     private String allNoticeBoardAdd(Model model) {
-        model.addAttribute("region", "");
+        RegionEnum regionEnum;
+        try {
+            regionEnum = RegionEnum.valueOf("ALL");
+        } catch (IllegalArgumentException e) {
+            return "error/400"; // 유효하지 않은 값에 대한 처리
+        }
+        RegionDto regionDto = RegionDto.from(regionEnum);
+        model.addAttribute("region", regionDto);
         return "board/board_add";
     }
 
