@@ -10,11 +10,17 @@ import lombok.Setter;
 public class RegionDto {
     private String englishName;
     private String koreanName;
+    private double centerLat;
+    private double centerLng;
+
+
 
     public static RegionDto from(RegionEnum region) {
         return new RegionDto(
                 region.getEnglishName(),
-                region.getKoreanName()
+                region.getKoreanName(),
+                region.getCenterLat(),
+                region.getCenterLng()
         );
     }
 }

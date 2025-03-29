@@ -48,7 +48,10 @@
 
     let region = "{{region.englishName}}";
     let regionKorean = "{{region.koreanName}}";
-
+    let selectedRegion = {
+        centerLat: "{{region.centerLat}}",
+        centerLng: "{{region.centerLng}}"
+    };
 
     $(document).ready(function () {
             $("#postForm").on("submit", function (event) {
@@ -250,11 +253,12 @@
     var markers = [];           // 지도에 추가된 마커들을 저장하는 배열
     var markerDataList = [];    // 각 마커에 입력한 내용과 관련 정보를 저장하는 리스트
 
-    function initMap() {
+    function initMap(selectedRegion) {
+        var lat = selectedRegion && selectedRegion.centerLat ? selectedRegion.centerLat : 37.3595704;
+        var lng = selectedRegion && selectedRegion.centerLng ? selectedRegion.centerLng : 127.105399;
+
         var mapOptions = {
-            // new naver.maps.LatLng
-            // 지도 상의 특정 좌표를 나타내는 객체를 생성
-            center: new naver.maps.LatLng(37.3595704, 127.105399),
+            center: new naver.maps.LatLng(lat, lng),
             zoom: 10
         };
         map = new naver.maps.Map('map', mapOptions);
@@ -262,7 +266,7 @@
         // 지도 빈 영역에서 우클릭 시 마커 추가
         naver.maps.Event.addListener(map, 'rightclick', function(e) {
             if (e.overlay) return;
-            if (region === "all") {
+            if (selectedRegion.englishName === "all") {
                 var clickPos = new naver.maps.LatLng(e.coord.y, e.coord.x);
                 addMarker(clickPos);
                 return;
@@ -270,6 +274,27 @@
             checkRegionAndAddMarker(e.coord.y, e.coord.x);
         });
     }
+
+    // function initMap() {
+    //     var mapOptions = {
+    //         // new naver.maps.LatLng
+    //         // 지도 상의 특정 좌표를 나타내는 객체를 생성
+    //         center: new naver.maps.LatLng(37.3595704, 127.105399),
+    //         zoom: 10
+    //     };
+    //     map = new naver.maps.Map('map', mapOptions);
+    //
+    //     // 지도 빈 영역에서 우클릭 시 마커 추가
+    //     naver.maps.Event.addListener(map, 'rightclick', function(e) {
+    //         if (e.overlay) return;
+    //         if (region === "all") {
+    //             var clickPos = new naver.maps.LatLng(e.coord.y, e.coord.x);
+    //             addMarker(clickPos);
+    //             return;
+    //         }
+    //         checkRegionAndAddMarker(e.coord.y, e.coord.x);
+    //     });
+    // }
 
     function checkRegionAndAddMarker(lat, lng) {
         naver.maps.Service.reverseGeocode({
@@ -522,7 +547,7 @@
 
 <script type="text/javascript"
         src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=jchd9s8hn9&submodules=geocoder"
-        onload="initMap()">
+        onload="initMap(selectedRegion)">
 </script>
 
 <div id="searchResults"></div>
