@@ -93,14 +93,11 @@ public class IndexController {
             log.error("OAuth 로그아웃 실패: " + e.getMessage());
         }
 
-
         // 세션 무효화
         session.invalidate();
         Cookie cookie = new Cookie(SecurityConfig.LOGINUSER, null);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
-
-
 
         return "login/signout";
     }

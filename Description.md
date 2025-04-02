@@ -38,6 +38,15 @@ IResponseController 클래스의 makeResponseEntity 메서드는 응답 데이�
 
 - $(function() { ... })
   - 축약형 표현으로, jQuery가 제공하는 $(document).ready()의 단축 문법
+  
+  # html 실행순서
+
+<head> 태그에 있는 요소(예: <title>, <script>, <style> 등)가 먼저 처리
+<script> 태그 실행
+HTML body 태그 파싱
+$(function () { ... })
+$(document).ready(function () { ... })
+$(function() { ... }): 축약형 표현으로, jQuery가 제공하는 $(document).ready()의 단축 문법
 ```
 
 # uuid

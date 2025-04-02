@@ -4,21 +4,57 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="/css/container.css" />
     <script>
-// 실행순서
-// <head> 태그에 있는 요소(예: <title>, <script>, <style> 등)가 먼저 처리
-// <script> 태그 실행
-// HTML body 태그 파싱
-// $(function () { ... })
-// $(document).ready(function () { ... })
-// $(function() { ... }): 축약형 표현으로, jQuery가 제공하는 $(document).ready()의 단축 문법
 
-let loginId = "{{loginId}}";
+
+
+    let loginId = "{{loginId}}";
 
         $(function () {
-
-
+            $("#search-name").autocomplete({
+                minLength: 2, // 2글자 이상 입력 시 추천 시작
+                source: function(request, response) {
+                    $.ajax({
+                        url: "/api/v1/member/search", // 실제 검색 API 호출
+                        type: "POST",
+                        dataType: "json",
+                        data: JSON.stringify({
+                            searchName: request.term,
+                            "searchId": loginId
+                        }),
+                        contentType: "application/json; charset=UTF-8",
+                        success: function(data) {
+                            let suggestions = [];
+                            if (data && data.responseData && data.responseData.dataList) {
+                                $.each(data.responseData.dataList, function(index, item) {
+                                    let cleanedName = item.nickname.replace(/<[^>]*>/g, "");  // HTML 태그 제거
+                                    suggestions.push({
+                                        label: cleanedName,  // 자동완성 목록에 표시될 텍스트
+                                        value: cleanedName   // 입력창에 채워질 값
+                                    });
+                                });
+                            }
+                            response(suggestions);  // 자동완성 추천 목록을 response로 반환
+                        },
+                        error: function() {
+                            response([]);  // 실패 시 빈 리스트 반환
+                        }
+                    });
+                },
+                focus: function(event, ui) {
+                    event.preventDefault();  // 자동완성 항목에 포커스가 되지 않도록 설정
+                },
+                select: function(event, ui) {
+                    event.preventDefault();
+                    $("#search-name").val(ui.item.label);  // 선택된 항목을 입력창에 채우기
+                    $("#search-name").autocomplete("close");  // 자동완성 목록 닫기
+                    // 버튼 클릭 없이 직접 검색하도록 처리
+                    searchAddress(ui.item.label);  // 선택된 값으로 검색
+                }
+            });
         });
 
         $(document).ready(function () {
@@ -116,7 +152,6 @@ let loginId = "{{loginId}}";
                     pageDiv.append(pageButton);
                 }
             };
-
             $.searchItemList();
         });
 

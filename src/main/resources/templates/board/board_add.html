@@ -266,7 +266,7 @@
         // 지도 빈 영역에서 우클릭 시 마커 추가
         naver.maps.Event.addListener(map, 'rightclick', function(e) {
             if (e.overlay) return;
-            if (selectedRegion.englishName === "all") {
+            if (region === "all") {
                 var clickPos = new naver.maps.LatLng(e.coord.y, e.coord.x);
                 addMarker(clickPos);
                 return;
