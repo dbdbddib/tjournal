@@ -4,6 +4,7 @@ import com.example.tjournal.member.IMember;
 import com.example.tjournal.member.IMemberService;
 import com.example.tjournal.security.config.SecurityConfig;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
@@ -32,12 +33,18 @@ public class IndexController {
     private IMemberService memberService;
 
     @GetMapping("")
-    private String index(Model model, @SessionAttribute(name = SecurityConfig.LOGINUSER, required = false) String nickname) {
+    private String index(Model model, @SessionAttribute(name = SecurityConfig.LOGINUSER, required = false) String nickname, HttpServletRequest request) {
         if ( nickname != null ) {
             IMember loginUser = this.memberService.findByNickname(nickname);
             model.addAttribute(SecurityConfig.LOGINUSER, loginUser);
+            return "/board/board_ajx_list/place";
+        } else {
+            HttpSession session = request.getSession(false); // 이미 존재하는 세션만 반환
+            if (session != null && session.getAttribute(SecurityConfig.LOGINUSER) != null) {
+                return "/board/board_ajx_list/place"; // 세션에 로그인 정보가 있으면 메인 페이지로 리다이렉트
+            }
+            return "/selogin/login";
         }
-        return "index";
     }
 
     @GetMapping("/signout")
