@@ -37,6 +37,12 @@
                                     });
                                 });
                             }
+                            if (suggestions.length === 0) {
+                                suggestions.push({
+                                    label: "No results found",
+                                    value: ""
+                                });
+                            }
                             response(suggestions);  // 자동완성 추천 목록을 response로 반환
                         },
                         error: function() {
@@ -48,6 +54,9 @@
                     event.preventDefault();  // 자동완성 항목에 포커스가 되지 않도록 설정
                 },
                 select: function(event, ui) {
+                    if (ui.item.value === "No results found") {
+                        return false; // 선택되지 않도록 방지
+                    }
                     event.preventDefault();
                     $("#search-name").val(ui.item.label);  // 선택된 항목을 입력창에 채우기
                     $("#search-name").autocomplete("close");  // 자동완성 목록 닫기
